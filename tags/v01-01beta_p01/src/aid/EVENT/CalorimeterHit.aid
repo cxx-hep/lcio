@@ -1,0 +1,49 @@
+package hep.lcio.event ;
+
+@ifdef cpp
+@cpp{
+#include <vector>
+}
+@endif
+    @ifdef IGNORE // we have to split the cpp stuff - includes should go outside namespace 
+    @endif
+
+@ifdef cpp
+@cpp{
+class CalorimeterHit ;
+typedef std::vector<CalorimeterHit*> CalorimeterHitVec ;
+}
+@endif
+
+/** The generic calorimeter hit for real data. 
+ * If Clusters from reconstruction want to point back to
+ * CalorimeterHit objects, these have to be stored in a collection
+ * with flag(LCIO::RCHBIT_PTR)==1.
+ *  
+ * @author gaede
+ * @version Aug 8, 2003
+ */
+
+public interface CalorimeterHit extends LCObject {
+    
+    /**Returns the detector specific (geometrical) cell id.
+     */
+    public int getCellID0() const ;
+    
+    /**Returns the second detector specific (geometrical) cell id.
+     *  0 if information is not stored -  check the flag word (bit CHBIT_ID1) 
+     *  of the collection. Default is to store only cellid0.
+     */
+    public int getCellID1() const ;
+    
+    /** Returns the energy (amplitude) of the hit on a detector (and calibration) 
+     * depending scale.
+     */
+    public float getEnergy() const ;
+    
+    /** Returns the position of the hit in world coordinates.
+     *  NULL if information is not stored - check the flag word (bit CHBIT_LONG) 
+     */
+    public const float3V getPosition() const ;	
+
+}
