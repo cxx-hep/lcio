@@ -31,15 +31,19 @@ namespace IMPL {
     /// Destructor.
     virtual ~ReconstructedParticleImpl() ; 
 
-    /** Flag word that decodes some particle type information<br>
-     *  bit 31, primary: 0 secondary, 1 primary <br>   
-     *  bits0-15: type: <br>
+    /** Type of reconstructed particle, one of:<br>
      *  ReconstructedParticle::SINGLE,<br>  
      *  ReconstructedParticle::V0,<br>
      *  ReconstructedParticle::COMPOUND,<br>
      *  ReconstructedParticle::JET<br>
      */
-    virtual int getTypeFlag() const ;
+    virtual int getType() const ;
+
+    /** Return particles primary flag. All particles in the ReconstructedParticle
+     *  collection should by definition return true. Compound partciles will return false.
+     */
+    virtual bool isPrimary() const ;
+
 
     /** The magnitude of the reconstructed particle's momentum,
      */
@@ -104,7 +108,9 @@ namespace IMPL {
     virtual const EVENT::FloatVec & getMCParticleWeights() const ;
 
     // setters
-    void setTypeFlag( int typeFlag)  ;
+    void setType(int type) ;
+    void setPrimary(bool primary) ;
+    //    void setTypeFlag( int typeFlag)  ;
     void setMomentum( const float* momentum ) ;
     void setEnergy( float energy) ;
     void setCovMatrix( const float* cov ) ;
@@ -113,13 +119,23 @@ namespace IMPL {
     void setCharge( float charge ) ;
     void setReferencePoint( const float* reference ) ;
     void addParticleID( EVENT::ParticleID*  pid ) ;
-    void addParticle( ReconstructedParticle* particle , float weight = 1.0 ) ;
+    void addParticle( EVENT::ReconstructedParticle* particle , float weight = 1.0 ) ;
     void addCluster( EVENT::Cluster* cluster, float weight = 1.0 ) ;
     void addTrack( EVENT::Track* track, float weight = 1.0 ) ;
     void addMCParticle( EVENT::MCParticle* mcParticle , float weight = 1.0 ) ;
 
   protected:
-    int _typeFlag ;
+    /** Flag word that decodes some particle type information<br>
+     *  bit 31, primary: 0 secondary, 1 primary <br>   
+     *  bits0-15: type: <br>
+     *  ReconstructedParticle::SINGLE,<br>  
+     *  ReconstructedParticle::V0,<br>
+     *  ReconstructedParticle::COMPOUND,<br>
+     *  ReconstructedParticle::JET<br>
+     */
+
+    bool _primary ;
+    int _type ;
     float _momentum[3] ;
     float _energy ;
     EVENT::FloatVec _cov ;

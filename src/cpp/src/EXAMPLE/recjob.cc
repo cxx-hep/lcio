@@ -255,13 +255,19 @@ public:
     LCCollectionVec* particleVec = new LCCollectionVec( LCIO::RECONSTRUCTEDPARTICLE )  ;
     
     for(int i=0;i<nRecP;i++){
-      ReconstructedParticleImpl* part = new ReconstructedParticleImpl ;
-      int typeFlag = ( 1 << 31 )  ;  // primary flag
-      part->setTypeFlag(  typeFlag |  ReconstructedParticle::SINGLE ) ;
+      ReconstructedParticle * part = new ReconstructedParticleImpl ;
+      part->setPrimary( true )  ;
+      part->setType(  ReconstructedParticle::SINGLE ) ;
+
       float p[3] = { 1.1 , 2.2 , 3.3 } ;
       part->setMomentum( p ) ;
       part->setEnergy(  i*101.101 ) ;
-      float cov[10] = { 1.,2.,3.,4.,5.,6.,7.,8.,9.,10. } ;
+
+      float covA[] =  { 1.,2.,3.,4.,5.,6.,7.,8.,9.,10. } ;
+      FloatVec cov(10) ;
+      for(int j=0;j<10;j++) cov[j] = covA[j] ;
+
+
       part->setCovMatrix( cov) ;
       part->setMass( 0.511*i ) ;
       part->setCharge( -2./3. ) ;

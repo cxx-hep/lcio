@@ -8,7 +8,6 @@
 #include "EVENT/LCIO.h"
 #include "AccessChecked.h"
 
-
 namespace IMPL{
 
   //class  EVENT::LCCollection ;
