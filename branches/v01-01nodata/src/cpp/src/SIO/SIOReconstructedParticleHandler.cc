@@ -9,6 +9,7 @@
 
 #include "SIO_functions.h"
 #include "SIO_block.h"
+#include <bitset>
 
 
 using namespace EVENT ;
@@ -29,7 +30,11 @@ namespace SIO{
     ReconstructedParticleIOImpl* recP  = new ReconstructedParticleIOImpl ;
     *objP = recP ;
 	
-    SIO_DATA( stream ,  &(recP->_typeFlag) , 1  ) ;
+    int typeFlag ;
+    SIO_DATA( stream ,  &typeFlag , 1  ) ;
+    recP->setType( 0x0000ffff & typeFlag ) ;
+    recP->setPrimary( (1<<31) &  typeFlag ) ;
+
     SIO_DATA( stream ,  recP->_momentum  , 3 ) ;
     SIO_DATA( stream ,  &(recP->_energy)  , 1 ) ;
 
@@ -135,7 +140,12 @@ namespace SIO{
     const ReconstructedParticle* recP = dynamic_cast<const ReconstructedParticle*>(obj)  ;
 
 
-    LCSIO_WRITE( stream, recP->getTypeFlag()  ) ;
+    // bit 31 is primary flag 
+    // lower 16 bits are type 
+    std::bitset<32> typeFlag =   recP->getType() ; 
+    if( recP->isPrimary() ) typeFlag[31] = 1 ;
+    LCSIO_WRITE( stream, (int) typeFlag.to_ulong()  ) ;
+
     float* mom = const_cast<float*> ( recP->getMomentum() ) ; 
     SIO_DATA( stream,  mom , 3 ) ;
     LCSIO_WRITE( stream, recP->getEnergy()  ) ;

@@ -33,16 +33,19 @@ public interface ReconstructedParticle extends LCObject {
     public static const int JET      =  4 ; 
 @endif
 
-    /** Flag word that decodes some particle type information<br>
-     *  bit 31, primary: 0 secondary, 1 primary <br>   
-     *  bits0-15: type: <br>
+    /** Type of reconstructed particle, one of:<br>
      *  ReconstructedParticle::SINGLE,<br>  
      *  ReconstructedParticle::V0,<br>
      *  ReconstructedParticle::COMPOUND,<br>
      *  ReconstructedParticle::JET<br>
      */
-    public int getTypeFlag() const ;	
+    public int getType() const ;	
     
+    /** Return particles primary flag. All particles in the ReconstructedParticle
+     *  collection should by definition return true. Compound partciles will return false.
+     */
+    public boolean isPrimary() const ;
+
     /** The magnitude of the reconstructed particle's momentum,
      */
     public const float3V getMomentum() const ;	
@@ -55,7 +58,7 @@ public interface ReconstructedParticle extends LCObject {
      */
     public const FloatVec& getCovMatrix() const ;
     
-    /** Mass of the  reconstructed particle.
+    /** Mass of the  reconstructed particle, set independently from four vector quantities.
      */
     public float getMass() const ;	
 
@@ -109,5 +112,69 @@ public interface ReconstructedParticle extends LCObject {
     /** The weights of the MCParticle assignment.
      */
     public const FloatVec& getMCParticleWeights() const ;
+
+
+    // set methods
+
+    /** Set the type of reconstructed particle, one of:<br>
+     *  ReconstructedParticle::SINGLE,<br>  
+     *  ReconstructedParticle::V0,<br>
+     *  ReconstructedParticle::COMPOUND,<br>
+     *  ReconstructedParticle::JET<br>
+     */
+    public void setType( int type)  ;
+
+    /**Set primary flag.
+     */
+    public void setPrimary( boolean primary ) ;
+
+    /** Set particle momentum (px,py,pz).
+     */
+    public void setMomentum( const float3V momentum ) ;
+
+    /**Set energy.
+     */
+    public void setEnergy( float energy) ;
+
+    /** Set the values of the covariance matrix of the particles four vector (px,py,pz,E).
+     */
+    public void setCovMatrix( const float3V cov ) ; 
+    
+    /** Set the values of the covariance matrix of the particles four vector (px,py,pz,E).
+     */
+    public void setCovMatrix( const FloatVec& cov ) ;
+
+    /**Set mass - independently from four vector. 
+     */
+    public void setMass( float mass ) ;
+
+    /** Set the charge. 
+     */
+    public void setCharge( float charge ) ;
+
+    /**Set the reference point, i.e. the point where the four vector is defined.
+     */
+    public void setReferencePoint( const float3V reference ) ;
+
+    /**Add a ParticleID object.
+     * @see ParticleID
+     */
+    public void addParticleID( ParticleID*  pid ) ;
+
+    /**Add a particle that has been used to create this particle.
+     */
+    public void addParticle( ReconstructedParticle* particle , float weight = 1.0 ) ;
+
+    /**Add a cluster that has been used to create this particle.
+     */
+    public void addCluster( Cluster* cluster, float weight = 1.0 ) ;
+
+    /**Add a track that has been used to create this particle.
+     */
+    public void addTrack( Track* track, float weight = 1.0 ) ;
+
+    /**Add a hypothesis for the MCParticle that this reconstructed particle corresponds to.
+     */
+    public void addMCParticle( MCParticle* mcParticle , float weight = 1.0 ) ;
 }
 

@@ -17,7 +17,9 @@ namespace IMPL{
     }
   }
  
-  int ReconstructedParticleImpl::getTypeFlag() const { return  _typeFlag ; }
+  int ReconstructedParticleImpl::getType() const { return _type ; }
+  bool ReconstructedParticleImpl::isPrimary() const { return _primary ;}
+
   const float* ReconstructedParticleImpl::getMomentum() const { return  _momentum ; }
   float ReconstructedParticleImpl::getEnergy() const { return  _energy ; }
   const EVENT::FloatVec & ReconstructedParticleImpl::getCovMatrix() const { return _cov   ; }
@@ -40,10 +42,20 @@ namespace IMPL{
   const EVENT::FloatVec & ReconstructedParticleImpl::getMCParticleWeights() const { return  _mcParticleWeights ; }
   
 
-  void ReconstructedParticleImpl::setTypeFlag( int typeFlag){
-    checkAccess("ReconstructedParticleImpl::setTypeFlag" );
-    _typeFlag  = typeFlag ;
+  void ReconstructedParticleImpl::setType(int type){
+    checkAccess("ReconstructedParticleImpl::setType" );
+    _type = type ;
   }
+  void ReconstructedParticleImpl::setPrimary(bool primary){
+    checkAccess("ReconstructedParticleImpl::setPrimary" );
+    _primary = primary ;
+  }
+
+//   void ReconstructedParticleImpl::setTypeFlag( int typeFlag){
+//     checkAccess("ReconstructedParticleImpl::setTypeFlag" );
+//     _typeFlag  = typeFlag ;
+//   }
+
   void ReconstructedParticleImpl::setMomentum( const float* momentum ){
     checkAccess("ReconstructedParticleImpl::setMomentum" );
     _momentum[0]  = momentum[0] ;
