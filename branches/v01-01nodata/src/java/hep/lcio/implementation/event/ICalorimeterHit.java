@@ -1,13 +1,11 @@
 package hep.lcio.implementation.event;
 
 import hep.lcio.event.CalorimeterHit;
-import hep.lcio.event.LCIO;
-
 
 /**
  * A default implementation of CalorimeterHit
  * @author Tony Johnson
- * @version $Id: ICalorimeterHit.java,v 1.5 2003-09-04 04:26:59 tonyj Exp $
+ * @version $Id: ICalorimeterHit.java,v 1.5.2.1 2004-04-06 11:26:00 gaede Exp $
  */
 public class ICalorimeterHit extends ILCObject implements CalorimeterHit
 {

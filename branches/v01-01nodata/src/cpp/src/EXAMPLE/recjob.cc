@@ -126,7 +126,7 @@ public:
       for( int i=0; i < nTrk ; i ++ ){
 
 	TrackImpl* trk = new TrackImpl ;
-	trk->setType( TrackData::TPC ) ;
+	trk->setType( Track::TPC ) ;
 	trk->setMomentum(  (i+1)*1.1 ) ;
 	trk->setTheta( (i+1)* M_PI / 10. ) ;
 	trk->setPhi( (i+1)* M_PI / 5. ) ;
@@ -154,7 +154,7 @@ public:
       for( int i=0; i < nTrk ; i ++ ){
 
 	TrackImpl* trk = new TrackImpl ;
-	trk->setType( TrackData::TPC ) ;
+	trk->setType( Track::TPC ) ;
 	trk->setMomentum(  (i+1)*1.1 ) ;
 	trk->setTheta( (i+1)* M_PI / 10. ) ;
 	trk->setPhi( (i+1)* M_PI / 5. ) ;

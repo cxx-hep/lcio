@@ -51,7 +51,7 @@ namespace IMPL {
 
     /** Covariance matrix of the reconstructed particle's 4vector (10 parameters).
      */
-    virtual const DATA::FloatVec & getCovMatrix() const ;
+    virtual const EVENT::FloatVec & getCovMatrix() const ;
 
     /** Mass of the  reconstructed particle.
      */
@@ -66,32 +66,17 @@ namespace IMPL {
     virtual const float* getReferencePoint() const ;
 
     /** The particle Id's sorted by their probability.
-     * @see ParticleIDData
-     */
-    virtual const DATA::ParticleIDDataVec & getParticleIDsData() const ;
-
-    /** The particle Id's sorted by their probability.
      * @see ParticleID
      */
     virtual const EVENT::ParticleIDVec & getParticleIDs() const ;
-
-    /** The particles (as ReconstructedParticleData objects) that have
-     *  been combined to this particle.
-     */
-    virtual const DATA::ReconstructedParticleDataVec & getParticlesData() const ;
 
     /** The reconstructed particles that have been combined to this particle.
      */
     virtual const EVENT::ReconstructedParticleVec& getParticles() const ; 
 
-
     /** The weights of the reconstructed particles combined to this particle
      */
-    virtual const DATA::FloatVec & getParticleWeights() const ;
-
-    /** The clusters (as ClusterData objects) that have been used for this particle.
-     */
-    virtual const DATA::ClusterDataVec & getClustersData() const ;
+    virtual const EVENT::FloatVec & getParticleWeights() const ;
 
     /** The clusters that have been used for this particle.
      */
@@ -99,11 +84,7 @@ namespace IMPL {
     
     /** The weights of cluster contributions to this particle
      */
-    virtual const DATA::FloatVec & getClusterWeights() const ;
-
-    /** The tracks (as TrackData objects) that have been used for this particle.
-     */
-    virtual const DATA::TrackDataVec & getTracksData() const ;
+    virtual const EVENT::FloatVec & getClusterWeights() const ;
 
     /** The tracks that have been used for this particle.
      */
@@ -111,12 +92,7 @@ namespace IMPL {
     
     /** The weights of track contributions to this particle
      */
-    virtual const DATA::FloatVec & getTrackWeights() const ;
-
-    /** The MCParticle assigned to this reconstructed particle.
-     * @see MCParticleData
-     */
-    virtual const DATA::MCParticleDataVec & getMCParticlesData() const ;
+    virtual const EVENT::FloatVec & getTrackWeights() const ;
 
     /** The MCParticle assigned to this reconstructed particle.
      * @see MCParticle
@@ -125,14 +101,14 @@ namespace IMPL {
 
     /** The weights of the MCParticle assignment.
      */
-    virtual const DATA::FloatVec & getMCParticleWeights() const ;
+    virtual const EVENT::FloatVec & getMCParticleWeights() const ;
 
     // setters
     void setTypeFlag( int typeFlag)  ;
     void setMomentum( const float* momentum ) ;
     void setEnergy( float energy) ;
     void setCovMatrix( const float* cov ) ;
-    void setCovMatrix( const DATA::FloatVec& ) ;
+    void setCovMatrix( const EVENT::FloatVec& ) ;
     void setMass( float mass ) ;
     void setCharge( float charge ) ;
     void setReferencePoint( const float* reference ) ;
@@ -146,19 +122,19 @@ namespace IMPL {
     int _typeFlag ;
     float _momentum[3] ;
     float _energy ;
-    DATA::FloatVec _cov ;
+    EVENT::FloatVec _cov ;
     float _mass ;
     float _charge ;
     float _reference[3] ;
     EVENT::ParticleIDVec _pid ;
     EVENT::ReconstructedParticleVec _particles ;
-    DATA::FloatVec _particleWeights ;
+    EVENT::FloatVec _particleWeights ;
     EVENT::ClusterVec _clusters ;
-    DATA::FloatVec _clusterWeights ;
+    EVENT::FloatVec _clusterWeights ;
     EVENT::TrackVec _tracks ;
-    DATA::FloatVec _trackWeights ;
+    EVENT::FloatVec _trackWeights ;
     EVENT::MCParticleVec _mcParticles ;
-    DATA::FloatVec _mcParticleWeights ;
+    EVENT::FloatVec _mcParticleWeights ;
     
 }; // class
 

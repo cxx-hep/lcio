@@ -7,8 +7,8 @@
 #include "EVENT/TPCHit.h"
 #include "EVENT/LCIO.h"
 #include "EVENT/MCParticle.h"
-#include "DATA/LCFloatVec.h"
-#include "DATA/LCIntVec.h"
+#include "EVENT/LCFloatVec.h"
+#include "EVENT/LCIntVec.h"
 #include "IMPL/LCFlagImpl.h"
 #include "EVENT/Track.h"
 #include "EVENT/Cluster.h"
@@ -26,7 +26,6 @@
 
 using namespace std ;
 using namespace EVENT ;
-using namespace DATA ;
 using namespace IMPL ;
 
 
