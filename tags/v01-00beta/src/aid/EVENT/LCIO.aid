@@ -1,0 +1,108 @@
+package hep.lcio.event ;
+
+/** Global constants used in LCIO.
+ * 
+ * @author gaede 
+ * @version Mar 4, 2003
+ * @see LCObject
+ * @see LCIO
+ */
+
+@cpp{ 
+// some convenient typedefs
+//#include <string>
+//#include <vector>
+//namespace EVENT{
+//    class MCParticle ;
+//    typedef std::vector<std::string> StringVec ;
+//    //typedef std::vector<const MCParticle*> MCParticleVec ;
+//    typedef std::vector<float> FloatVec ;
+//    typedef std::vector<int> IntegerVec ;
+//} ;
+}
+
+public interface LCIO{
+    
+    // it seems to be impossible to have one declaration for
+    // static constants in Java and C++ - so we need to define
+    // the same constants twice !!
+
+@ifdef cpp
+@cpp{
+  public:
+    // current version number of lcio
+    static const int MAJORVERSION  = 1 ; 
+    static const int MINORVERSION  = 0 ; 
+
+    // bits in flag words
+    // SimCalorimeterHit (CH)
+    static const int CHBIT_LONG   = 31; // long(1) - short(0), (position)
+    static const int CHBIT_BARREL = 30 ;  // barrel(1) - endcap(0) 
+    static const int CHBIT_ID1    = 29 ;  // cellid1 stored
+    static const int CHBIT_PDG    = 28 ;  // PDG(0) - no PDG(0) of secondaries
+    // SimTrackerHit
+    static const int THBIT_BARREL = 31 ; // barrel(1) - endcap(0) 
+
+    // TPCHit
+    static const int TPCBIT_RAW = 31 ; // raw data stored(1) - not stored(0) 
+
+    static const int READ_ONLY =  0 ;
+    static const int UPDATE   =  1 ;
+    // error handling
+    static const int ERROR   =  0 ;
+    static const int SUCCESS =  1 ;
+
+    //write modes
+    static const int WRITE_NEW = 0 ; 
+    static const int WRITE_APPEND = 1 ; 
+
+    // type names:
+    static const char* LCEVENT ;
+    static const char* LCRUNHEADER ;
+    static const char* MCPARTICLE ; 
+    static const char* SIMCALORIMETERHIT ;
+    static const char* CALORIMETERHIT ;
+    static const char* SIMTRACKERHIT ; 
+    static const char* TPCHIT ; 
+    static const char* LCFLOATVEC ; 
+    static const char* LCINTVEC ; 
+}
+@else
+    // current version number of lcio
+  public static const int MAJORVERSION  = 1 ; 
+  public static const int MINORVERSION  = 0 ; 
+
+  // bits in flag words
+  // SimCalorimeterHit (CH)
+  public static const int CHBIT_LONG   = 31 ;  // long(1) - short(0) , incl./excl. position
+  public static const int CHBIT_BARREL = 30 ;  // barrel(1) - endcap(0) 
+  public static const int CHBIT_ID1    = 29 ;  // cellid1 stored
+  public static const int CHBIT_PDG    = 28 ;  // PDG(0) - no PDG(0) of secondaries
+  // SimTrackerHit
+  public static const int THBIT_BARREL = 31 ; // barrel(1) - endcap(0) 
+
+  // TPCHit
+  public static const int TPCBIT_RAW = 31 ; // raw data stored(1) - not stored(0) 
+
+  public static const int READ_ONLY =  0 ;
+  public static const int UPDATE   =  1 ;
+  public static const int ERROR   =  0 ;
+  public static const int SUCCESS =  1 ;
+
+  //write modes
+  public static const int WRITE_NEW = 0 ; 
+  public static const int WRITE_APPEND = 1 ; 
+
+    // type names:
+  public static const String LCEVENT = "LCEvent" ;
+  public static const String LCRUNHEADER = "LCRunHeader" ;
+  public static const String MCPARTICLE = "MCParticle" ;
+  public static const String SIMCALORIMETERHIT = "SimCalorimeterHit" ;
+  public static const String CALORIMETERHIT = "CalorimeterHit" ;
+  public static const String SIMTRACKERHIT = "SimTrackerHit" ;
+  public static const String TPCHIT = "TPCHit" ;
+  public static const String LCFLOATVEC = "LCFloatVec" ;
+  public static const String LCINTVEC = "LCIntVec" ;
+@endif
+}
+
