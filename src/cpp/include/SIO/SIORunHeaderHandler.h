@@ -37,6 +37,7 @@ namespace SIO {
     virtual unsigned int   version() ;
     
     void setRunHeader(const EVENT::LCRunHeader* hdr ) ; 
+    void setRunHeaderPtr(IOIMPL::LCRunHeaderIOImpl** hdrP ) ; 
     
   private: 
     IOIMPL::LCRunHeaderIOImpl** _rhP ;  // address for reading

@@ -36,6 +36,9 @@ namespace SIO  {
   void SIOEventHandler::setEvent(const LCEvent* evt ){
     _evt = evt ;
   }
+  void SIOEventHandler::setEventPtr(IOIMPL::LCEventIOImpl** evtP ){
+    _evtP = evtP ;
+  } 
 
 
   unsigned int SIOEventHandler::xfer( SIO_stream* stream, SIO_operation op, 

@@ -36,6 +36,9 @@ namespace SIO  {
   void SIORunHeaderHandler::setRunHeader(const LCRunHeader* rh ){
     _hdr = rh ;
   }
+  void SIORunHeaderHandler::setRunHeaderPtr( LCRunHeaderIOImpl** hdrP ) {
+    _rhP= hdrP ;
+  } 
 
 
   unsigned int SIORunHeaderHandler::xfer( SIO_stream* stream, SIO_operation op, 

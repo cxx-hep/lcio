@@ -33,9 +33,10 @@ namespace SIO {
     virtual unsigned int   version() ;
     
     void setEvent(const EVENT::LCEvent* evt ) ; 
+    void setEventPtr( IOIMPL::LCEventIOImpl** evtP ) ; 
     
   private: 
-    // event implemenatation for reading 
+    // event implementation for reading 
     IOIMPL::LCEventIOImpl **_evtP ;  
     // event data interface for writing
     const EVENT::LCEvent *_evt ;  
