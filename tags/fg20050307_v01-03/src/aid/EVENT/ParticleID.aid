@@ -1,0 +1,52 @@
+package hep.lcio.event;
+
+@ifdef cpp
+@cpp{
+class ParticleID ;
+typedef std::vector<ParticleID*> ParticleIDVec ;
+}
+@endif
+
+/** Persistent interface for LCIO ParticleIDs.
+ *  Used by ReconstructedParticle and Cluster  
+ *  for different hypotheses on the particle type.
+ * 
+ * @author gaede
+ * @version $Id: ParticleID.aid,v 1.8 2004-09-22 16:18:31 gaede Exp $
+ * @see ReconstructedParticle.getParticleIDs()
+ * @see Cluster.getParticleIDs()
+ */
+public interface ParticleID extends  LCObject {
+
+    /** Type - userdefined.
+     */
+    public int getType() const ;	
+    
+    /** The PDG code of this id - UnknownPDG ( 999999 ) if unknown.
+     */
+    public int getPDG() const ;
+
+    /** Constant to be used if the PDG code is not known or undefined.
+     */
+@ifdef cpp
+@cpp{
+    static const int UnknownPDG = 999999 ;
+}@else
+    public static const int UnknownPDG = 999999 ;
+@endif
+
+    /**The likelihood  of this hypothesis - in a user defined normalization.
+     */
+    public float getLikelihood() const ;	
+    
+    /** Type of the algorithm/module that created this hypothesis. 
+     * Check/set collection parameters PIDAlgorithmTypeName and PIDAlgorithmTypeID.
+     */
+    public  int getAlgorithmType() const ;	
+    
+    /** Parameters associated with this hypothesis.
+     * Check/set collection paramter PIDParameterNames for decoding the indices.
+     */
+    public const FloatVec& getParameters() const ;
+    
+}
