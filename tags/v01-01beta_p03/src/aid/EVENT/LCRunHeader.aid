@@ -1,0 +1,31 @@
+package hep.lcio.event;
+
+/** Interface for the run header. 
+ *
+ * @author gaede
+ * @version Jan 3, 2003
+ */
+public interface LCRunHeader extends LCObject {
+    
+    /** Returns the run number.
+     */
+    public int getRunNumber() const ;
+    
+    /** Returns the name of the detector setup used in the simulation.
+     */
+    public const String& getDetectorName() const ;
+    
+    /** Description of the simulation, physics channels etc.
+     */		 
+    public const String& getDescription() const ;
+    
+    /** Returns the names of the active subdetectors
+     *  used in the simulation.
+     */ 
+    public const String[]*  getActiveSubdetectors() const ;
+
+
+    /** Parameters defined for this run.
+     */
+    public LCParameters& parameters() ;
+}
