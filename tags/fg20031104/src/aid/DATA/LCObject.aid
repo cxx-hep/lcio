@@ -1,0 +1,22 @@
+package hep.lcio.data ;
+
+/** The generic object that is held in an LCCollectionData. 
+ *  Every object stored in an LCCollectionData, i.e. in an LCEventData has to 
+ *  implement this interface.
+ * 
+ * @author gaede 
+ * @version Jun 7, 2003
+ * fg 20030607 moved here from hep.lcio.event
+ */
+public interface LCObject extends Cloneable {
+    
+
+@cpp{
+    /** Deep copy of the object. C++ implementations should return the 
+     *  concrete type (virtual constructor). 
+     */
+    public:
+	 virtual LCObject* clone() const {  return 0 ; } 
+}
+
+}
