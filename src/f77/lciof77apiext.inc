@@ -168,38 +168,23 @@ c ---------------  convenient methods for the vector interface
       integer lcgetstringvector
 
 
-*     Create/Delete a complete vector of Integers
+*     Create a complete vector of Integers
 *
 *     PTRTYPE intvectorcreate ( int* intv, const int nintv )
-*     int intvectordelete( PTRTYPE vector )
 
       PTRTYPE intvectorcreate
-      integer intvectordelete
 
-*     Createe/Delete a complete vector of Floats
+*     Create a complete vector of Floats
 *
 *     PTRTYPE floatvectorcreate ( float* floatv , const int nfloatv )
-*     int floatvectordelete( PTRTYPE vector )
 
       PTRTYPE floatvectorcreate
-      integer floatvectordelete
 
-*     Createe/Delete a complete vector of Strings
+*     Create a complete vector of Strings
 *
 *     PTRTYPE stringvectorcreate ( void* stringv, const int nstringv, const int nchstringv)
-*     int stringvectordelete( PTRTYPE vector )
 
       PTRTYPE stringvectorcreate
-      integer stringvectordelete
-
-*     Createe/Delete a complete vector of Pointers
-*
-*     PTRTYPE pointervectorcreate( PTRTYPE* pointerv, const int npointerv )
-*     int pointervectordelete( PTRTYPE vector )
-
-      PTRTYPE pointervectorcreate
-      integer pointervectordelete
-
 
 *     Get the complete vector of Integers
 *     
@@ -218,12 +203,6 @@ c ---------------  convenient methods for the vector interface
 *     int getstringvector( PTRTYPE vector, void* stringv, int* nstringv, const int nchstringv) 
 
       integer getstringvector
-
-*     Get the complete vector of Pointers
-*     
-*     int getpointervector( PTRTYPE vector, PTRTYPE* pointerv, int* npointerv )
-
-      integer getpointervector
 
 
 *     Set methods for LCParameters
