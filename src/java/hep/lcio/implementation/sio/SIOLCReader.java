@@ -1,15 +1,12 @@
 package hep.lcio.implementation.sio;
 
 import hep.lcd.io.sio.SIOBlock;
-import hep.lcd.io.sio.SIOInputStream;
 import hep.lcd.io.sio.SIOReader;
 import hep.lcd.io.sio.SIORecord;
 
 import hep.lcio.event.LCEvent;
 import hep.lcio.event.LCIO;
 import hep.lcio.event.LCRunHeader;
-
-import hep.lcio.implementation.event.ILCEvent;
 
 import hep.lcio.io.LCEventListener;
 import hep.lcio.io.LCReader;
@@ -25,7 +22,7 @@ import java.util.List;
 /**
  *
  * @author Tony Johnson
- * @version $Id: SIOLCReader.java,v 1.10 2004-02-17 15:09:28 gaede Exp $
+ * @version $Id: SIOLCReader.java,v 1.10.2.1 2004-04-06 11:26:03 gaede Exp $
  */
 class SIOLCReader implements LCReader
 {

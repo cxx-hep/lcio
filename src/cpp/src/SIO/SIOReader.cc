@@ -317,7 +317,7 @@ namespace SIO {
     if( !runFound ){
 //       std::stringstream message ;
 //       message << " run not found: " << runNumber << std::ends ;
-//       throw DataNotAvailableException( message.str()  ) ;
+//       throw NotAvailableException( message.str()  ) ;
       return 0 ;
     }
     { // -- scope for unpacking evt header --------

@@ -1,14 +1,14 @@
 #include "SIO/SIOEventHandler.h"
 #include "SIO/LCSIO.h"
 
-#include "DATA/LCEventData.h"
+#include "EVENT/LCEvent.h"
 #include "EVENT/LCIO.h"
 #include "IOIMPL/LCEventIOImpl.h"
 #include "IOIMPL/LCCollectionIOVec.h"
 
 #include "SIO_functions.h"
 
-using namespace DATA ;
+
 using namespace EVENT ;
 using namespace IOIMPL ;
 
@@ -33,7 +33,7 @@ namespace SIO  {
   }
 
   
-  void SIOEventHandler::setEvent(const LCEventData* evt ){
+  void SIOEventHandler::setEvent(const LCEvent* evt ){
     _evt = evt ;
   }
 
@@ -98,7 +98,7 @@ namespace SIO  {
       
 	for( std::vector<std::string>::const_iterator name = strVec->begin() ; name != strVec->end() ; name++){
 	
-	  const LCCollectionData* col = _evt->getCollectionData( *name ) ;
+	  const LCCollection* col = _evt->getCollection( *name ) ;
 	  LCSIO_WRITE( stream, *name ) ;
 	  LCSIO_WRITE( stream, col->getTypeName() ) ;
 		
