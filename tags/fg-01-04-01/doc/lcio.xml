@@ -1,0 +1,1135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sio SYSTEM "http://lcio.desy.de/doc/sio.dtd">
+
+<!--
+    Document   : lcio.xml
+    Created on : December 12, 2002, 5:06 PM
+    Author     : Frank Gaede, Ties Behnke, Norm Graf, Tony Johnson
+    Description:
+        Description of LCIO format in sio files.
+	Unless specified otherwise the default units used in LCIO files are:
+	length: mm, energy: GeV and time ns
+-->
+<sio>
+  <record name="LCRunHeader">
+     <block name="RunHeader" major="1" minor="4">
+        <data type="int" name="runNumber"></data>
+        <data type="string" name="detectorName"></data>
+        <data type="string" name="description"></data>
+        <data type="int" name="nActiveSubdetectors"></data>
+        <repeat count="nActiveSubdetectors">
+           <data type="string" name="subdetectorName"></data>
+        </repeat>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+     </block>
+  </record>  
+  <record name="LCEventHeader">
+     <block name="EventHeader" major="1" minor="4">
+        <data type="int" name="runNumber"></data>
+        <data type="int" name="eventNumber"></data>
+        <data type="long" name="timeStamp"></data>
+        <data type="string" name="detectorName"></data>
+        <data type="int" name="nBlockNames"></data>
+        <repeat count="nBlockNames">
+           <data type="string" name="blockName"></data>
+	   <data type="string" name="blockType">e.g. CalorimeterHit, TrackerHit</data>
+        </repeat>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+     </block>
+  </record>  
+  <record name="LCEvent">
+      <block name="MCParticle" major="1" minor="4">
+         <data type="int" name="flags"> not yet used, Bits 0-15 user/application dependent</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+	 <data type="int" name="nMC"></data>
+         <repeat count="nMC">
+            <data type="ptag" name="this"></data>
+            <if condition="1000*major+minor&lt;9">
+                <data type="pntr" name="parent"></data>
+                <data type="pntr" name="secondParent"></data>
+                <data type="int" name="nDaughter"></data>
+                <repeat count="nDaughter">
+                   <data type="pntr" name="daughter"></data>
+                </repeat> 
+            <else/>
+                <data type="int" name="nParent"></data>
+                <repeat count="nParent">
+                   <data type="pntr" name="parent"></data>
+                </repeat>
+            </if>   
+            <data type="int" name="PDG"></data>
+            <data type="int" name="generatorStatus">
+                              =0   empty line
+                              =1   undecayed particle, stable in the generator
+                              =2   particle decayed in the generator
+                              =3   documentation line
+	    </data>
+            <if condition="!(1000*major+minor&lt;9)">
+                <data type="int" name="simulatorStatus"></data>
+            </if>
+            <data type="double[3]" name="vertex">Production vertex</data>
+            <if condition="1000*major+minor&gt;1002">
+                <data type="float" name="time">creation time of the particle in ns</data>
+            </if>
+	    <data type="float[3]" name="momentum">Momentum at production vertex</data>
+            <data type="float" name="mass"></data>
+            <data type="float" name="charge"></data>
+	    <if condition="1000*major+minor&lt;9"> 
+               <if condition="nDaughter==0">
+                  <data type="double[3]" name="endpoint"/>
+               </if>
+            <else/>
+               <if condition="(simulatorStatus&amp;(1&lt;&lt;31)) != 0">
+                  <data type="double[3]" name="endpoint"/>
+               </if>               
+            </if>
+         </repeat>
+      </block>
+      <block name="SimTrackerHit" major="1" minor="4">
+         <data type="int" name="flags">Bit 31 Barrel = 0, Endcap = 1, Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="n"></data>
+         <repeat count="n">
+            <data type="int" name="cellID">Detector specific</data>
+            <data type="double[3]" name="position"></data>
+            <data type="float" name="dedx"></data>
+            <data type="float" name="time"></data>
+            <data type="pntr" name="MCParticle"></data>
+           <if condition="1000*major+minor&gt;1000">
+            <data type="ptag" name="this"></data>
+           </if>
+         </repeat>
+      </block>
+      <block name="SimCalorimeterHit" major="1" minor="4">
+         <data type="int" name="flags">Bit 31 long = 1, short = 0; Bit 30 Barrel = 0, Endcap = 1; 
+              Bit 29 cellid1 = 1, no cellid1 = 0; Bit 28 PDG = 1, no PDG =0, Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="nHits"></data>
+         <repeat count="nHits">
+            <data type="int" name="cellId0">Defines cell ID in detector specific way</data>
+	    <if condition="1000*major+minor&lt;9||(flags&amp;(1&lt;&lt;29)) != 0">
+                <data type="int" name="cellId1">second word for cell id</data>
+            </if>
+            <data type="float" name="energy"></data>
+	    <if condition="(flags&amp;(1&lt;&lt;31)) != 0">
+		<data type="float[3]" name="position"></data>
+	    </if> 
+            <data type="int" name="nContributions"></data>
+            <repeat count="nContributions">
+		<data type="pntr" name="MCParticle"></data>
+		<data type="float" name="energyContrib"></data>
+		<data type="float" name="time"></data>
+		<if condition="(flags&amp;(1&lt;&lt;28)) != 0">
+		   <data type="int" name="PDG"></data>
+		</if>
+            </repeat>
+           <if condition="1000*major+minor&gt;1000">
+             <data type="ptag" name="this"></data>
+           </if>
+         </repeat>
+      </block>
+      <block name="LCFloatVec" major="1" minor="4">
+         <data type="int" name="flags">not yet used, Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="nVectors"></data>
+         <repeat count="nVectors">
+	    <data type="int" name="nElements"></data>
+            <repeat count="nElements">
+	       <data type="float" name="value"></data>
+            </repeat>
+           <if condition="1000*major+minor&gt;1002">
+             <data type="ptag" name="this"></data>
+           </if>
+         </repeat>
+      </block>
+      <block name="LCIntVec" major="1" minor="4">
+         <data type="int" name="flags">not yet used, Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="nVectors"></data>
+         <repeat count="nVectors">
+	    <data type="int" name="nElements"></data>
+            <repeat count="nElements">
+	       <data type="int" name="value"></data>
+            </repeat>
+           <if condition="1000*major+minor&gt;1002">
+             <data type="ptag" name="this"></data>
+           </if>
+         </repeat>
+      </block>
+      <block name="LCStrVec" major="1" minor="4">
+         <data type="int" name="flags">not yet used, Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="nVectors"></data>
+         <repeat count="nVectors">
+	    <data type="int" name="nElements"></data>
+            <repeat count="nElements">
+	       <data type="string" name="value"></data>
+            </repeat>
+           <if condition="1000*major+minor&gt;1002">
+             <data type="ptag" name="this"></data>
+           </if>
+         </repeat>
+      </block>
+      <block name="RawCalorimeterHit" major="1" minor="4">
+         <data type="int" name="flags">Bit 31 long = 1, short = 0; Bit 30 Barrel = 0, Endcap = 1; 
+              Bit 29 cellid1 = 1, no cellid1 = 0;Bit 28 = 1: don't store ptr tag;
+	      Bit 27 = 1: timeStamp stored; Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="nHits"></data>
+         <repeat count="nHits">
+            <data type="int" name="cellId0">Defines cell ID in detector specific way</data>
+	    <if condition="1000*major+minor==8||(flags&amp;(1&lt;&lt;29)) != 0">
+                <data type="int" name="cellId1">second word for cell id</data>
+            </if>
+            <data type="int" name="amplitude"></data>
+	    <if condition="(flags&amp;(1&lt;&lt;27)) != 0">
+	       <data type="int" name="timeStamp"></data>
+	    </if>
+	    <if condition="(flags&amp;(1&lt;&lt;28)) == 0">
+              <data type="ptag" name="this"></data>
+	    </if>
+         </repeat>
+      </block>
+      <block name="CalorimeterHit" major="1" minor="4">
+         <data type="int" name="flags">Bit 31 long = 1, short = 0; Bit 30 Barrel = 0, Endcap = 1; 
+              Bit 29 cellid1 = 1, no cellid1 = 0;
+	      Bit 27 = 1: timeStamp stored; Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="nHits"></data>
+         <repeat count="nHits">
+            <data type="int" name="cellId0">Defines cell ID in detector specific way</data>
+	    <if condition="1000*major+minor==8||(flags&amp;(1&lt;&lt;29)) != 0">
+                <data type="int" name="cellId1">second word for cell id</data>
+            </if>
+            <data type="float" name="energy"></data>
+	    <if condition="1000*major+minor&gt;1002&amp;&amp;(flags&amp;(1&lt;&lt;27)) != 0">
+	       <data type="float" name="time"></data>
+	    </if>
+	    <if condition="(flags&amp;(1&lt;&lt;31)) != 0">
+	       <data type="float[3]" name="position"></data>
+	    </if>
+	    <if condition="1000*major+minor&gt;1002">
+	       <data type="int" name="type"></data>
+	       <data type="pntr" name="rawHit"></data>
+	    </if>
+            <if condition="1000*major+minor&gt;1002">
+              <data type="ptag" name="this"></data>
+	    <else/>
+	      <if condition="(flags&amp;(1&lt;&lt;28)) != 0">
+                <data type="ptag" name="this"></data>
+	      </if>
+            </if>
+         </repeat>
+      </block>
+      <block name="TrackerHit" major="1" minor="4">
+         <data type="int" name="flags">Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="n"></data>
+         <repeat count="n">
+            <if condition="1000*major+minor&gt;1002">
+	      <data type="int" name="type">Type of Track - encoded in parameters TrackerHitTypeName and
+	      TrackerHitTypeValue</data>
+            </if>
+            <data type="double[3]" name="position"></data>
+            <data type="float[6]" name="covariance">Covariance Matrix of position (x,y,z)</data>
+            <data type="float" name="dedx"></data>
+            <data type="float" name="time"></data>
+            <if condition="1000*major+minor&gt;1002">
+              <data type="int" name="nRawHits">number of raw hits</data>
+              <repeat count="nRawHits">
+	        <data type="pntr" name="rawHit"></data>
+              </repeat>
+            <else/> 
+              <data type="pntr" name="rawHit">pointer to TPCHit,...</data>
+            </if>
+            <data type="ptag" name="this"></data>
+         </repeat>
+      </block>
+      <block name="TPCHit" major="1" minor="4">
+         <data type="int" name="flags">Bit 31 no raw data = 0, raw data = 1, Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="n"></data>
+         <repeat count="n">
+            <data type="int" name="cellID">Detector specific</data>
+            <data type="float" name="time"></data>
+            <data type="float" name="charge"></data>
+            <data type="int" name="quality"></data>
+	    <if condition="(flags&amp;(1&lt;&lt;31)) != 0">
+            <data type="int" name="nRawDataWords"></data>
+            <repeat count="nRawDataWords">
+		<data type="int" name="rawDataWord"></data>
+            </repeat>
+	    </if>
+            <if condition="1000*major+minor&gt;1002">
+	      <if condition="(flags&amp;(1&lt;&lt;30)) == 0">
+                <data type="ptag" name="this"></data>
+	      </if>
+	    <else/>
+	      <if condition="(flags&amp;(1&lt;&lt;30)) != 0">
+                <data type="ptag" name="this"></data>
+	      </if>
+            </if>
+         </repeat>
+      </block>
+      <block name="TPCRawData" major="1" minor="4">
+         <data type="int" name="flags">Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="n"></data>
+         <repeat count="n">
+            <data type="int" name="channelID">channel Id</data>
+            <data type="int" name="time0">t0 of spectrum</data>
+
+            <data type="int" name="nCharge"></data>
+            <repeat count="nCharge">
+		<data type="short" name="charge"></data>
+            </repeat>
+            <data type="ptag" name="this"></data>
+         </repeat>
+      </block>
+      <block name="TPCCorrectedData" major="1" minor="4">
+         <data type="int" name="flags">Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="n"></data>
+         <repeat count="n">
+            <data type="int" name="channelID">channel Id</data>
+            <data type="int" name="time0">t0 of spectrum</data>
+
+            <data type="int" name="nCharge"></data>
+            <repeat count="nCharge">
+		<data type="float" name="charge"></data>
+            </repeat>
+            <data type="ptag" name="this"></data>
+         </repeat>
+      </block>
+      <block name="TPCPulse" major="1" minor="4">
+         <data type="int" name="flags">Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="n"></data>
+         <repeat count="n">
+            <data type="int" name="channelID">channel Id</data>
+            <data type="float" name="time">time of pulse</data>
+            <data type="float" name="charge">charge</data>
+            <data type="int" name="quality">quality flag word</data>
+ 	    <data type="pntr" name="tpcCorrectedData">the spectrum used to create the pulse</data>
+            <data type="ptag" name="this"></data>
+         </repeat>
+      </block>
+      <block name="VTXRawHit" major="1" minor="4">
+         <data type="int" name="flags">Bits 0-15 user/detector specific</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="n"></data>
+         <repeat count="n">
+            <data type="int" name="moduleID"></data>
+            <data type="int" name="row"></data>
+            <data type="int" name="column"></data>
+            <data type="int" name="adcCounts"></data>
+            <data type="ptag" name="this"></data>
+         </repeat>
+      </block>
+    <block name="Track" major="1" minor="4">
+      <data type="int" name="flag">Bit 31 Hits are kept =1, Hits are not kept = 0</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+      <data type="int" name="nTrack"/>
+      <repeat count="nTrack">
+	<data type="int" name="type">Type of Track, e.g. TPC, VTX, SIT</data>
+	<data type="float" name="d0">Impact Parameter in r-phi</data>
+	<data type="float" name="phi">Phi of track in r-phi</data>
+	<data type="float" name="omega">curvature signed with charge</data>
+	<data type="float" name="z0">Impact Parameter in r-z</data>
+	<data type="float" name="tanLambda">tangent of dip angle in r-z</data>
+
+	<data type="float[15]" name="covMatrix"> Covariance matrix</data>
+	<data type="float[3]" name="referencePoint">Reference point (x,y,z) </data>
+	<data type="float" name="chi2">chi**2 of fit</data>
+	<data type="int" name="ndf">ndf of fit</data>
+	<data type="float" name="dEdx">dEdx</data>
+	<data type="float" name="dEdxError">Error of dEdx</data>
+	<data type="float" name="radiusOfInnermostHit">radius of innermost hit used in track fit</data>
+	<data type="int" name="nHitNumbers"></data>
+	<repeat count="nHitNumbers">
+	  <data type="int" name="subdetectorHitNumbers">number of hits in particular subdetectors. TODO need way to define mapping in run/event header</data>
+	</repeat>
+	<data type="int" name="nTracks"></data>
+	<repeat count="nTracks">
+	  <data type="pntr" name="Track">tracks that have been combined to this track</data>
+	</repeat>
+	<if condition="(flag&amp;(1&lt;&lt;31)) !=0">
+	  <data type="int" name="n"/>
+	  <repeat count="n">
+	    <data type="pntr" name="TrackerHit"/>
+	  </repeat>
+	</if>
+      <data type="ptag" name="this"></data>
+      </repeat>
+    </block>
+    <block name="Cluster" major="1" minor="4">
+      <data type="int" name="flag">Bit 31 Hits are kept =0, Hits are not kept = 1</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+      <data type="int" name="nCluster"/>
+      <repeat count="nCluster">
+	<data type="int" name="type"> Type of cluster:(bits31-16): ECAL,HCAL,COMBINED,LAT,LCAL
+	(bits15-0): NEUTRAL, CHARGED ,UNDEFINED</data>
+	<!--data type="int" name="linktype"> NEUTRAL, CHARGED ,UNDEFINED</data-->
+	<data type="float" name="energy">Energy of the cluster </data>
+	<data type="float[3]" name="position">Center of cluster (x,y,z): to be defined</data>
+	<data type="float[6]" name="errpos">cov matrix of position</data>
+	<data type="float" name="theta">intrinsic direction: theta at position</data>
+	<data type="float" name="phi">intrinsic direction: phi at position</data>
+	<data type="float[3]" name="errdir">cov matrix of direction</data>
+
+        <if condition="1000*major+minor&gt;1002">
+          <data type="int" name="nParams"></data>
+	  <repeat count="nParams">
+	  <data type="float" name="shape">Shape parameters, defined in collection parameter 
+                ShapeParameterNames</data>
+	  </repeat>
+       	  <data type="int" name="npid"/>
+	  <repeat count="npid">
+	    <data type="float" name="likelihood"/>
+	    <data type="int" name="type"/>
+	    <data type="int" name="pdg"/>
+	    <data type="int" name="algorithmType"/>
+	    <data type="int" name="npar"/>
+	    <repeat count="npar">
+	       <data type="float" name="parameter"/>
+            </repeat>
+	  </repeat>
+        <else/>
+	  <data type="float[6]" name="shape"> Shape parameters, TO BE DEFINED</data>
+  	  <data type="float[3]" name="particletype">weight to be compatible with EM,HAD,muoncluster</data>
+        </if>	  
+        <data type="int" name="nClusters"></data>
+	<repeat count="nClusters">
+	  <data type="pntr" name="Clusters">clusters that have been combined to this cluster</data>
+	</repeat>
+	<if condition="(flag&amp;(1&lt;&lt;31)) !=0">
+	  <data type="int" name="n"/>
+	  <repeat count="n">
+	    <data type="pntr" name="CalorimeterHit"/>
+	    <data type="float" name="Contribution">Energy fraction of the hit that contributed to this cluster</data> 
+	  </repeat>
+	</if>
+        <data type="int" name="nEnergies"></data>
+	<repeat count="nEnergies">
+	  <data type="float" name="subdetectorEnergy">energy observed in a particular subdetector</data>
+	</repeat>
+        <data type="ptag" name="this"></data>
+      </repeat>
+    </block>
+    <block name="ReconstructedParticle" major="1" minor="4">
+      <data type="int" name="flag"></data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+      <data type="int" name="nObject"/>
+      <repeat count="nObject">
+        <data type="int" name="typeFlag">particle type - see  collection parameters 
+              ReconstructedParticleTypeNames and ReconstructedParticleTypeValues</data>
+	<!--data type="int" name="type">single particle, compound particle (V0,B), jet</data-->
+        <data type="float[3]" name="momentum">(px, py, pz)</data>
+        <data type="float" name="energy">E</data>
+	<data type="float[10]" name="covariance">cov matrix for 4-Vec (px,py,pz,E)</data>
+	<data type="float" name="mass">mass of object used for 4vec</data>
+	<data type="float" name="charge"/>
+	<data type="float[3]" name="reference"> reference point for 4-vec</data>
+	<data type="int" name="npid"/>
+	<repeat count="npid">
+          <if condition="1000*major+minor&gt;1002">
+	    <data type="float" name="likelihood"/>
+	    <data type="int" name="type"/>
+	    <data type="int" name="pdg"/>
+	    <data type="int" name="algorithmType"/>
+	    <data type="int" name="npar"/>
+	    <repeat count="npar">
+	       <data type="float" name="parameter"/>
+            </repeat>
+            <data type="ptag" name="pid"></data>
+	  <else/>
+	    <data type="float" name="probability"/>
+	    <data type="int" name="typeID"/>
+	    <data type="string" name="identifier"/>
+	    <data type="int" name="npar"/>
+	    <repeat count="npar">
+	       <data type="float" name="parameter"/>
+            </repeat>
+	  </if>
+	</repeat>
+        <if condition="1000*major+minor&gt;1002">
+          <data type="pntr" name="ParticleIDUsed"></data>
+	  <data type="float" name="goodnessOfPID">overall quality of the particle 
+           identification</data>
+	</if>
+        <data type="int" name="nrecopart"/>
+        <repeat count="nrecopart">
+	  <data type="pntr" name="ReconstructedParticle"></data>
+          <if condition="1000*major+minor&lt;1003">
+	    <data type="float" name="weight">weight of contribution</data>
+          </if>
+        </repeat>
+	<data type="int" name="ntrk"/>
+	<repeat count="ntrk">
+	  <data type="pntr" name="Track"/>
+          <if condition="1000*major+minor&lt;1003">
+	    <data type="float" name="weight">TODO: to be defined </data>
+          </if>
+	</repeat>
+	<data type="int" name="ncal"/>
+	<repeat count="ncal">
+	  <data type="pntr" name="Cluster"/>
+          <if condition="1000*major+minor&lt;1003">
+	    <data type="float" name="weight">TODO: to be defined </data>
+          </if>
+	</repeat>
+        <if condition="1000*major+minor&lt;1003">
+	  <data type="int" name="nmc"/>
+	  <repeat count="nmc">
+	    <data type="pntr" name="MCParticle"/>
+	    <data type="float" name="weight">weight of assignment</data>
+	  </repeat>
+        </if>
+        <data type="ptag" name="this"></data>
+      </repeat>
+    </block>
+    <block name="LCGenericObject" major="1" minor="4">
+      <data type="int" name="flag"></data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+        <if condition="(flag&amp;(1&lt;&lt;31)) !=0">
+	  <data type="int" name="nInt">number of ints for fixed size objects</data>
+	  <data type="int" name="nFloat">number of floats for fixed size objects</data>
+	  <data type="int" name="nDouble">number of doubles for fixed size objects</data>
+	</if>
+      <data type="int" name="nObject"/>
+      <repeat count="nObject">
+        <if condition="(flag&amp;(1&lt;&lt;31)) ==0">
+	  <data type="int" name="nInt">number of ints for variable size objects</data>
+	  <data type="int" name="nFloat">number of floats for variable size objects</data>
+	  <data type="int" name="nDouble">number of doubles for variable size objects</data>
+	</if>
+	<repeat count="nInt">
+	  <data type="int" name="intValue">integer value</data>
+	</repeat>
+	<repeat count="nFloat">
+	  <data type="float" name="floatValue">float value</data>
+	</repeat>
+	<repeat count="nDouble">
+	  <data type="double" name="doubleValue">double value</data>
+	</repeat>
+        <data type="ptag" name="this"></data>
+      </repeat>
+    </block>
+    <block name="LCRelation" major="1" minor="4">
+       <data type="int" name="flag">Bit 31: 1[0] Weights are [not] stored</data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+       <data type="int" name="nRelations"/>
+       <repeat count="nRelations">
+          <data type="pntr" name="LCObjectFrom">the 'from' side of the relation</data>
+	  <data type="pntr" name="LCObjectTo">the 'pointed to' side of the relation</data>
+	  <if condition="(flag&amp;(1&lt;&lt;31)) !=0">
+	    <data type="float" name="weight">weight of the relation</data>
+	  </if>
+       </repeat>
+    </block>
+      <!-- generic block description for subset collections that hold references to exisitng objects -->
+      <block name="References" major="1" minor="4">
+         <data type="int" name="flags"></data>
+	<!-- start of named parameters -->
+        <if condition="1000*major+minor&gt;1001">
+          <data type="int" name="nIntParameters">number of named integer parameter entries</data>
+          <repeat count="nIntParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="int" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nFloatParameters">number of named float parameter entries</data>
+          <repeat count="nFloatParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="float" name="value"></data>
+             </repeat>
+          </repeat>
+          <data type="int" name="nStringParameters">number of named string parameter entries</data>
+          <repeat count="nStringParameters">
+             <data type="string" name="key">key (name) of parameter</data>
+             <data type="int" name="nVals">number of values for this parameter</data>
+             <repeat count="nVals">
+	       <data type="string" name="value"></data>
+             </repeat>
+          </repeat>
+        </if>
+	<!-- end of named parameters -->
+         <data type="int" name="nReferences"></data>
+         <repeat count="nReferences">
+            <data type="pntr" name="originalObject"></data>
+         </repeat>
+      </block>
+  </record>
+</sio>
