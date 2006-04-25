@@ -110,6 +110,15 @@ namespace IMPL{
     return _vec[i]->PDG ;
   }
   
+  const double* SimCalorimeterHitImpl::getPositionCont(int i) const {
+    return _vec[i]->Position ;
+  }
+
+  const float* SimCalorimeterHitImpl::getMomentumCont(int i) const {
+    return  _vec[i]->Momentum ;
+  }
+
+
   void SimCalorimeterHitImpl::setCellID0(int id0){
     checkAccess("SimCalorimeterHitImpl::setCellID0") ;
     _cellID0 = id0 ;
@@ -133,23 +142,38 @@ namespace IMPL{
   }
   
   void SimCalorimeterHitImpl::addMCParticleContribution( EVENT::MCParticle *p,
-						      float en,
-						      float t,
-						      int pdg ){
-
+							 float en,
+							 float t,
+							 int pdg ){
     checkAccess("SimCalorimeterHitImpl::addMCParticleContribution") ;
+    
+    addMapsContribution( p, en, t, 0., 0., 0.,0., 0., 0., pdg ) ;
+
+  }
+  
+  
+  void SimCalorimeterHitImpl::addMapsContribution( EVENT::MCParticle *p,
+						   float en,
+						   float t,
+						   double x, double y, double z,
+						   float px, float py, float pz,
+						   int pdg ) { 
+    
+    
+    checkAccess("SimCalorimeterHitImpl::addMapsContribution") ;
+    
     if( p==0){
       // just add the energy - no MC contribution  !!
       _energy += en ;
       return ;
     }
     else if( pdg == 0 ) { // not in extended mode - only one contribution per primary particle
-
-
-
+      
+      
+      
       for( std::vector<MCParticleCont*>::iterator iter=_vec.begin() ;
 	   iter != _vec.end() ; iter++ ){
-
+	
 	if( (*iter)->Particle == p ) {  //  && (*iter)->PDG == pdg ){
 	  
 	  (*iter)->Energy += en ;
@@ -168,6 +192,12 @@ namespace IMPL{
     con->Energy = en ;
     con->Time = t ;
     con->PDG = pdg ;
+    con->Position[0] = x ;
+    con->Position[1] = y ;
+    con->Position[2] = z ;
+    con->Momentum[0] = px ;
+    con->Momentum[1] = py ;
+    con->Momentum[2] = pz ;
     _vec.push_back( con ) ;
     
   }

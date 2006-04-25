@@ -15,6 +15,8 @@ namespace IMPL {
     float Energy ;
     float Time ;
     int   PDG ;
+    double Position[3] ;
+    float  Momentum[3] ;
   }  MCParticleCont  ;
   
   typedef std::vector< MCParticleCont* > MCParticleContVec ;
@@ -105,6 +107,17 @@ namespace IMPL {
      */ 
     virtual int getPDGCont(int i) const ;
 
+
+    /** Returns the (mean) position of where the shower particle crossed the cell. Only 
+     *  in MAPS mode ( LCIO.CHBIT_MAPS==1 && LCIO.CHBIT_PDG==1 ).
+     */
+    virtual const double* getPositionCont(int i) const ;
+
+    /** Returns the 3-momentum of  the shower particle at the (mean) position of where it crossed the cell. 
+     *  Only in MAPS mode ( LCIO.CHBIT_MAPS==1 && LCIO.CHBIT_PDG==1 ).  
+     */
+    virtual const float* getMomentumCont(int i) const ;
+
     /** Returns the MCParticle that caused the shower responsible for this contribution to the hit.
      *  This is the particle that flew into the calorimeter and not the shower particle that made the 
      *  energy deposition.
@@ -147,6 +160,17 @@ namespace IMPL {
 				    float en,
 				    float t,
 				    int pdg=0 ) ; 
+    
+    /** Special method for MAPS mode where also position and momentum of every shower particle are stored -
+     *  you need to set the flag word bits LCIO::CHBIT_PDG and LCIO::CHBIT_MAPS to actually 
+     *  store the additional information and call this method with p!=0, pdg!=0.
+     */
+    void addMapsContribution( EVENT::MCParticle *p,
+			      float en,
+			      float t,
+			      double x, double y, double z,
+			      float px, float py, float pz,
+			      int pdg ) ; 
 
   protected:
 

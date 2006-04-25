@@ -196,6 +196,7 @@ int main(int argc, char** argv ){
 	LCFlagImpl chFlag(0) ;
 	chFlag.setBit( LCIO::CHBIT_LONG ) ;
 	chFlag.setBit( LCIO::CHBIT_PDG ) ;
+	chFlag.setBit( LCIO::CHBIT_MAPS ) ;
 	calVec->setFlag( chFlag.getFlag()  ) ;
 	
 	std::string cellIDEncoding( "M:3,S-1:3,I:9,J:9,K-1:6") ;// old Mokka convention
@@ -234,9 +235,13 @@ int main(int argc, char** argv ){
 	  
 	  // in order to access a MCParticle,  we need a dynamic cast as the 
 	  // LCCollection returns an LCIOObject - this is like vectors in Java 
-	  hit->addMCParticleContribution(  dynamic_cast<MCParticle*>(mcVec->getElementAt( mcIndx )) , 
-					   0.314159, 0.1155 ) ; // no pdg
+// 	  hit->addMCParticleContribution(  dynamic_cast<MCParticle*>(mcVec->getElementAt( mcIndx )) , 
+// 					   0.314159, 0.1155 ) ; // no pdg
 	  
+	  hit->addMapsContribution(  dynamic_cast<MCParticle*>(mcVec->getElementAt( mcIndx )) , 
+				     0.314159, 0.1155 ,
+				     1., 2., 3., .1, .2, .3 , // x,y,z,px,py,pz
+				     13 ) ; 
 	}
 	
 	// -------- data can be modified as long as is not not made persistent --------
@@ -247,9 +252,12 @@ int main(int argc, char** argv ){
 
  	  //	    = dynamic_cast<SimCalorimeterHitImpl*>( (*calVec)[j] ) ;  // << not needed 
 	  
-	  existingHit->addMCParticleContribution( dynamic_cast<MCParticle*>
-						  (mcVec->getElementAt(0)), 
-						  0.1, 0. ) ;
+// 	  existingHit->addMCParticleContribution( dynamic_cast<MCParticle*>
+// 						  (mcVec->getElementAt(0)), 
+// 						  0.1, 0. ) ;
+	  existingHit->addMapsContribution( dynamic_cast<MCParticle*> (mcVec->getElementAt(0)), 
+						  1., 2., 3., .1, .2, .3 , // x,y,z,px,py,pz
+						  0.1, 0. , -13 ) ;
 	}
 
 	// and finally some tracker hits
