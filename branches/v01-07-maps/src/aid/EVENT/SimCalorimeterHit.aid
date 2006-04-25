@@ -3,7 +3,7 @@ package hep.lcio.event ;
 /** The generic simulated calorimeter hit. 
  * 
  * @author gaede
- * @version $Id: SimCalorimeterHit.aid,v 1.8 2006-03-24 13:25:52 gaede Exp $
+ * @version $Id: SimCalorimeterHit.aid,v 1.8.2.1 2006-04-25 15:29:36 gaede Exp $
  */
 
 public interface SimCalorimeterHit extends LCObject {
@@ -71,6 +71,20 @@ public interface SimCalorimeterHit extends LCObject {
      */ 
     public int  getPDGCont(int i) const ;
     
+
+    /** Returns the (mean) position of where the shower particle crossed the cell. Only 
+     *  in MAPS mode ( Check the flag word bit LCIO.CHBIT_MAPS of the collection).
+     *  Note this only makes sense in detailed shower mode, i.e. LCIO.CHBIT_PDG==1.
+     */
+    public const double3V getPositionCont(int i) const ;	
+
+    /** Returns the 3-momentum of  the shower particle at the (mean) position of where it crossed the cell. 
+     *  Only in MAPS mode ( Check the flag word bit LCIO.CHBIT_MAPS of the collection).
+     *  Note this only makes sense in detailed shower mode, i.e. LCIO.CHBIT_PDG==1.
+     */
+    public const float3V getMomentumCont(int i) const ;	
+
+
     /** Returns the MCParticle that caused the shower responsible for this contribution to the hit.
      *  This is the particle that flew into the calorimeter and not the shower particle that made the 
      *  energy deposition.

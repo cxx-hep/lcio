@@ -7,7 +7,7 @@ import hep.lcio.event.SimCalorimeterHit;
 /**
  * A default implementation of SimCalorimeterHit
  * @author Tony Johnson
- * @version $Id: ISimCalorimeterHit.java,v 1.9 2004-09-24 10:39:29 tonyj Exp $
+ * @version $Id: ISimCalorimeterHit.java,v 1.9.4.1 2006-04-25 15:29:38 gaede Exp $
  */
 public class ISimCalorimeterHit extends ILCObject implements SimCalorimeterHit
 {
@@ -68,7 +68,15 @@ public class ISimCalorimeterHit extends ILCObject implements SimCalorimeterHit
    {
       return pdg[i];
    }
-   
+    
+   public double[] getPositionCont(int i){
+       return null; //FIXME:
+   }
+   public float[] getMomentumCont(int i){
+       return null; //FIXME:
+   }
+
+
    public MCParticle getParticleCont(int i)
    {
       return (MCParticle) particle[i];

@@ -109,7 +109,9 @@
       </block>
       <block name="SimCalorimeterHit" major="1" minor="7">
          <data type="int" name="flags">Bit 31 long = 1, short = 0; Bit 30 Barrel = 0, Endcap = 1; 
-              Bit 29 cellid1 = 1, no cellid1 = 0; Bit 28 PDG = 1, no PDG =0, Bits 0-15 user/detector specific</data>
+              Bit 29 cellid1 = 1, no cellid1 = 0; Bit 28 PDG = 1, no PDG =0,; Bit 27 MAPS = 1, 
+              Bits 0-15 user/detector specific
+         </data>
          <include subroutine="namedParameters"/>
          <data type="int" name="nHits"></data>
          <repeat count="nHits">
@@ -128,6 +130,10 @@
 		<data type="float" name="time"></data>
 		<if condition="(flags&amp;(1&lt;&lt;28)) != 0">
 		   <data type="int" name="PDG"></data>
+  		   <if condition="(flags&amp;(1&lt;&lt;27)) != 0">
+                     <data type="double[3]" name="positionCont"></data>
+                     <data type="float[3]" name="momentumCont"></data>
+		   </if>
 		</if>
             </repeat>
            <if condition="1000*major+minor&gt;1000">

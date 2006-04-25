@@ -993,6 +993,7 @@ void LCTOOLS::printTrackerRawData(const EVENT::LCCollection* col ) {
     cout << "     LCIO::CHBIT_BARREL : " << flag.bitSet( LCIO::CHBIT_BARREL ) << endl ;
     cout << "     LCIO::CHBIT_ID1   :  " << flag.bitSet( LCIO::CHBIT_ID1 ) << endl ;
     cout << "     LCIO::CHBIT_PDG    : " << flag.bitSet( LCIO::CHBIT_PDG ) << endl ;
+    cout << "     LCIO::CHBIT_MAPS    : " << flag.bitSet( LCIO::CHBIT_MAPS ) << endl ;
 
     int nHits =  col->getNumberOfElements() ;
     int nPrint = nHits > MAX_HITS ? MAX_HITS : nHits ;
@@ -1050,9 +1051,24 @@ void LCTOOLS::printTrackerRawData(const EVENT::LCCollection* col ) {
 	       << hit->getEnergyCont( k)             << " | " 
 	       << hit->getTimeCont( k)               << " | " ;
 
-	  if( flag.bitSet( LCIO::CHBIT_PDG ) )
-	    cout << hit->getPDGCont( k) << " | " << endl ;
-	  else
+	  if( flag.bitSet( LCIO::CHBIT_PDG ) ){
+	    
+	    cout << hit->getPDGCont( k) << " | " ;
+	    
+	    if( flag.bitSet( LCIO::CHBIT_MAPS ) ){
+	      
+	      cout << " [x:" 
+		   << hit->getPositionCont(k)[0] << ", "
+		   << hit->getPositionCont(k)[1] << ", "
+		   << hit->getPositionCont(k)[2] << "][p: "
+		   << hit->getMomentumCont(k)[0] << ", "
+		   << hit->getMomentumCont(k)[1] << ", "
+		   << hit->getMomentumCont(k)[2] << "] " ;
+	    } 
+
+	    cout << endl ;
+
+	  } else
 	    cout << " no PDG" << endl ;
 	} 
 
