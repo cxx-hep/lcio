@@ -1,4 +1,5 @@
 #include "UTIL/LCTOOLS.h"
+#include "UTIL/Operators.h"
 
 #include "EVENT/LCCollection.h"
 #include "EVENT/SimCalorimeterHit.h"
@@ -17,6 +18,7 @@
 #include "EVENT/Track.h"
 #include "EVENT/Cluster.h"
 #include "EVENT/ReconstructedParticle.h"
+#include "EVENT/Vertex.h"
 #include "EVENT/LCGenericObject.h"
 
 #include "EVENT/LCRelation.h"
@@ -148,6 +150,11 @@ namespace UTIL {
       else if( evt->getCollection( *name )->getTypeName() == LCIO::RECONSTRUCTEDPARTICLE ){
 	  
 	printReconstructedParticles( col ) ;
+
+      }
+      else if( evt->getCollection( *name )->getTypeName() == LCIO::VERTEX ){
+	  
+	printVertices( col ) ;
 
       }
       else if( evt->getCollection( *name )->getTypeName() == LCIO::LCGENERICOBJECT ){
@@ -1295,6 +1302,56 @@ void LCTOOLS::printTrackerRawData(const EVENT::LCCollection* col ) {
 	   << endl ;
   }
 
+  void LCTOOLS::printVertices( const EVENT::LCCollection* col ){
+    if( col->getTypeName() != LCIO::VERTEX ){
+      
+      cout << " collection not of type " << LCIO::VERTEX << endl ;
+      return ;
+    }
+    cout << endl 
+	 << "--------------- " << "print out of "  << LCIO::VERTEX << " collection "
+	 << "--------------- " << endl << endl;
+    
+    printParameters( col->getParameters() ) ;
+    
+    int nVertices = col->getNumberOfElements() ;
+    int nPrint = nVertices > MAX_HITS ? MAX_HITS : nVertices ;
+    
+    
+    /*
+    cout << "\n    [id]    |pri|   chi2   |   prob.  |       position ( x, y, z)       |"
+	    "                   covariance matrix (px, py, pz)                 |  [idRecP] \n"
+            "------------|---|----------|----------|---------------------------------|"
+            "------------------------------------------------------------------|-----------\n";
+    */
+    
+    for( int i=0 ; i< nPrint ; i++ ){
+      Vertex* v = dynamic_cast<Vertex*>( col->getElementAt( i ) ) ;
+      
+      if( i==0) { cout<<header(v); }
+      cout<<lcshort(v);
+      if(i==nPrint-1){ cout<<tail(v); }
+      /*
+      printf(" [%8.8x] | %1d | %4.2e | %4.2e | %5.3e, %5.3e, %5.3e | "
+	, v->id()
+	, v->isPrimary()
+        , v->getChi2()
+        , v->getProbability()
+        , v->getPosition()[0]
+	, v->getPosition()[1]
+	, v->getPosition()[2]
+      ) ;
+
+      for(int j=0; j<6; j++)
+	printf("%5.3e%s", v->getCovMatrix()[j], (j<(6-1) ? ", ":" | ") ) ;
+
+      printf("[%8.8x]\n", (v->getAssociatedParticle()!=NULL? v->getAssociatedParticle()->id(): 0) ) ;
+
+      cout << "------------|---|----------|----------|---------------------------------|"
+	      "------------------------------------------------------------------|-----------\n";
+      */
+    }
+  }
 
   void LCTOOLS::printReconstructedParticles( const EVENT::LCCollection* col ){
 
@@ -1319,9 +1376,9 @@ void LCTOOLS::printTrackerRawData(const EVENT::LCCollection* col ) {
     int nPrint = nReconstructedParticles > MAX_HITS ? MAX_HITS : nReconstructedParticles ;
     
     std::cout << endl
-	      << " [   id   ] |com|type|     momentum( px,py,pz)         | energy   | mass     | charge    |          position ( x,y,z)       | [pidUsed]"
+	      << " [   id   ] |com|type|     momentum( px,py,pz)         | energy   | mass     | charge    |          position ( x,y,z)       | [pidUsed] | [startVtx] | [endVtx] "
 	      << endl	      
-	      << "  ----------|---|----|---------------------------------|----------|----------|-----------|----------------------------------|----------"
+	      << "  ----------|---|----|---------------------------------|----------|----------|-----------|----------------------------------|-----------|------------|----------"
 	      << endl ;
     
     for( int i=0 ; i< nPrint ; i++ ){
@@ -1343,7 +1400,7 @@ void LCTOOLS::printTrackerRawData(const EVENT::LCCollection* col ) {
       if(  recP->getParticleIDUsed() != 0 ) 
 	pidUsed  = recP->getParticleIDUsed()->id() ;
       
-      printf(" [%8.8x] | %1d | %2d | (%5.3e,%5.3e,%5.3e) | %4.2e | %4.2e | %4.2e | (%5.3e,%5.3e,%5.3e) | [%8.8x] \n"
+      printf(" [%8.8x] | %1d | %2d | (%5.3e,%5.3e,%5.3e) | %4.2e | %4.2e | %4.2e | (%5.3e,%5.3e,%5.3e) | [%8.8x] | [%8.8x] | [%8.8x]\n"
 	     //	     , reinterpret_cast<int> ( recP )
 	     , recP->id()
 	     , compound
@@ -1357,7 +1414,9 @@ void LCTOOLS::printTrackerRawData(const EVENT::LCCollection* col ) {
 	     , recP->getReferencePoint()[0] 
 	     , recP->getReferencePoint()[1] 
 	     , recP->getReferencePoint()[2] 
-	     , pidUsed 
+	     , pidUsed
+	     , recP->getStartVertex()->id()
+	     , recP->getEndVertex()->id()
 	     ) ;
       cout << "    covariance( px,py,pz,E) : (" ;
       for(int l=0;l<10;l++){
