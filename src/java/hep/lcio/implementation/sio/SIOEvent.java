@@ -17,7 +17,7 @@ import java.util.TreeSet;
 /**
  *
  * @author Tony Johnson
- * @version $Id: SIOEvent.java,v 1.41.2.2 2006-09-11 13:05:37 engels Exp $
+ * @version $Id: SIOEvent.java,v 1.41.2.3 2006-12-07 18:52:49 tonyj Exp $
  */
 class SIOEvent extends ILCEvent
 {
@@ -575,18 +575,12 @@ class SIOEvent extends ILCEvent
             else if (type.equals(LCIO.VERTEX))
             {
             	//index strings to integers (writing)
-            	
-            	/* THIS DOES NOT WORK!!!
-        	    //add parameters to collection
-        	    col.getParameters().setValues( "_lcio.VertexAlgorithmTypes", keys );
-        	    SIOLCParameters.write( col.getParameters() , out ) ;
-        	    */
-
+ 
             	TreeMap _map = new TreeMap();
             	String[] keys = new String[ col.getParameters().getStringVals("_lcio.VertexAlgorithmTypes").length ] ;
             	keys=col.getParameters().getStringVals("_lcio.VertexAlgorithmTypes");
             	for (int i=0; i < keys.length; i++){
-            		_map.put(keys[i],i);
+            		_map.put(keys[i],new Integer(i));
             	}
                 
                for (int i=0; i < n; i++)
