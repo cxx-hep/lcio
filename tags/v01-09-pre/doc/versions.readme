@@ -1,0 +1,446 @@
+---------------------------------------------------------------
+ Describes the changes for the different versions/tags of LCIO
+---------------------------------------------------------------
+
+=====================
+v01-09
+=====================
+  no changes in file format
+
+   - made compatible with new stdhep files (Java/C++)
+
+   - LCStdHepRdr now fills MCParticle::charge properly (C++)
+
+   - Java uses new sio classes from hep.io.sio
+
+   - added event weight: LCEvent.getWeight()  (Java/C++)
+
+   - added LCWriter::setCompressionLevel(int level)  (C++) 
+
+
+=====================
+v01-08-05
+=====================
+  no changes in file format and API
+
+  - experimental code for direct access (C++) 
+    (LCReader builds event map at open())
+
+  - readEvent( rNum , evtNum ) uses direct access
+
+  - first version of cmake tests (for C++)  (JE)
+    build with -DBUILD_LCIO_TESTJOBS=ON, afterwards call 'make test'
+
+  - bug fixes:
+    Change all gmake calls to make for Linux build  (JMC)
+    predefined USE_CLHEP for doxygen (JE)
+    dump format of TrackerPulses in LCTOOLS (AB)
+    show proper include path in API doc
+
+=====================
+v01-08-04 
+=====================
+  bug fix release
+  no changes in file format and API
+  - minor fixes in Java code (JMC)
+  - minor fixes for building with cmake 
+
+  - changed order of modifyEvent and processEvent in SIOLCReader
+    (needed for Marlin Overlay processor)
+ 
+  - simple shell like tool for browsing lcio files in C++: .../EXAMPLES/lsh.cc
+    ( use -DBUILD_LCIO_SHELL=true - requires ncurses and readline )
+    [experimental code]
+ 
+=====================
+v01-08-03
+=====================
+  bug fix release
+  no changes in file format and API
+  - minor fixes in Java code (TJ,JMC)
+  - full support for building with cmake 
+
+=====================
+v01-08-02
+=====================
+  bug fix release
+  no changes in file format and API
+    - fixed several problems with templates for newer gcc versions (>=3.4)
+    - removed obsolte lcioframe example
+    - support for building LCIO (C++) with cmake (experimental)
+
+=====================
+v01-08-01
+=====================
+  bug fix release
+  no changes in file format and API
+    - fixed problems with storing large arrays in SIO (C++) 
+    - fixed some issues with CellIDEncoder (C++) 
+    - enforce valid collection names (like C/C++ variables)
+
+=====================
+v01-08    
+=====================
+
+   - introduced C++ runtime (user) extensions and relations
+     see LCRTRelation and lcrtrelation.cc for documentation and examples
+
+   - new Vertex class in LCIO - for a detailed description see the proposal at:
+     http://forum.linearcollider.org/index.php?t=getfile&id=32
+
+   - new Java lcio command line tool - for detailed documentation see:
+     http://confluence.slac.stanford.edu/display/ilc/LCIO+Command+Line+Tool
+
+   - modified function UTIL:LCTOOLS:dumpEvent() for a more readable format
+     used e.g. in anajob.cc 
+
+   - bug fixes:
+	+ in SIOReader::skipNEvents() (skipped only n-1 with readStream())
+        + collection parameters in LCRelationNavigator (From/ToType)
+        + made id() const
+        + bug with BitField64/CellIdDecoder
+        + ...
+
+======================
+  v01-07
+=======================
+
+   - optional python binding (Jeremy McCormick)
+
+   - C++ utility code for encoding/decoding of cellids in hit classes:
+     UTIL::CellIDEncoder and UTIL::CellIDDecoder 
+
+   - introduced additional pathLength in SimTrackerHit for silicon tracker digitization 
+     (stored optionally together with momentum)
+
+   - introduced UTIL::LCSplitWriter to split larger files
+
+   - fixed files size limit (2GB) in SIO C++ implementation
+
+   - ant does not show "BUILD SUCCESSFUL" in case of error  anymore
+
+======================
+  v01-06
+=======================
+
+   - added optional momentum[3] to SimTrackerHit (momentum of particle at position of hit)
+ 
+   - added LCReader::skipNEvents() method to skip (the first) n events in a file
+
+   - added option to dump the n-th event in a file to $LCIO/bin/dumpevent 
+
+======================
+  v01-05
+=======================
+   - changed return values of energy, momentum and mass to double for MCParticle and 
+     ReconstructedParticle - stored are still floats
+     -> requires some trivial changes (float->double) in code where indicated by the compiler !
+
+   - new template UTIL::LCTypedVector for creating std::vector<LCOBJECTTYPE>s  of LCCollections
+ 
+   - added first implementations of generic tracker raw data classes (TPC, VTX, SiliconStrip,...)
+     TrackerRawData, TrackerData, TrackerPulse
+
+   - added macro to lcio.h for handling of uncaught exceptions if not Reader/Writer is used:
+     #define HANDLE_LCIO_EXCEPTIONS 
+
+   - added MACRO LCIO_PATCHVERSION_GE(  MAJV , MINV , PLEV) to check for patch level releases
+ 
+   - changed printout of calorimeter hit cellids to decode M,S,I,J,K as defined in Mokka in LCTOOL::dumpEventDetailed
+
+ - bug fixes and minor changes
+   - C++ version :
+    * fixed bug in LCTime ( first day of month ) and added LCTime::test(int nDates)
+    * added -pedantic to GNUmakefile and removed additional ';'s at end of namespaces and macros
+    * corrected documentation for SimCalorimeterHitImpl::addMCParticleContribution
+    * corrected documentation for Track::getTrackerHits - need LCIO::TRBIT_HITS==1 
+    * bug fix in UTIL::LCFourVector - c'tors take _const_ OBJECTTYPE* pointers now
+    * removed deprecated function calls in LCStdHepRdr
+    * fixed a memory leak in lStdHep.cc
+    * MCParticle: proper treatment of endpoint bit (was always on)
+    * Cluster: hit weights where always 0 
+   - Java version
+    * ReconstructedParticle.getParticleIDs() now sorted wrt. likelihood
+
+======================
+  v01-04
+=======================
+
+ - added flag isSubset to LCCollection to allow to have collections in the event that 
+   are subsets of other collections in the event. In case the collection is not transient
+   only references/pointers are stored in the output file.
+
+ - added implementation of LCGenericObjects in Java
+
+ - API change:  Changed the return value of LCGenericObject::getTypeName() and 
+   LCGenericObject::getDataDescription() from const std::string& to 
+   const std::string to  make the implementation easier
+   -> requires a trivial change in LCGenericObject subclasses
+
+ - added UTIL::LCFixedObject template for user defined subclasses of LCGenericObjects
+   with fixed size
+   see: src/cpp/src/EXAMPLE/CalibrationConstant.h for example on how to use it
+
+ - added UTIL::LCTime: helper class to convert between time stamps and calendar time
+
+ - added LCIODEBUG environment variable to control compilation
+
+ - added support for multiple read/and write streams in C++
+
+ - added support for multiple events in C++
+
+ - removed calls to deprecated functions in f77
+
+ - bug fixes (C++):
+     + dump only five elements of LCInt/Float/StringVecs in LCTOOLS
+     + don't allow to add NULL collections to the event
+     + changed LCEvent::getTimestamp() to long long (64bit) 
+     + fixed bug when writing empty collection of LCGenericObjects
+ 
+======================
+  v01-03-01
+=======================
+  bug fix release
+  no changes in file format and API
+
+======================
+  v01-03
+=======================
+  - added support for reading stdhep binary files  
+
+  - added ant target 'doc.all' - requires javadoc, doxygen, pdflatex,latex2html
+    builds all documentation on linux 
+	
+  - added isDefault flag to LCCollection   
+
+  - LCGenericObject added
+
+  - usage/logic of SimCalorimeterHit MCParticle contributions has changed
+    now the detailed mode has one entry per simulator step that contributed to the hit 
+
+  - > getNMCParticles renamed to getNMCContributions
+
+
+  - added LCRelation
+
+  - replaced LCIO::TPCBIT_PTR by LCIO::TPCBIT_NO_PTR and 
+    LCIO::RCHBIT_PTR by LCIO::RCHBIT_NO_PTR and inverted logic  <<<<<< user action !
+ 
+  - introduced RawCalorimeterHit with int amplitude and time
+
+  - added time to CalorimterHit
+
+  - added getParents()/getDaughters() to MCParticle
+
+  - flag for transient collections -> not written to file
+
+======================
+  v01-02 prebeta
+=======================
+
+   - new classes Track, Cluster, ReconstructedParticle 
+  
+   - ....
+
+   - new package UTIL for C++
+      -> LCTOOLS moved to UTIL
+
+   - added LCFourVector (CLHEP::HepLorentzvector) as handle template
+     for MCParticle
+
+   - added 'chain reader' : LCReader::open(std::vector<std::string> fileNames  )   
+
+============================
+  v01-00
+============================
+
+   first public release
+
+============================
+  v00-08  ( fg20030911 ) 
+============================
+
+
+   - require version >= v00-08 in C++    
+
+   - removed pointer tag from SimCalorimeterHit, CalorimeterHit and SimTrackerHit
+     [Java and C++]
+
+   - Access checked for read only mode in Java (Tony)
+
+   - scripts for building under cygwin (Norman)
+
+============================
+ v00-08beta ( fg20030911 ) 
+============================
+  
+   - added TPCHit class for real data TPC prototypes
+     lcio.xml updated
+     [C++ and Java]
+
+
+   - removed DataNotAvailableExceptions from all get-methods that return object 
+     pointers or referencs, e.g. MCParticle::getParent(), return null pointers instead
+     [C++ and Java]
+      updated manual.tex accordingly
+
+   - manual.tex now able to create ps, pdf and html
+
+
+============================
+  ( fg20030909 ) 
+============================
+
+   - manual reviewed and updated, added section on Exceptions
+
+   - all throw clauses in C++ include std::exception now
+     -> similar behavior to Java Exceptions
+
+   - implemented new 'access check' mechanism: 
+     removed const methods from data entities using ReadOnlyExceptions instead
+     introduced base class AccessChecked  [ C++ only - Java has ILCObject]
+
+   - renamed analyze/update methods to processEvent/modifyEvent and 
+     processRunHeader/modifyRunHeader in the LCRun(Event)Listener interfaces
+     
+   - added printout for unexpected or uncaught exceptions in C++
+
+ 
+
+============================
+ v00-07beta ( fg 20030903 ) 
+============================
+
+   - first version of user manual ('ant doc.manual' -> ./doc/manual.ps)
+
+   - store Mass instead of Energy for MCParticle ( v > 0.7)
+     [ C++ and Java ]
+
+   - added scripts (bash) to call Java examples (bin/runSimJob.sh,...)
+
+   - added integer user extensions (LCIntVec)
+     [ C++  and Java ]
+
+   - removed EndOfDataException from LCReader API
+     EOF is signaled by null pointers again ( while ( evt=lcRdr->readNextEvent()) != 0)
+     -> we only use exceptions to signal errors (and unexpected events)
+     [ C++ only ]
+
+   - new class 'CalorimeterHit' for real data 
+     same as SimCalorimeterHit except for MCParticle link
+     [ Java and C++ ]      
+
+   - some code documentation for the C++ API from doxygen
+     
+   - modification of build.xml ( now 'ant   '  builds everything)
+
+
+ 
+
+============================
+ v00-05beta ( fg 20030613 )
+============================
+
+  - new package hep.lcio.data / namespace DATA
+    defines pure data contents - this is now the interface that has to implemented
+    for writing data with LCIO 
+       -> LCWriter uses only this interface
+
+  - added pointer tag to track and calorimeter hits for future reference to those
+
+  - added enpoint to MCParticle
+
+  - new methods in LCCollection addElement(), removeElement(int i)
+ 
+  - new methods in MCParticle: getNumberOfDaughters(), getDaughter(int i)
+     replacing getDaughters() and  getEndPoint()
+ 
+  - sio-file extension '.slcio' not required by LCReader any more 
+    [C++ only]
+  
+  - LCWriter::open() if no mode specified an exception is thrown
+    if the file already exists
+    [C++ only]
+
+  - TrackerHit and CalorimeterHit renamed to SimTrackerHit and SimCalorimeterHit
+
+  - New Exception hierarchy  for C++ according to exceptions used in Java 
+ 
+  - Added some Exceptions to hep.lcio.exceptions (Java)
+
+  - Exceptions in LCWriter interface
+
+  - Exceptions in LCReader interface
+    [C++ only] 
+ 
+  - Added new default units GeV, mm, ns to comments/documentation
+
+  
+  - new method LCTOOLS::dumpEventDetailed() - prints everything in the event
+    (bin/dumpevent simjob.slcio 2 2)
+    C++ only (incomplete, TrackerHits and user extensions missing)
+
+
+  - new method SIOWriter::readStream(int maxRecord)
+    [C++ only]
+
+
+=====================
+v00-04  (fg 20030514)
+=====================
+
+ - new sio-file extension '.slcio' (enforced by C++ version of LCReader/Writer)
+
+ - introduced append mode for writing in LCWriter::open() 
+   (constants LCIO::WRITE_NEW and LCIO::WRITE_APPEND )
+   C++ only
+
+ - SIO file buffers are flushed after each record
+   
+ - small program 'copyfix' added:
+   Copies all complete events from a file (that has incomplete  
+   records at the end due to a program crash) so the append mechanism can be used 
+   to continue the program after the crash, e.g. a long running simulation job.
+   
+ - new method LCReader::readEvent( evtN, runN ) to access 
+   given event ( demonstrating fast skip mechanism - no direct access)
+   -> see example dumpevent.cc
+
+ - duplicate event header information is not written any more (neither Java nor C++)
+   -> event information always in two consecutive records of sio file:
+      LCEventHeader: runNum, evtNum, collection names and types
+      LCEvent: the data (collections)
+
+ - compression of files now controled by constants 
+   (SLCIO::compression, SIOFactory.compression) - set to true for C++ and Java
+  
+ - the ant target cpp needs aid.generate as a prerequisite (not automatically 
+   included any more)
+
+ - added this file: please document your (major) changes to LCIO here 
+
+
+
+
+=====================
+v00-03  (fg 20030509)
+=====================
+
+ - no 0's at end of strings
+
+ - flag bits for CalorimeterHits taken into account (also Java version)
+
+ - Java version uses identical block names to C++ (as defined in lcio.xml)
+
+ - small bug fix in Java version of SIO:
+   src/java/hep/lcd/io/sio/SIOWriter.java writes record header length (as
+   opposed to the record length)
+   for this to take effect lcio.jar has to be before sio.jar in your
+   classpath - otherwise C++ won't be able to read files generated from
+   Java...
+   needs to be checked for implications on hep.lcd and (if none) applied 
+   to sio.jar
+
+ - Java writes the (duplicate) header also for the event record
+
+ - Old files cannot be read with this version !
