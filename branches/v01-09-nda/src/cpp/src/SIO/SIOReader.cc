@@ -185,7 +185,7 @@ namespace SIO {
 //     else
 //       eh->setEventPtr( _evtP ) ;
 
-    getEventMap() ;
+//    getEventMap() ;
 
   }
   
