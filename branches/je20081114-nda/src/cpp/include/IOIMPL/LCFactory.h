@@ -40,7 +40,8 @@ public:
   
   /**Creates an LCReader object for the current persistency type.
    */
-  virtual IO::LCReader * createLCReader() ;
+  virtual IO::LCReader * createLCReader(
+  	const bool readEventMap=false ) ;
 
 
 private:

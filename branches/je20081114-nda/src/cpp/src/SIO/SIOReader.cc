@@ -57,7 +57,8 @@ namespace SIO {
   
   //#define DEBUG 1
   
-  SIOReader::SIOReader() 
+  SIOReader::SIOReader( const bool readEventMap ) :
+        _readEventMap( readEventMap )
     //     :     
     //     _myFilenames(0), 
     //     _currentFileIndex(0) 
@@ -187,7 +188,9 @@ namespace SIO {
 //     else
 //       eh->setEventPtr( _evtP ) ;
 
-    getEventMap() ;
+    if( _readEventMap ){
+        getEventMap() ;
+    }
 
   }
   

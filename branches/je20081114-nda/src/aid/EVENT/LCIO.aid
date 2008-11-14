@@ -16,7 +16,7 @@ package hep.lcio.event ;
 /** Global constants used in LCIO.
  *
  * @author gaede
- * @version $Id: LCIO.aid,v 1.67 2008-11-07 15:58:05 gaede Exp $
+ * @version $Id: LCIO.aid,v 1.67.2.1 2008-11-14 13:21:49 engels Exp $
  * @see LCObject
  * @see LCIO
  */
@@ -74,6 +74,7 @@ public interface LCIO{
     // LCGenericObject
     static const int GOBIT_FIXED = 31 ; // is fixed size
 
+    static const int READ_EVENT_MAP =  1 ;
     static const int READ_ONLY =  0 ;
     static const int UPDATE   =  1 ;
     // error handling

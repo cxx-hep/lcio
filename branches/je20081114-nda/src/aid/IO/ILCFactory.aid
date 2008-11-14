@@ -1,4 +1,7 @@
 package hep.lcio.io;
+@ifdef cpp
+@cpp{class LCReader;
+}
 
 
 /**Factory to create LCWriter and Reader object for the known data 
@@ -30,6 +33,12 @@ public interface ILCFactory {
 	
 /**Creates an LCReader object for the current persistency type.
  */
-	public  LCReader* createLCReader() ;
+@ifdef cpp
+@cpp{
+    virtual LCReader * createLCReader(const bool) = 0;
+}
+@else
+    public  LCReader* createLCReader() ;
+@endif
 
 }
