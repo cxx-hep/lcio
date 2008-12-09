@@ -24,7 +24,7 @@ class SIOEventHandler ;
 /** Concrete implementation of LCWriter using SIO.
  * 
  * @author gaede
- * @version $Id: SIOReader.h,v 1.25.6.1 2008-11-14 13:21:49 engels Exp $
+ * @version $Id: SIOReader.h,v 1.25.6.2 2008-12-09 11:32:32 gaede Exp $
  */
   class SIOReader : public IO::LCReader {
     
@@ -34,7 +34,7 @@ class SIOEventHandler ;
     
     /** Default constructor.
      */
-    SIOReader( const bool readEventMap=false ) ;
+    SIOReader( int lcReaderFlag=0 ) ;
     
     // Destructor
     virtual ~SIOReader() ;

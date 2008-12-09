@@ -33,7 +33,6 @@ int main(int argc, char** argv ){
   int nFiles = argc-1 ;
   
   LCReader* lcReader = LCFactory::getInstance()->createLCReader() ;
-  //LCReader* lcReader = LCFactory::getInstance()->createLCReader(LCIO::READ_EVENT_MAP) ;
   
   // first we read the run information
   

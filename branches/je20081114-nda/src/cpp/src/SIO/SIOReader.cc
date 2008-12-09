@@ -57,8 +57,8 @@ namespace SIO {
   
   //#define DEBUG 1
   
-  SIOReader::SIOReader( const bool readEventMap ) :
-        _readEventMap( readEventMap )
+  SIOReader::SIOReader( int lcReaderFlag ) :
+    _readEventMap( lcReaderFlag & LCReader::directAccess  )
     //     :     
     //     _myFilenames(0), 
     //     _currentFileIndex(0) 

@@ -41,10 +41,10 @@ namespace IOIMPL{
     return new SIOWriter ;
   }
   
-  LCReader * LCFactory::createLCReader(
-  		const bool readEventMap ) { 
+  LCReader * LCFactory::createLCReader(int lcReaderFlag) {
+
     // so far we just create SIO objects
-    return new SIOReader( readEventMap );
+    return new SIOReader( lcReaderFlag );
   }
   
   
