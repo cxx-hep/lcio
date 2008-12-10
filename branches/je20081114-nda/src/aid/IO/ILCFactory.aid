@@ -1,8 +1,5 @@
 package hep.lcio.io;
 
-@ifdef cpp
-@cpp{class LCReader; }
-
 /**Factory to create LCWriter and Reader object for the known data 
  * formats, e.g. SIO. The implementation (LCFactory) will be a singleton class 
  * that knows all concrete reader/writer implementations.
@@ -12,20 +9,26 @@ package hep.lcio.io;
  */
 public interface ILCFactory {
 
-    /**Creates an LCWriter object for the current persistency type.
-     */
-    public LCWriter* createLCWriter() ;
-    
-    /**Creates an LCReader object for the current persistency type.
-     */
-    public  LCReader* createLCReader(int lcReaderFlag=0) ;
-    
-    // @ifdef cpp
-    // @cpp{
-    //     virtual LCReader * createLCReader(const bool) = 0;
-    // }
-    // @else
-    //     public  LCReader* createLCReader() ;
-    // @endif
-    
+
+//     /** Returns the instance of the factory.
+//      * In the future we need to specify the data format here...
+//      * This doesn't work for java as an interface can't have static members ...
+//      */
+    // this needs more thought ....
+// @ifdef cpp
+// @cpp{ static LCFactory* getInstance() ;  
+// }
+// @else
+//     public  LCFactory getInstance() ;
+// @endif
+
+
+/**Creates an LCWriter object for the current persistency type.
+ */
+	public LCWriter* createLCWriter() ;
+	
+/**Creates an LCReader object for the current persistency type.
+ */
+	public  LCReader* createLCReader(int readerFlag=0) ;
+
 }
