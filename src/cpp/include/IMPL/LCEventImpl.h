@@ -1,5 +1,5 @@
-#ifndef EVENT_LCEVENTIMPL_H
-#define EVENT_LCEVENTIMPL_H 1
+#ifndef IMPL_LCEventImpl_H
+#define IMPL_LCEventImpl_H 1
 
 #include <string>
 #include <map>
@@ -65,6 +65,8 @@ namespace IMPL{
      */
     virtual const std::vector<std::string>  * getCollectionNames() const;
     
+    virtual const std::vector<std::string>  * getCollectionNames(bool refresh) const;
+
     /** Returns the collection for the given name.
      *
      * @throws DataNotAvailableException
@@ -169,17 +171,17 @@ namespace IMPL{
   protected:  
     int _runNumber ;
     int _eventNumber ;
-    EVENT::long64 _timeStamp ;
+    EVENT::long64 _timeStamp ; 
     std::string _detectorName ;
     
     // map has to be defined mutable in order to use _map[]  for const methods ...
-    mutable LCCollectionMap _colMap ;
+    mutable LCCollectionMap _colMap ;    //! no RIO
     mutable std::vector<std::string> _colNames ;
     
     LCParametersImpl _params ;
     
     // set of collections that are not owned by the event anymore
-    mutable LCCollectionSet _notOwned ;
+    mutable LCCollectionSet _notOwned ;   //! no RIO
     
 
   }; // class

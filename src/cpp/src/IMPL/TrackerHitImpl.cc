@@ -8,8 +8,7 @@ namespace IMPL {
   TrackerHitImpl::TrackerHitImpl() :
     _type(0),
     _dEdx(0),
-    _time(0),
-    _quality(0) {
+    _time(0) {
     _pos[0] = 0. ;
     _pos[1] = 0. ;
     _pos[2] = 0. ;
@@ -78,20 +77,6 @@ namespace IMPL {
   void TrackerHitImpl::setTime( float t )  { 
     checkAccess("TrackerHitImpl::setTime") ;
     _time = t ; 
-  }
-
-  void TrackerHitImpl::setQuality( int quality )  { 
-    checkAccess("TrackerHitImpl::setQuality") ;
-    _quality = quality ; 
-  }
-
-  void TrackerHitImpl::setQualityBit( int bit , bool val ) {
-    checkAccess("TrackerHitImpl::setQuality") ;
-
-    if( val )
-      _quality |=  ( 1 << bit )  ;
-    else
-      _quality &= ~( 1 << bit ) ;
   }
 
   void TrackerHitImpl::setCovMatrix( const FloatVec& cov ){
