@@ -12,6 +12,61 @@
 	length: mm, energy: GeV and time ns
 -->
 <sio>
+  <record name="LCIORandomAccess">
+     There are two types of LCIORandomAccess records
+       file record -- one per file, always first record on file
+       index record -- one or more per file, points to associated LCIOIndex record
+     <block name="LCIORandomAccess" major="1" minor="0">
+         <data type="int" name="runMin"/>
+         <data type="int" name="eventMin"/>
+         <data type="int" name="runMax"/>
+         <data type="int" name="eventMax"/>
+         <data type="int" name="nRunHeaders"/>
+         <data type="int" name="nEvents"/>
+         <data type="int" name="recordsAreInOrder"/>
+         <data type="long" name="indexLocation">
+            Location in file off associated index. Always null for file record.
+         </data>
+         <data type="long" name="prevLocation">
+            For file record location of first index record in file
+            For index record location of previous index record (or null if first)
+         </data>
+         <data type="long" name="nextLocation">
+            For file record location of last index record in file
+            For index record location of next index record (or null if last)
+         </data>
+     </block>
+  </record>
+  <record name="LCIOIndex">
+     <block name="LCIOIndex" major="1" minor="0">
+         <data type="int" name="controlWord">
+            Bit 0 = single Run
+            Bit 1 = long offset required
+         </data>
+         <data type="int" name="runMin"/>
+         <data type="long" name="baseOffset"/>
+         <data type="int" name="size"/>
+         <repeat count="size">
+             <if condition="(controlWord&amp;1)==0">
+                <data type="int" name="runOffset">
+                    Relative to runMin
+                </data>
+             </if>
+             <data type="int" name="eventNumber">
+                Event number, or -1 for run header records
+             </data>
+             <if condition="(controlWord&amp;2)==1">
+                <data type="long" name="locationOffset">
+                    Relative to baseOffset
+                </data>
+             <else/>
+                <data type="int" name="locationOffset">
+                    Relative to baseOffset
+                </data>
+             </if>
+         </repeat>
+     </block>
+  </record>
   <record name="LCRunHeader">
      <block name="RunHeader" major="1" minor="11">
         <data type="int" name="runNumber"></data>
@@ -38,7 +93,7 @@
         <include subroutine="namedParameters"/>
      </block>
   </record>  
-  <record name="LCEvent">
+  <record name="LCEvent">Insert one or more special "index" records into the LCIO file. This contains pointers to the location of the events and other records within the file. The record can optionally also contain additional event tags, which allow events which satisfy certain criteria to be located.
       <block name="MCParticle" major="1" minor="11">
          <data type="int" name="flags"> not yet used, Bits 0-15 user/application dependent</data>
          <include subroutine="namedParameters"/>
@@ -245,7 +300,6 @@
             <data type="float[6]" name="covariance">Covariance Matrix of position (x,y,z)</data>
             <data type="float" name="dedx"></data>
             <data type="float" name="time"></data>
-            <data type="int" name="quality">quality flag word</data>
             <if condition="1000*major+minor&gt;1002">
               <data type="int" name="nRawHits">number of raw hits</data>
               <repeat count="nRawHits">

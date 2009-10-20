@@ -13,22 +13,25 @@ import hep.lcio.io.LCReader;
 import hep.lcio.io.LCRunListener;
 
 import java.io.EOFException;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 /**
  *
  * @author Tony Johnson
- * @version $Id: SIOLCReader.java,v 1.16 2007-11-09 08:18:32 gaede Exp $
+ * @version $Id: SIOLCReader.java,v 1.16.10.1 2009-10-20 23:18:21 tonyj Exp $
  */
 class SIOLCReader implements LCReader
 {
    private List eventListeners = new ArrayList();
    private List runListeners = new ArrayList();
+   private RandomAccessBlock fileRandomAccessBlock;
+   private List<RandomAccessBlock> indexRandomAccessBlocks = new ArrayList<RandomAccessBlock>();
    private SIOReader reader;
+   private boolean indexBlocksRead;
 
    private String[] _filenames ;
    private int _currentIndex ;
@@ -40,7 +43,7 @@ class SIOLCReader implements LCReader
 
    public void open(String filename) throws IOException
    {
-      reader = new SIOReader(new FileInputStream(filename));
+      reader = new SIOReader(filename);
    }
 
     /** Opens a list of files for reading (read-only). All subsequent
@@ -95,6 +98,7 @@ class SIOLCReader implements LCReader
          {
             SIORecord record = reader.readRecord();
             String name = record.getRecordName();
+            if (name.equals("LCIORandomAccess")) addRandomAccessRecord(record);
             if (!name.equals(SIOFactory.eventHeaderRecordName))
                continue;
 
@@ -237,7 +241,6 @@ class SIOLCReader implements LCReader
             throw x;
       }
    }
-
    public void registerLCEventListener(LCEventListener ls)
    {
       eventListeners.add(ls);
@@ -258,4 +261,58 @@ class SIOLCReader implements LCReader
       runListeners.remove(ls);
    }
 
+   private void addRandomAccessRecord(SIORecord record) throws IOException
+   {
+      RandomAccessBlock ra = new RandomAccessBlock(record);
+      System.out.println("Found ra="+ra);
+      if (ra.getIndexLocation() == 0) fileRandomAccessBlock = ra;
+      else indexRandomAccessBlocks.add(ra);
+   }
+
+   private long findNextRunHeader() throws IOException {
+      RandomAccessBlock fab = findFileRandomAccessBlock();
+      for (RandomAccessBlock rab : findIndexRandomAccessBlocks()) {
+          
+      }
+   }
+
+   private long findEvent(int run, int event) throws IOException {
+      if (!indexBlocksRead) readIndexBlocks();
+      // FIXME: Assumes records are ordered
+      RunEvent re = new RunEvent(run,event);
+      if (!fileRandomAccessBlock.contains(re)) return -1;
+
+      int location = Collections.binarySearch(indexRandomAccessBlocks,re);
+      return 0;
+   }
+
+    private void readIndexBlocks() throws IOException {
+       RandomAccessBlock fab = findFileRandomAccessBlock();
+
+       if (indexRandomAccessBlocks.isEmpty()) {
+           SIORecord record = reader.readRecord(fab.getPreviousLocation());
+           RandomAccessBlock rab = new RandomAccessBlock(record);
+           indexRandomAccessBlocks.add(rab);
+           indexBlocksRead =  rab.getNextLocation() == 0;
+       }
+       while (!indexBlocksRead) {
+           long nextLocation = indexRandomAccessBlocks.get(indexRandomAccessBlocks.size()-1).getNextLocation();
+           SIORecord record = reader.readRecord(nextLocation);
+           RandomAccessBlock rab = new RandomAccessBlock(record);
+           indexRandomAccessBlocks.add(rab);
+           indexBlocksRead =  rab.getNextLocation() == 0;
+       }
+    }
+
+    private RandomAccessBlock findFileRandomAccessBlock() throws IOException {
+        if (fileRandomAccessBlock == null) {
+           SIORecord record = reader.readRecord(0);
+           fileRandomAccessBlock = new RandomAccessBlock(record);
+        }
+        return fileRandomAccessBlock;
+    }
+
+    private Iterable<RandomAccessBlock> findIndexRandomAccessBlocks() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }
