@@ -9,6 +9,7 @@ import hep.lcio.event.LCEvent;
 import hep.lcio.event.LCRunHeader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -150,6 +151,20 @@ class IndexBlock {
 
     int getRunHeaderCount() {
         return nRunHeaders;
+    }
+
+    long getLocation(RunEvent re) {
+        int position = Collections.binarySearch(index, re);
+        if (position < 0) return -1;
+        else return index.get(position).recordLocation;
+    }
+    
+    long findRecordHeader(long startPosition) {
+        // FIXME: Do something more efficient
+        for (IndexEntry entry : index) {
+           if (entry.recordLocation>startPosition && entry.getEvent() == -1) return entry.recordLocation;
+        }
+        return -1;
     }
 
     private static class IndexEntry extends RunEvent {

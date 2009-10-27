@@ -11,8 +11,8 @@ esac
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
   LOCALCLASSPATH=`cygpath --path --windows "$LOCALCLASSPATH"`
-  java -cp "$LOCALCLASSPATH" hep.lcio.example.AnalysisJob $@
+  java $JVM_ARGS -cp "$LOCALCLASSPATH" hep.lcio.example.AnalysisJob $@
 else
-  java -cp $LOCALCLASSPATH hep.lcio.example.AnalysisJob $@
+  java $JVM_ARGS -cp $LOCALCLASSPATH hep.lcio.example.AnalysisJob $@
 fi
 
