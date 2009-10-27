@@ -81,6 +81,18 @@ class RandomAccessBlock implements Comparable<RunEvent> {
         sio.close();
     }
 
+    int getRecordCount() {
+        return nRunHeaders+nEvents;
+    }
+
+    int getRunHeaderCount() {
+        return nRunHeaders;
+    }
+
+    int getEventCount() {
+        return nEvents;
+    }
+
     long getIndexLocation() {
         return indexLocation;
     }
