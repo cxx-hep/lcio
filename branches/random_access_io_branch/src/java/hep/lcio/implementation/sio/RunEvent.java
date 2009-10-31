@@ -30,4 +30,9 @@ class RunEvent implements Comparable<RunEvent> {
         return run;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Run: %d Event: %d",run,event);
+    }
+
 }

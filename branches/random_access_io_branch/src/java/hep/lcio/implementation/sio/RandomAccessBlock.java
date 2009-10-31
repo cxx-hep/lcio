@@ -26,6 +26,7 @@ class RandomAccessBlock implements Comparable<RunEvent> {
     private long previousAccessBlockLocation;
     private long nextAccessBlockLocation;
     private long myLocation;
+    private long firstRecordLocation;
     private SIOWriter writer;
 
     RandomAccessBlock() {
@@ -58,6 +59,7 @@ class RandomAccessBlock implements Comparable<RunEvent> {
         sio.writeLong(indexLocation);
         sio.writeLong(previousAccessBlockLocation);
         sio.writeLong(nextAccessBlockLocation);
+        sio.writeLong(firstRecordLocation);
         sio.close();
     }
 
@@ -78,11 +80,12 @@ class RandomAccessBlock implements Comparable<RunEvent> {
         indexLocation = sio.readLong();
         previousAccessBlockLocation = sio.readLong();
         nextAccessBlockLocation = sio.readLong();
+        firstRecordLocation = sio.readLong();
         sio.close();
     }
 
     int getRecordCount() {
-        return nRunHeaders+nEvents;
+        return nRunHeaders + nEvents;
     }
 
     int getRunHeaderCount() {
@@ -104,6 +107,7 @@ class RandomAccessBlock implements Comparable<RunEvent> {
         nEvents = indexBlock.getEventCount();
         nRunHeaders = indexBlock.getRunHeaderCount();
         indexLocation = indexBlock.getLocation();
+        firstRecordLocation = indexBlock.getFirstRecordLocation();
     }
 
     /**
@@ -151,12 +155,11 @@ class RandomAccessBlock implements Comparable<RunEvent> {
         return compareTo(re) == 0;
     }
 
-    public int compareTo(RunEvent o) {
-        RunEvent re = (RunEvent) o;
-        if (re.compareTo(minRunEvent) > 0) {
-            return -1;
-        } else if (re.compareTo(maxRunEvent) < 0) {
+    public int compareTo(RunEvent re) {
+        if (minRunEvent.compareTo(re) > 0) {
             return 1;
+        } else if (maxRunEvent.compareTo(re) < 0) {
+            return -1;
         } else {
             return 0;
         }
@@ -168,5 +171,9 @@ class RandomAccessBlock implements Comparable<RunEvent> {
 
     long getNextLocation() {
         return nextAccessBlockLocation;
+    }
+
+    long getFirstRecordLocation() {
+        return firstRecordLocation;
     }
 }
