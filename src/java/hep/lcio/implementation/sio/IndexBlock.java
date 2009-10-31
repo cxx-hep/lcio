@@ -8,6 +8,7 @@ import hep.io.sio.SIOWriter;
 import hep.lcio.event.LCEvent;
 import hep.lcio.event.LCRunHeader;
 import java.io.IOException;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -86,31 +87,41 @@ class IndexBlock {
     }
 
     void write(SIOWriter writer) throws IOException {
-        myLocation = writer.createRecord(LCIOINDEX,true);
-        SIOOutputStream sio = writer.createBlock(LCIOINDEX,majorVersion,minorVersion);
+        myLocation = writer.createRecord(LCIOINDEX, true);
+        SIOOutputStream sio = writer.createBlock(LCIOINDEX, majorVersion, minorVersion);
         boolean oneRun = minEntry.getRun() == maxEntry.getRun();
         long firstLocation = index.get(0).recordLocation;
         boolean longOffset = lastEntry.recordLocation - firstLocation > Integer.MAX_VALUE;
         int controlWord = 0;
-        if (oneRun) controlWord |= 1;
-        if (longOffset) controlWord |= 2;
+        if (oneRun) {
+            controlWord |= 1;
+        }
+        if (longOffset) {
+            controlWord |= 2;
+        }
         sio.writeInt(controlWord);
         sio.writeInt(minEntry.getRun());
         sio.writeLong(firstLocation);
         sio.writeInt(index.size());
         for (IndexEntry entry : index) {
-            if (!oneRun) sio.writeInt(entry.getRun()-minEntry.getRun());
+            if (!oneRun) {
+                sio.writeInt(entry.getRun() - minEntry.getRun());
+            }
             sio.writeInt(entry.getEvent());
-            if (longOffset) sio.writeLong(entry.recordLocation-firstLocation);
-            else sio.writeInt((int) (entry.recordLocation-firstLocation));
+            if (longOffset) {
+                sio.writeLong(entry.recordLocation - firstLocation);
+            } else {
+                sio.writeInt((int) (entry.recordLocation - firstLocation));
+            }
         }
         sio.close();
     }
 
     private void read(SIORecord record) throws IOException {
         SIOBlock block = record.getBlock();
-        if (!block.getBlockName().equals(LCIOINDEX) || block.getMajorVersion()!=1 || block.getMinorVersion()!=0)
+        if (!block.getBlockName().equals(LCIOINDEX) || block.getMajorVersion() != 1 || block.getMinorVersion() != 0) {
             throw new IOException("Unexpected block in LCIOIndex record");
+        }
         SIOInputStream sio = block.getData();
         int controlWord = sio.readInt();
         boolean oneRun = (controlWord & 1) == 1;
@@ -120,11 +131,11 @@ class IndexBlock {
         int size = sio.readInt();
         index = new ArrayList<IndexEntry>(size);
         maxEntries = size;
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             int run = oneRun ? minRun : minRun + sio.readInt();
             int event = sio.readInt();
             long location = firstLocation + (longOffset ? sio.readLong() : sio.readInt());
-            index.add(new IndexEntry(run,event,location));
+            index.add(new IndexEntry(run, event, location));
         }
         sio.close();
     }
@@ -155,16 +166,44 @@ class IndexBlock {
 
     long getLocation(RunEvent re) {
         int position = Collections.binarySearch(index, re);
-        if (position < 0) return -1;
-        else return index.get(position).recordLocation;
+        if (position < 0) {
+            return -1;
+        } else {
+            return index.get(position).recordLocation;
+        }
     }
-    
+
     long findRecordHeader(long startPosition) {
-        // FIXME: Do something more efficient
-        for (IndexEntry entry : index) {
-           if (entry.recordLocation>startPosition && entry.getEvent() == -1) return entry.recordLocation;
+        int startIndex = findIndexOfRecordLocation(startPosition);
+        for (IndexEntry entry : index.subList(startIndex, index.size())) {
+            if (entry.recordLocation > startPosition && entry.getEvent() == -1) {
+                return entry.recordLocation;
+            }
         }
         return -1;
+    }
+
+    long getFirstRecordLocation() {
+        return index.isEmpty() ? 0 : index.get(0).recordLocation;
+    }
+
+    private int findIndexOfRecordLocation(long recordLocation) {
+        int position = Collections.binarySearch(new RecordLocationList(), recordLocation);
+        if (position < 0) {
+            position = Math.max(0, -position - 2);
+        }
+        return position;
+    }
+
+    private class RecordLocationList extends AbstractList<Long> {
+
+        public Long get(int i) {
+            return index.get(i).recordLocation;
+        }
+
+        public int size() {
+            return index.size();
+        }
     }
 
     private static class IndexEntry extends RunEvent {
@@ -172,17 +211,17 @@ class IndexBlock {
         private long recordLocation;
 
         private IndexEntry(long recordLocation, LCRunHeader runHeader) {
-            super(runHeader.getRunNumber(),-1);
+            super(runHeader.getRunNumber(), -1);
             this.recordLocation = recordLocation;
         }
 
         private IndexEntry(long recordLocation, LCEvent eventHeader) {
-            super(eventHeader.getRunNumber(),eventHeader.getEventNumber());
+            super(eventHeader.getRunNumber(), eventHeader.getEventNumber());
             this.recordLocation = recordLocation;
         }
 
         private IndexEntry(int run, int event, long location) {
-            super(run,event);
+            super(run, event);
             this.recordLocation = location;
         }
     }

@@ -15,24 +15,19 @@ import hep.lcio.io.LCRunListener;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
  *
  * @author Tony Johnson
- * @version $Id: SIOLCReader.java,v 1.16.10.2 2009-10-27 23:39:06 tonyj Exp $
+ * @version $Id: SIOLCReader.java,v 1.16.10.3 2009-10-31 00:26:19 tonyj Exp $
  */
 class SIOLCReader implements LCReader
 {
    private List eventListeners = new ArrayList();
    private List runListeners = new ArrayList();
-   private SIOReader reader;
-   private RandomAccessSupport randomAccess;
-   private long lastRecordPosition;
+   protected SIOReader reader;
 
    private String[] _filenames ;
    private int _currentIndex ;
@@ -45,7 +40,6 @@ class SIOLCReader implements LCReader
    public void open(String filename) throws IOException
    {
       reader = new SIOReader(filename);
-      randomAccess = new RandomAccessSupport(reader);
    }
 
     /** Opens a list of files for reading (read-only). All subsequent
@@ -100,7 +94,6 @@ class SIOLCReader implements LCReader
          {
             SIORecord record = reader.readRecord();
             String name = record.getRecordName();
-            if (name.equals("LCIORandomAccess")) randomAccess.addRandomAccessRecord(record);
             if (!name.equals(SIOFactory.eventHeaderRecordName))
                continue;
 
@@ -122,21 +115,14 @@ class SIOLCReader implements LCReader
 
    public void skipNEvents(int n) throws IOException
    {
-      if (randomAccess != null)
+      int nEvents = 0;
+      while( nEvents < n )
       {
-
-      }
-      else
-      {
-          int nEvents = 0;
-          while( nEvents < n )
-          {
-            SIORecord record = reader.readRecord();
-            String name = record.getRecordName();
-            if ( ! name.equals( SIOFactory.eventHeaderRecordName) )
-               continue;
-            ++nEvents ;
-          }
+        SIORecord record = reader.readRecord();
+        String name = record.getRecordName();
+        if ( ! name.equals( SIOFactory.eventHeaderRecordName) )
+           continue;
+        ++nEvents ;
       }
    }
    public LCEvent readNextEvent() throws IOException
@@ -151,14 +137,15 @@ class SIOLCReader implements LCReader
 
    public LCRunHeader readNextRunHeader(int accessMode) throws IOException
    {
-      if (randomAccess != null)
+      try
       {
-         long position = randomAccess.findNextRunHeader(lastRecordPosition);
-         if (position < 0) return null;
-         else
+         for (;;)
          {
-            SIORecord record = reader.readRecord(position);
-            lastRecordPosition = position;
+            SIORecord record = reader.readRecord();
+            String name = record.getRecordName();
+            if (!name.equals(SIOFactory.runRecordName))
+               continue;
+
             SIOBlock block = record.getBlock();
             int major = block.getMajorVersion() ;
             int minor = block.getMinorVersion() ;
@@ -169,36 +156,14 @@ class SIOLCReader implements LCReader
             return new SIORunHeader(block.getData(),major,minor);
          }
       }
-      else
+      catch (EOFException x)
       {
-          try
-          {
-             for (;;)
-             {
-                SIORecord record = reader.readRecord();
-                String name = record.getRecordName();
-                if (!name.equals(SIOFactory.runRecordName))
-                   continue;
-
-                SIOBlock block = record.getBlock();
-                int major = block.getMajorVersion() ;
-                int minor = block.getMinorVersion() ;
-                if (( major < 1) && ( minor < 8))
-                   throw new IOException("Sorry: files created with versions older than v00-08" + " are no longer supported !");
-
-                // FIX ME: need to set access mode here....
-                return new SIORunHeader(block.getData(),major,minor);
-             }
-          }
-          catch (EOFException x)
-          {
-            if( _filenames != null  && ++_currentIndex < _filenames.length ){
-                close() ;
-                open( _filenames[ _currentIndex ] ) ;
-                return readNextRunHeader( accessMode ) ;
-            }
-             return null;
-          }
+        if( _filenames != null  && ++_currentIndex < _filenames.length ){
+            close() ;
+            open( _filenames[ _currentIndex ] ) ;
+            return readNextRunHeader( accessMode ) ;
+        }
+         return null;
       }
    }
 
@@ -284,90 +249,4 @@ class SIOLCReader implements LCReader
    {
       runListeners.remove(ls);
    }
-
-    private static class RandomAccessSupport {
-
-        private RandomAccessBlock fileRandomAccessBlock;
-        private List<RandomAccessBlock> indexRandomAccessBlocks = new ArrayList<RandomAccessBlock>();
-        private boolean indexBlocksRead;
-        private SIOReader reader;
-        private Map<RandomAccessBlock,IndexBlock> indexHash = new HashMap<RandomAccessBlock,IndexBlock>();
-
-        RandomAccessSupport(SIOReader reader) {
-            this.reader = reader;
-        }
-
-        private void addRandomAccessRecord(SIORecord record) throws IOException {
-            RandomAccessBlock ra = new RandomAccessBlock(record);
-            System.out.println("Found ra=" + ra);
-            if (ra.getIndexLocation() == 0) {
-                fileRandomAccessBlock = ra;
-            } else {
-                indexRandomAccessBlocks.add(ra);
-            }
-        }
-
-        private long findNextRunHeader(long currentPosition) throws IOException {
-            List<RandomAccessBlock> iab = findIndexRandomAccessBlocks();
-            for (RandomAccessBlock rab : iab) {
-               // FIXME: Do something more efficient
-               if (rab.getRunHeaderCount() > 0)
-               {
-                   IndexBlock ib = findIndexBlock(rab);
-                   long position = ib.findRecordHeader(currentPosition);
-                   if (position >= 0) return position;
-               }
-            }
-            return -1;
-        }
-
-        private long findEvent(int run, int event) throws IOException {
-            RunEvent re = new RunEvent(run, event);
-
-            RandomAccessBlock fab = findFileRandomAccessBlock();
-            if (!fab.contains(re)) {
-                return -1;
-            }
-
-            List<RandomAccessBlock> iab = findIndexRandomAccessBlocks();
-            int location = Collections.binarySearch(iab, re);
-            IndexBlock ib = findIndexBlock(iab.get(location));
-            return ib.getLocation(re);
-        }
-
-        private RandomAccessBlock findFileRandomAccessBlock() throws IOException {
-            if (fileRandomAccessBlock == null) {
-                SIORecord record = reader.readRecord(0);
-                fileRandomAccessBlock = new RandomAccessBlock(record);
-            }
-            return fileRandomAccessBlock;
-        }
-
-        private List<RandomAccessBlock> findIndexRandomAccessBlocks() throws IOException {
-            RandomAccessBlock fab = findFileRandomAccessBlock();
-            if (indexRandomAccessBlocks.isEmpty()) {
-                SIORecord record = reader.readRecord(fab.getPreviousLocation());
-                RandomAccessBlock rab = new RandomAccessBlock(record);
-                indexRandomAccessBlocks.add(rab);
-                indexBlocksRead = rab.getNextLocation() == 0;
-            }
-            while (!indexBlocksRead) {
-                long nextLocation = indexRandomAccessBlocks.get(indexRandomAccessBlocks.size() - 1).getNextLocation();
-                SIORecord record = reader.readRecord(nextLocation);
-                RandomAccessBlock rab = new RandomAccessBlock(record);
-                indexRandomAccessBlocks.add(rab);
-                indexBlocksRead = rab.getNextLocation() == 0;
-            }
-            return indexRandomAccessBlocks;
-        }
-
-        private IndexBlock findIndexBlock(RandomAccessBlock rab) throws IOException {
-            IndexBlock result = indexHash.get(rab);
-            if (result == null) {
-                result = new IndexBlock(reader.readRecord(rab.getIndexLocation()));
-                indexHash.put(rab,result);
-            }
-            return result;
-        }
-    }
 }
