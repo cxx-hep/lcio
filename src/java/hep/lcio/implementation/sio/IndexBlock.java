@@ -130,10 +130,14 @@ class IndexBlock {
         long firstLocation = sio.readLong();
         int size = sio.readInt();
         index = new ArrayList<IndexEntry>(size);
+        nEvents = 0;
+        nRunHeaders = 0;
         maxEntries = size;
         for (int i = 0; i < size; i++) {
             int run = oneRun ? minRun : minRun + sio.readInt();
             int event = sio.readInt();
+            if (event >= 0) nEvents++;
+            else nRunHeaders++;
             long location = firstLocation + (longOffset ? sio.readLong() : sio.readInt());
             index.add(new IndexEntry(run, event, location));
         }
@@ -173,6 +177,10 @@ class IndexBlock {
         }
     }
 
+    long getLocation(int position) {
+        return index.get(position).recordLocation;
+    }
+
     long findRecordHeader(long startPosition) {
         int startIndex = findIndexOfRecordLocation(startPosition);
         for (IndexEntry entry : index.subList(startIndex, index.size())) {
@@ -187,12 +195,20 @@ class IndexBlock {
         return index.isEmpty() ? 0 : index.get(0).recordLocation;
     }
 
-    private int findIndexOfRecordLocation(long recordLocation) {
+    int findIndexOfRecordLocation(long recordLocation) {
         int position = Collections.binarySearch(new RecordLocationList(), recordLocation);
         if (position < 0) {
             position = Math.max(0, -position - 2);
         }
         return position;
+    }
+
+    int getRecordCount() {
+        return nEvents+nRunHeaders;
+    }
+
+    boolean isEvent(int i) {
+        return index.get(i).getEvent() >= 0;
     }
 
     private class RecordLocationList extends AbstractList<Long> {

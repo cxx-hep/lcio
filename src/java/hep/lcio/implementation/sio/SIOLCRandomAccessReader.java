@@ -6,6 +6,7 @@ import hep.io.sio.SIORecord;
 import hep.lcio.event.LCEvent;
 import hep.lcio.event.LCIO;
 import hep.lcio.event.LCRunHeader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -92,16 +93,6 @@ class SIOLCRandomAccessReader extends SIOLCReader {
             fileRandomAccessBlock = new RandomAccessBlock(record);
         }
 
-//        private void addRandomAccessRecord(SIORecord record) throws IOException {
-//            RandomAccessBlock ra = new RandomAccessBlock(record);
-//            System.out.println("Found ra=" + ra);
-//            if (ra.getIndexLocation() == 0) {
-//                fileRandomAccessBlock = ra;
-//            } else {
-//                indexRandomAccessBlocks.add(ra);
-//            }
-//        }
-
         private long findNextRunHeader() throws IOException {
             List<RandomAccessBlock> iab = findIndexRandomAccessBlocks();
             int iabIndex = findIndexOfRandomAccessBlockContaining(reader.getNextRecordPosition());
@@ -118,17 +109,33 @@ class SIOLCRandomAccessReader extends SIOLCReader {
         }
 
         private void skipNEvents(int n) throws IOException {
-//            int iabIndex = findIndexOfRandomAccessBlockContaining(lastRecordPosition);
-//            List<RandomAccessBlock> iab = findIndexRandomAccessBlocks();
-//            IndexBlock ib = findIndexBlock(iab.get(iabIndex));
-//            int recordIndex = ib.findIndexOfRecord(lastRecordPosition);
-//            for (int i = recordIndex; i<ib.getRecordCount(); i++) {
-//            }
-//
-//            for (RandomAccessBlock rab : iab.subList(iabIndex, iab.size())) {
-//                IndexBlock ib = rab.get(iabIndex);
-//
-//            }
+            if (n==0) return;
+            int iabIndex = findIndexOfRandomAccessBlockContaining(reader.getNextRecordPosition());
+            List<RandomAccessBlock> iab = findIndexRandomAccessBlocks();
+            IndexBlock ib = findIndexBlock(iab.get(iabIndex));
+            // Find how many events are left in current block.
+            int recordIndex = ib.findIndexOfRecordLocation(reader.getNextRecordPosition());
+            for (int i = recordIndex; i<ib.getRecordCount(); i++) {
+                if (ib.isEvent(i)) if (n-- == 0) {
+                    reader.seek(ib.getLocation(i));
+                    return;
+                }
+            }
+
+            for (RandomAccessBlock rab : iab.subList(iabIndex+1, iab.size())) {
+                ib = findIndexBlock(rab);
+                int nEvents = ib.getEventCount();
+                if (nEvents <= n) n -= nEvents;
+                else {
+                    for (int i=0; i<ib.getRecordCount(); i++) {
+                        if (ib.isEvent(i)) if (n-- == 0) {
+                            reader.seek(ib.getLocation(i));
+                            return;
+                        }
+                    }
+                }
+            }
+            throw new EOFException();
         }
 
 
