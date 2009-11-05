@@ -35,6 +35,9 @@
             For file record location of last index record in file
             For index record location of next index record (or null if last)
          </data>
+         <data type="long" name="firstRecordLocation">
+             For index record location of the first record associated with this block
+         </data>
      </block>
   </record>
   <record name="LCIOIndex">
