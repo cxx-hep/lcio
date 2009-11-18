@@ -25,7 +25,7 @@
          <data type="int" name="nEvents"/>
          <data type="int" name="recordsAreInOrder"/>
          <data type="long" name="indexLocation">
-            Location in file off associated index. Always null for file record.
+            Location in file of associated index. Always null for file record.
          </data>
          <data type="long" name="prevLocation">
             For file record location of first index record in file
@@ -45,10 +45,25 @@
          <data type="int" name="controlWord">
             Bit 0 = single Run
             Bit 1 = long offset required
+            Bit 2 = LCParameters included
          </data>
          <data type="int" name="runMin"/>
          <data type="long" name="baseOffset"/>
          <data type="int" name="size"/>
+         <if condition="(controlWord&amp;2)==1">
+            <data type="short" name="nIntParameters"/>
+            <repeat count="nIntParameters">
+                <data type="string" name="key">key (name) of parameter</data>
+            </repeat>
+            <data type="short" name="nFloatParameters"/>
+            <repeat count="nFloatParameters">
+                <data type="string" name="key">key (name) of parameter</data>
+            </repeat>
+            <data type="short" name="nStringParameters"/>
+            <repeat count="nStringParameters">
+                <data type="string" name="key">key (name) of parameter</data>
+            </repeat>
+         </if>
          <repeat count="size">
              <if condition="(controlWord&amp;1)==0">
                 <data type="int" name="runOffset">
@@ -66,6 +81,17 @@
                 <data type="int" name="locationOffset">
                     Relative to baseOffset
                 </data>
+             </if>
+             <if condition="(controlWord&amp;2)==1">
+                <repeat count="nIntParameters">
+                    <data type="int" name="value"/>
+                </repeat>
+                <repeat count="nFloatParameters">
+                    <data type="float" name="value"/>
+                </repeat>
+                <repeat count="nStringParameters">
+                    <data type="string" name="value"/>
+                </repeat>
              </if>
          </repeat>
      </block>
