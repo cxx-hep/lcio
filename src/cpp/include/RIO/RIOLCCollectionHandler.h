@@ -62,8 +62,8 @@ namespace RIO{
       std::cout << "  RIOLCCollectionHandler( " << name << ", " << tree << ")" << std::endl ;
 #endif
       
-      //_tv = 0 ; //IMPL::LCCollectionVec ; // new std::vector<T*> ;      
-      _tv =  _emptyCol ; // new IMPL::LCCollectionVec( type  )  ;
+      _tv = 0 ; //IMPL::LCCollectionVec ; // new std::vector<T*> ;      
+      //_tv =  _emptyCol ; // new IMPL::LCCollectionVec( type  )  ;
 //       TClass* cl = TClass::GetClass(TString::Format("vector<EVENT::%s>", type.c_str()));
 //       if (!cl) printf("bad\n");
 //       else {
@@ -83,12 +83,13 @@ namespace RIO{
 	
 	//FIXME: make split level and 'record size' parameters ....
 	//	_br = tree->Branch( _name.c_str(), &_tv, 16000, RIO_SPLIT_LEVEL );
+
 	std::stringstream typeStream ;
-	typeStream << "IMPL::LCCollectionTVec<" << type << ">" ;
+	typeStream << "IMPL::LCCollectionTVec<EVENT::" << type << ">" ;
 
 	std::cout << " create branch for type   " << typeStream.str()  << std::endl ;
 	
-	_br = tree->Branch( _name.c_str(), typeStream.str().c_str(), &_tv, 16000, RIO_SPLIT_LEVEL );
+	_br = tree->Branch( _name.c_str(), typeStream.str().c_str(), (void*) &_tv, 16000, RIO_SPLIT_LEVEL );
 
 
 
