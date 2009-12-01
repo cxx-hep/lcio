@@ -16,8 +16,9 @@
 
 #define RIO_RECORD_SIZE    16000
 
-#define RIO_SPLIT_LEVEL        101
+#define RIO_SPLIT_LEVEL        5
 
-#define RIO_DEFAULT_COMPRESS   4  // what is a reasonable default ?
+#define RIO_DEFAULT_COMPRESS   1
+  // 1 is TFile default ?
 
 #endif

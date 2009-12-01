@@ -350,12 +350,12 @@ IF( BUILD_ROOTIO )
     INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}" )
     
     ADD_LIBRARY( lib_LCIODICT ${dict_lib_srcs} ${LCIO_RIO_SRCS} )
-    #ADD_LIBRARY( lib_LCIO ${LCIO_RIO_SRCS} )
     INSTALL( TARGETS lib_LCIODICT DESTINATION lib )
  
 
    IF( APPLE )
      SET( ROOT_DICT_LINK_FLAGS "-single_module -undefined dynamic_lookup -bind_at_load")
+     ADD_LIBRARY( lib_LCIO ${LCIO_RIO_SRCS} )
    ELSE( APPLE )
      SET( ROOT_DICT_LINK_FLAGS " " )
    ENDIF( APPLE )

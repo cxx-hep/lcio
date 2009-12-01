@@ -10,6 +10,7 @@
 
 #include "TTree.h"
 #include <vector>
+#include <sstream>
 #include "RIO.h"
 
 namespace RIO{
@@ -81,7 +82,15 @@ namespace RIO{
  } else {
 	
 	//FIXME: make split level and 'record size' parameters ....
-	_br = tree->Branch( _name.c_str()  , &_tv, 16000, RIO_SPLIT_LEVEL );
+	//	_br = tree->Branch( _name.c_str(), &_tv, 16000, RIO_SPLIT_LEVEL );
+	std::stringstream typeStream ;
+	typeStream << "IMPL::LCCollectionTVec<" << type << ">" ;
+
+	std::cout << " create branch for type   " << typeStream.str()  << std::endl ;
+	
+	_br = tree->Branch( _name.c_str(), typeStream.str().c_str(), &_tv, 16000, RIO_SPLIT_LEVEL );
+
+
 
 	//((TBranch*)_br->GetListOfBranches()->FindObject("vector<EVENT::LCObject*>"))->SetName("LCObjVec")  ;
       }

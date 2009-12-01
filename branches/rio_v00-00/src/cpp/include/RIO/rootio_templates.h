@@ -12,6 +12,7 @@
 #include "IMPL/TrackImpl.h"
 #include "IMPL/ClusterImpl.h"
 #include "IMPL/LCRelationImpl.h"
+#include "IMPL/LCCollectionVec.h"
 
 #include "TRefArray.h"
 #include <string>
@@ -66,6 +67,18 @@
 #pragma link C++ class IMPL::LCRef<EVENT::Cluster*>+;
 #pragma link C++ class IMPL::LCRef<EVENT::LCRelation*>+;
 #pragma link C++ class IMPL::LCRef<EVENT::Vertex*>+;
+
+//#pragma link C++ class IMPL::LCCollectionTVec<EVENT::LCObject>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::ReconstructedParticle>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::MCParticle>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::SimTrackerHit>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::SimCalorimeterHit>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::TrackerHit>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::CalorimeterHit>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::Track>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::Cluster>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::LCRelation>+;
+#pragma link C++ class IMPL::LCCollectionTVec<EVENT::Vertex>+;
 
 
 

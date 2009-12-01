@@ -38,5 +38,7 @@ DONE: see IMPL/LCRefVec.h
   - make LCCollection branches subbranches of LCEvent 
 
 
+  - don't flush at the end of writing the event - rather use 'autosave' feature
+    TTree::SetAutoSave()
 
 

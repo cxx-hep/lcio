@@ -113,7 +113,11 @@ int main(int argc, char** argv ){
       lcReader->registerLCRunListener( &evtProc ) ; 
       lcReader->registerLCEventListener( &evtProc ) ; 
       
+    if( argc > 3 )
       lcReader->readStream( maxEvt ) ;
+    else
+      lcReader->readStream() ;
+
     } 
     
     lcReader->close() ;
