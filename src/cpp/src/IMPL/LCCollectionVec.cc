@@ -1,5 +1,9 @@
 
 #include "IMPL/LCCollectionVec.h"
+
+#ifdef __IGNORE_THIS_FILE
+
+#include "IMPL/LCCollectionVec.h"
 #include "EVENT/LCIO.h"
 #include "LCIOTypes.h"
 
@@ -67,33 +71,33 @@ LCCollectionVec::LCCollectionVec( const std::string& type ) :
   }
  
  void LCCollectionVec::ptrToIndex() {
-
-    for( unsigned i=0 ; i< _vec.size() ; ++i ){
-
-      _vec.operator[](i)->ptrToIndex() ;
-    }
-  }
-
-LCCollectionVec::~LCCollectionVec() {
-
-  if( ! isSubset() ){
-    // delete all elements
-    LCObjectVec::const_iterator iter = _vec.begin() ;
-    //    std::cout << "deleting collection " 
-    //  	    << std::endl ;
-    //    UTIL::LCTOOLS::printParameters( parameters() )  ;
+   
+   for( unsigned i=0 ; i< _vec.size() ; ++i ){
+     
+     _vec.operator[](i)->ptrToIndex() ;
+   }
+ }
+  
+  LCCollectionVec::~LCCollectionVec() {
     
-    while( iter != _vec.end() ){
-      delete *iter++ ;
+    if( ! isSubset() ){
+      // delete all elements
+      LCObjectVec::const_iterator iter = _vec.begin() ;
+      //    std::cout << "deleting collection " 
+      //  	    << std::endl ;
+      //    UTIL::LCTOOLS::printParameters( parameters() )  ;
+      
+      while( iter != _vec.end() ){
+	delete *iter++ ;
+      }
     }
   }
-}
-
-
-int LCCollectionVec::getNumberOfElements() const{
-  return _vec.size() ;
-}
-
+  
+  
+  int LCCollectionVec::getNumberOfElements() const{
+    return _vec.size() ;
+  }
+  
 
 const std::string & LCCollectionVec::getTypeName() const{
   return _typeName ;
@@ -163,3 +167,4 @@ void LCCollectionVec::setFlag(int flag){
 
 } // namespace IMPL
 
+#endif

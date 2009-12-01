@@ -138,6 +138,9 @@ namespace RIO {
     if( !_file->IsOpen() )
       throw IOException( std::string( "[RIOWriter::open()] Couldn't open file: " 
 				      +  rioFilename ) ) ;
+
+
+    _tree->SetAutoSave() ;
   }
   
 
@@ -274,7 +277,7 @@ namespace RIO {
     
     _evtImpl = &proxyEvt ; 
     _tree->Fill() ;
-    _file->Flush() ;
+    //_file->Flush() ;
 
     // now we need to take the ownership for the  collections away from proxy Event
     strVec = proxyEvt.getCollectionNames() ;
@@ -296,7 +299,8 @@ namespace RIO {
   
   void RIOWriter::flush() throw (IOException, std::exception) {
 
-    _file->Flush() ;
+    // fg: we should not flush but use the auto safe feature for ROOT ....
+    //_file->Flush() ;
   }
   
 } // namespace

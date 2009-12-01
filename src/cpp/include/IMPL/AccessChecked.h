@@ -7,7 +7,7 @@
 namespace IMPL {
   
   class  LCEventImpl ;
-  class  LCCollectionVec ;
+  //  class  LCCollectionVec ;
 
   /** Controls access to objects.
    * 
@@ -17,7 +17,8 @@ namespace IMPL {
   class AccessChecked {
     
     friend class LCEventImpl ;     
-    friend class LCCollectionVec ; 
+    //    friend class LCCollectionVec ; 
+    template <typename T> friend class LCCollectionTVec ; 
     
   public:
     AccessChecked() ;

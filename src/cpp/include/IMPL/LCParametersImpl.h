@@ -13,7 +13,7 @@ namespace IMPL {
 
   class LCRunHeaderImpl ;
   class LCEventImpl ;
-  class LCCollectionVec ;
+  //  class LCCollectionVec ;
 
   typedef std::map< std::string, EVENT::IntVec >    IntMap ;
   typedef std::map< std::string, EVENT::FloatVec >  FloatMap ;
@@ -36,8 +36,9 @@ namespace IMPL {
 
     friend class LCRunHeaderImpl ;
     friend class LCEventImpl ;
-    friend class LCCollectionVec ;
-    
+    //friend class LCCollectionVec ;
+    template <typename T> friend class LCCollectionTVec ; 
+   
   public: 
     
     LCParametersImpl() ; 
