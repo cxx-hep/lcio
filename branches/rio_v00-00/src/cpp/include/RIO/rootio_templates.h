@@ -8,6 +8,8 @@
 #include "IMPL/MCParticleImpl.h"
 #include "IMPL/SimCalorimeterHitImpl.h"
 #include "IMPL/SimTrackerHitImpl.h"
+#include "IMPL/CalorimeterHitImpl.h"
+#include "IMPL/TrackerHitImpl.h"
 #include "IMPL/VertexImpl.h"
 #include "IMPL/TrackImpl.h"
 #include "IMPL/ClusterImpl.h"
@@ -80,6 +82,17 @@
 #pragma link C++ class IMPL::LCCollectionTVec<EVENT::LCRelation>+;
 #pragma link C++ class IMPL::LCCollectionTVec<EVENT::Vertex>+;
 
+
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::ReconstructedParticleImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::MCParticleImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::SimTrackerHitImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::SimCalorimeterHitImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::TrackerHitImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::CalorimeterHitImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::TrackImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::ClusterImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::LCRelationImpl>+;
+#pragma link C++ class IMPL::LCCollectionTVec<IMPL::VertexImpl>+;
 
 
 #endif
