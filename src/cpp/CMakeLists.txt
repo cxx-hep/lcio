@@ -65,6 +65,13 @@ SET( LCIO_IMPL_SRCS
 
 SET( LCIO_IOIMPL_SRCS
   ./src/IOIMPL/LCFactory.cc
+  ./src/IOIMPL/WriterDecorator.cc
+  ./src/IOIMPL/ReaderDecorator.cc
+)
+
+SET( LCIO_RIO_SRCS
+  ./src/RIO/RIOWriter.cc
+  ./src/RIO/RIOReader.cc
 )
 
 SET( LCIO_SIO_SRCS
@@ -114,7 +121,16 @@ SET( LCIO_UTIL_SRCS
   ./src/UTIL/CellIDEncoder.cc
   ./src/UTIL/CollectionParameterMap.cc
   ./src/UTIL/PIDHandler.cc
+  ./src/UTIL/LCIOTypeInfo.cc
 )
+
+
+
+# -------- ROOT libraries -----------------
+IF( BUILD_ROOTIO )
+  INCLUDE( ${PROJECT_SOURCE_DIR}/FindROOT.cmake )
+ENDIF( BUILD_ROOTIO )
+
 
 #------ require proper C++ -------
 ADD_DEFINITIONS( "-Wall -ansi -pedantic" )
@@ -160,9 +176,12 @@ SET_TARGET_PROPERTIES( lib_LCIO PROPERTIES
     OUTPUT_NAME lcio
 )
 
+# - needed for apple ??? ---  
+IF( APPLE )
+TARGET_LINK_LIBRARIES( lib_LCIO ${ROOT_LIBRARIES} )
+ENDIF( APPLE )
 TARGET_LINK_LIBRARIES( lib_LCIO lib_SIO )
 TARGET_LINK_LIBRARIES( lib_LCIOF77 lib_LCIO )
-
 
 # create symbolic target for calling targets bin_XXX
 ADD_CUSTOM_TARGET( bin )
@@ -174,6 +193,9 @@ MACRO( ADD_LCIO_BIN file )
 #  MESSAGE( STATUS " in ADD_LCIO_BIN : " ${file} " " ./src/EXAMPLE/${file}.cc )
   SET_TARGET_PROPERTIES( bin_${file} PROPERTIES OUTPUT_NAME ${file} )
   TARGET_LINK_LIBRARIES( bin_${file} lib_LCIO )
+  IF( BUILD_ROOTIO )
+    TARGET_LINK_LIBRARIES( bin_${file} ${ROOT_LIBRARIES} lib_LCIODICT )
+  ENDIF( BUILD_ROOTIO )
   INSTALL( TARGETS bin_${file} DESTINATION bin )
 ENDMACRO()
 #===================================================================
@@ -208,8 +230,166 @@ IF( BUILD_LCIO_EXAMPLES )
   ELSE()
     MESSAGE( STATUS "Warning: didn't find curses and/or readline libraries. Cannot build lsh" )
   ENDIF()
+
+
+
+#	INCLUDE( ${PROJECT_SOURCE_DIR}/FindROOT.cmake )
+#	INCLUDE( ${PROJECT_SOURCE_DIR}/MacroLoadPackage.cmake )
+#	SET( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} ) 
+#  LOAD_PACKAGE( ROOT REQUIRED )
+
 ENDIF()
 
+#------ root dict -----------------------------
+IF( BUILD_ROOTIO )
+
+#-----------------------------------------------------------------
+
+
+#SET( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} ) 
+#FIND_PACKAGE( ROOT )
+
+  INCLUDE( ${PROJECT_SOURCE_DIR}/FindROOT.cmake )
+
+
+  IF( ROOT_FOUND )
+    
+    
+    SET( ENV{ROOTSYS} "${ROOT_HOME}" )
+    SET( ENV{PATH} $ENV{ROOTSYS}/bin:$ENV{PATH} )
+    SET( ENV{LD_LIBRARY_PATH} $ENV{ROOTSYS}/lib:$ENV{LD_LIBRARY_PATH} )
+    
+    
+    #TODO test ROOT_FOUND and ${ROOT_HOME}/bin/rootcint
+    
+    # list of headers
+    FILE( GLOB_RECURSE lcio_headers include/*.h )
+    
+    # list of headers to exclude
+    FILE( GLOB_RECURSE exclude_headers include/empty_ignore.h include/SIO/*.h include/CPPFORT/*.h include/UTIL/CellIDDecoder.h)
+    
+    # remove items to exclude
+    LIST( REMOVE_ITEM lcio_headers ${exclude_headers} )
+    
+    SET( DICT_OUTPUT_DIR "${PROJECT_BINARY_DIR}/dict" )
+    
+    # create output directory
+#    ADD_CUSTOM_COMMAND(
+#      OUTPUT  "${DICT_OUTPUT_DIR}"
+#      COMMAND "${CMAKE_COMMAND}"
+#      ARGS -E make_directory "${DICT_OUTPUT_DIR}"
+#      COMMENT "create directory ${DICT_OUTPUT_DIR}"
+#      )
+    file(MAKE_DIRECTORY ${DICT_OUTPUT_DIR})
+
+
+
+    SET( dict_lib_srcs )
+    
+    # FIXME variables must be set by FindROOT.cmake
+    #SET( cint_script "${PROJECT_BINARY_DIR}/rootcint.cmake" )
+    #FILE( WRITE "${cint_script}" "# little script to run rootcint\n" )
+    #FILE( APPEND "${cint_script}" "SET( ENV{ROOTSYS} ${ROOT_HOME} )\n" )
+    #FILE( APPEND "${cint_script}" "SET( ENV{PATH} \$ENV{ROOTSYS}/bin:\$ENV{PATH} )\n" )
+    #FILE( APPEND "${cint_script}" "SET( ENV{LD_LIBRARY_PATH} \$ENV{ROOTSYS}/lib:\$ENV{LD_LIBRARY_PATH} )\n" )
+    #FILE( APPEND "${cint_script}" "EXEC_PROGRAM( rootcint -f \${dict_src_file} -c -DHANDLE_LCIO_EXCEPTIONS=IGNORED_FOR_CINT -Iinclude \${lcio_hdr_rel_path} \${dict_hdr_file} )\n" )
+    
+    
+    FOREACH( lcio_hdr ${lcio_headers} )
+      
+      # get the relative path
+      #FILE( RELATIVE_PATH lcio_hdr_rel_path "${PROJECT_SOURCE_DIR}" ${lcio_hdr} )
+      #STRING( REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" lcio_hdr_rel_path ${lcio_hdr} )
+      FILE( RELATIVE_PATH lcio_hdr_rel_path "${CMAKE_CURRENT_SOURCE_DIR}" ${lcio_hdr} )
+      
+      # generate a basename from the header + relative path, e.g.:
+      # include/EVENT/TrackerPulse.h  -->>  include_EVENT_TrackerPulse
+      STRING( REPLACE "/" "_" dict_basename ${lcio_hdr_rel_path} )
+      STRING( REPLACE ".h" "" dict_basename ${dict_basename} )
+      
+      
+      SET( dict_hdr "${dict_basename}_Linkdef.h" )
+      SET( dict_hdr_file "${DICT_OUTPUT_DIR}/${dict_hdr}" )
+      
+      SET( dict_src "${dict_basename}_dict.cxx" )
+      SET( dict_src_file "${DICT_OUTPUT_DIR}/${dict_src}" )
+      
+      # generate dict header file
+      ADD_CUSTOM_COMMAND(
+	OUTPUT  ${dict_hdr_file}
+	COMMAND ${CMAKE_COMMAND}
+	ARGS -E echo "\\#pragma link C++ defined_in \\\"${lcio_hdr_rel_path}\\\"\; >${dict_hdr}"
+	#ARGS -E echo "\\#pragma link C++ defined_in ${lcio_hdr_rel_path}\; >${dict_hdr}"
+	WORKING_DIRECTORY "${DICT_OUTPUT_DIR}"
+	DEPENDS ${lcio_hdr}  # ${DICT_OUTPUT_DIR}
+	COMMENT "generating ${dict_hdr}"
+	)
+      
+      # generate dict source file
+      ADD_CUSTOM_COMMAND(
+	OUTPUT  ${dict_src_file}
+	#COMMAND ${ROOT_HOME}/bin/rootcint
+	#COMMAND $ENV{ROOTSYS}/bin/rootcint
+	COMMAND rootcint
+	ARGS -f ${dict_src_file} -c -DHANDLE_LCIO_EXCEPTIONS=IGNORED_FOR_CINT -Iinclude ${lcio_hdr_rel_path} ${dict_hdr_file}
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+	DEPENDS ${dict_hdr_file}
+	COMMENT "generating ${dict_src}"
+	)
+      
+      LIST( APPEND dict_lib_srcs ${dict_src_file} )
+    ENDFOREACH()
+    
+    INCLUDE_DIRECTORIES( "${DICT_OUTPUT_DIR}" )
+    INCLUDE_DIRECTORIES( "${ROOT_INCLUDE_DIRS}" )
+    # FIXME next line should not be needed
+    # xxx_dict.h files should have:
+    # #include "IOIMPL/TrackerRawDataIOImpl.h"
+    # instead of:
+    # #include "include/IOIMPL/TrackerRawDataIOImpl.h"
+    INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}" )
+    
+    ADD_LIBRARY( lib_LCIODICT ${dict_lib_srcs} ${LCIO_RIO_SRCS} )
+    #ADD_LIBRARY( lib_LCIO ${LCIO_RIO_SRCS} )
+    INSTALL( TARGETS lib_LCIODICT DESTINATION lib )
+ 
+
+   IF( APPLE )
+     SET( ROOT_DICT_LINK_FLAGS "-single_module -undefined dynamic_lookup -bind_at_load")
+   ELSE( APPLE )
+     SET( ROOT_DICT_LINK_FLAGS " " )
+   ENDIF( APPLE )
+    
+    SET_TARGET_PROPERTIES( lib_LCIODICT PROPERTIES
+      # create *nix style library versions + symbolic links
+      VERSION ${LCIO_VERSION}
+      SOVERSION ${LCIO_SOVERSION}
+      # allow creating static and shared libs without conflicts
+      CLEAN_DIRECT_OUTPUT 1
+      # avoid conflicts between library and binary target names
+      OUTPUT_NAME lcioDict
+      LINKER_FLAGS ${ROOT_DICT_LINK_FLAGS}
+      )
+    
+    ADD_CUSTOM_TARGET( dict DEPENDS  lib_LCIODICT )
+
+    TARGET_LINK_LIBRARIES( lib_LCIODICT ${ROOT_LIBRARIES} lib_LCIO)
+
+
+  ELSE( ROOT_FOUND ) 
+
+     MESSAGE( STATUS " NO ROOT found :-( " ) 
+
+     
+  ENDIF( ROOT_FOUND )
+ENDIF( BUILD_ROOTIO )
+#----------------------------------------------
+
+IF( BUILD_ROOTIO ) 
+  ADD_LCIO_BIN( rootio )
+  TARGET_LINK_LIBRARIES( bin_rootio lib_LCIODICT ) 
+  TARGET_LINK_LIBRARIES( bin_rootio ${ROOT_LIBRARIES} )
+ENDIF( BUILD_ROOTIO )
 
 
 

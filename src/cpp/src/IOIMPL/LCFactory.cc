@@ -1,50 +1,50 @@
 #include "IOIMPL/LCFactory.h"
 
-
-
 #include "IO/LCWriter.h"
 #include "IO/LCReader.h"
 
-#include "SIO/SIOWriter.h"
-#include "SIO/SIOReader.h"
+#include "WriterDecorator.h"
+#include "ReaderDecorator.h"
 
+// #include "SIO/SIOWriter.h"
+// #include "SIO/SIOReader.h"
+
+// #include "RIO/RIOWriter.h"
+// #include "RIO/RIOReader.h"
+
+
+//fg:  09/2009 - modified to return generic decorators that decide on the io type based on the file 
+//     name extension in open()
 
 
 using namespace IO ;
-using namespace SIO ;
+
 
 namespace IOIMPL{
 
-  LCFactory* LCFactory::_me = 0 ;
+  
+  LCFactory::LCFactory(){}
   
   
-  LCFactory::LCFactory() {  
-  }
-  
-
   LCFactory* LCFactory::getInstance() { 
-
-    if( !_me ) _me = new LCFactory ;
-    return _me ;
+    
+    static LCFactory _me ;
+    
+    return &_me ;
   }
   
-
-  LCFactory::~LCFactory() { 
-    delete _me ;
-  }
+  LCFactory::~LCFactory(){}
+  
   
   LCWriter * LCFactory::createLCWriter() { 
     
-    // the reason for having this class
-    // so far we just create SIO objects
-
-    return new SIOWriter ;
+    
+    return new IOIMPL::WriterDecorator ;
   }
   
   LCReader * LCFactory::createLCReader(int lcReaderFlag) {
-
-    // so far we just create SIO objects
-    return new SIOReader( lcReaderFlag );
+    
+    return new IOIMPL::ReaderDecorator ;
   }
   
   

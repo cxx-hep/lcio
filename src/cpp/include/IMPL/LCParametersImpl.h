@@ -41,6 +41,9 @@ namespace IMPL {
   public: 
     
     LCParametersImpl() ; 
+   
+    LCParametersImpl(const LCParametersImpl& other) ;
+    LCParametersImpl&  operator=(const LCParametersImpl& other) ;
     
     /// Destructor.
     virtual ~LCParametersImpl() { /* nop */; }
@@ -110,15 +113,16 @@ namespace IMPL {
 
     /** Set integer values for the given key.
      */
-    virtual void setValues(const std::string & key, const EVENT::IntVec & values);
+    virtual void setValues(const std::string & key, EVENT::IntVec & values);
 
     /** Set float values for the given key.
      */
-    virtual void setValues(const std::string & key, const EVENT::FloatVec & values);
+    virtual void setValues(const std::string & key, EVENT::FloatVec & values);
 
     /** Set string values for the given key.
      */
-    virtual void setValues(const std::string & key, const EVENT::StringVec & values);
+    virtual void setValues(const std::string & key, EVENT::StringVec & values);
+
 
 
   protected:

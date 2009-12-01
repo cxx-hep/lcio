@@ -1,14 +1,33 @@
 package hep.lcio.event ;
+@ifdef cpp
+@cpp{
+#include <string>
+}
+@endif
+    @ifdef IGNORE // we have to split the cpp stuff - includes should go outside namespace 
+    @endif
 
 @ifdef cpp
 @cpp{
 #define LCIO_MAJOR_VERSION 1
-#define LCIO_MINOR_VERSION 12
+#define LCIO_MINOR_VERSION 11
 #define LCIO_PATCH_LEVEL 0
 
 #define LCIO_VERSION_GE( MAJV , MINV )  ( (  LCIO_MAJOR_VERSION  > MAJV ) || ( (LCIO_MAJOR_VERSION==MAJV) && ( LCIO_MINOR_VERSION >= MINV ) ) )
 
 #define LCIO_PATCHVERSION_GE( MAJV , MINV , PLEV)  ( (  LCIO_MAJOR_VERSION  > MAJV ) ||   ( (LCIO_MAJOR_VERSION==MAJV) && ( LCIO_MINOR_VERSION > MINV ) ) ||   ( (LCIO_MAJOR_VERSION==MAJV) && ( LCIO_MINOR_VERSION == MINV ) && ( LCIO_PATCH_LEVEL >= PLEV ) ) )
+
+
+    /** Hash function for faster lookup in string maps.
+     *  Code copied from ROOT TMath::Hash (http://root.cern.ch).
+     */
+    unsigned Hash(const void *str, int len)  ;
+
+    inline unsigned Hash(const std::string& s){
+      return Hash( &s[0], s.size() ) ;
+    }
+
+
 
 }
 @endif
@@ -16,7 +35,7 @@ package hep.lcio.event ;
 /** Global constants used in LCIO.
  *
  * @author gaede
- * @version $Id: LCIO.aid,v 1.69 2009-11-18 11:09:57 engels Exp $
+ * @version $Id: LCIO.aid,v 1.68.2.1 2009-11-20 15:08:27 gaede Exp $
  * @see LCObject
  * @see LCIO
  */
@@ -116,7 +135,7 @@ public interface LCIO{
 @else
     // current version number of lcio
   public static const int MAJORVERSION  = 1 ; 
-  public static const int MINORVERSION  = 12 ;
+  public static const int MINORVERSION  = 11 ;
 
 
   // bits in flag words

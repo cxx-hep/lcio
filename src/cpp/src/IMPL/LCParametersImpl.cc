@@ -10,6 +10,19 @@ namespace IMPL{
   LCParametersImpl::LCParametersImpl(){
     
   }
+   
+  LCParametersImpl::LCParametersImpl(const LCParametersImpl& other) :
+    _intMap( other._intMap ),
+    _floatMap( other._floatMap ) ,
+    _stringMap( other._stringMap ) {
+  }
+  
+  LCParametersImpl& LCParametersImpl::operator=(const LCParametersImpl& other){
+    _intMap    = other._intMap ;
+    _floatMap  = other._floatMap ;
+    _stringMap = other._stringMap ;
+    return *this ;
+  }
 
   int LCParametersImpl::getIntVal(const std::string & key) const {
     
@@ -163,7 +176,7 @@ namespace IMPL{
 
 
 
-  void LCParametersImpl::setValues(const std::string & key,const EVENT::IntVec & values){
+  void LCParametersImpl::setValues(const std::string & key, EVENT::IntVec & values){
     
     checkAccess("LCParametersImpl::setValues") ;
 
@@ -173,7 +186,7 @@ namespace IMPL{
     _intMap[ key ].assign(  values.begin() , values.end() ) ;
   }
   
-  void LCParametersImpl::setValues(const std::string & key,const  EVENT::FloatVec & values){
+  void LCParametersImpl::setValues(const std::string & key, EVENT::FloatVec & values){
 
     checkAccess("LCParametersImpl::setValues") ;
 
@@ -183,7 +196,7 @@ namespace IMPL{
     _floatMap[ key ].assign(  values.begin() , values.end() ) ;
   }
   
-  void LCParametersImpl::setValues(const std::string & key, const EVENT::StringVec & values){
+  void LCParametersImpl::setValues(const std::string & key, EVENT::StringVec & values){
 
     checkAccess("LCParametersImpl::setValues") ;
 

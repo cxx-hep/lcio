@@ -19,14 +19,17 @@ namespace IMPL {
    *  of LCObjects.
    * 
    * @author gaede 
-   * @version $Id: LCCollectionVec.h,v 1.11 2005-04-15 08:37:37 gaede Exp $
+   * @version $Id: LCCollectionVec.h,v 1.11.20.3 2009-11-26 14:24:31 gaede Exp $
    * @see LCObject
    * @see LCCollection
    */
-  class LCCollectionVec : public EVENT::LCCollection , public EVENT::LCObjectVec 
-    , public AccessChecked {
+  class LCCollectionVec : public EVENT::LCCollection, public AccessChecked {
     
-  protected:
+//   class LCCollectionVec : public EVENT::LCCollection , public EVENT::LCObjectVec 
+//     , public AccessChecked {
+    
+    //  protected:
+  public:
     /**  Default Constructor is protected  - every LCCollection needs to know the type
      *   of its elements.
      */
@@ -141,6 +144,29 @@ namespace IMPL {
      */
     virtual EVENT::LCParameters & parameters() { return _params ; } 
     
+    /**Helper function to convert object addresses into indices for all objects:  ((hash<<32)||index) */
+    void setIndices( unsigned hash ) ;
+
+    /** Calls ptrToIndex for all elements */
+    void ptrToIndex() ;
+    
+
+    // forward some of std::vector's interface so that we can serve as a wrapper to vector ------------
+
+    inline void push_back(EVENT::LCObject* t){
+      _vec.push_back(t) ;
+    }
+    inline void resize(size_t nS){   _vec.resize(nS) ; }
+    inline EVENT::LCObject* operator[](size_t n){  return _vec[n] ; }
+    inline const EVENT::LCObject* operator[](size_t n) const { return _vec[n] ; }
+    inline EVENT::LCObject*& at(size_t n){ return _vec.at(n)  ; }
+    inline size_t size() const { return _vec.size()  ; }
+//     inline iterator begin(){  return _vec.begin() ; }
+//     inline iterator end(){ return _vec.end() ; }
+//     inline const_iterator begin() const {  return _vec.begin() ; }
+//     inline const_iterator end() const { return _vec.end() ; }
+
+
 
   protected:
     void setReadOnly(bool readOnly) ;
@@ -149,6 +175,8 @@ namespace IMPL {
     int _flag ;
     LCParametersImpl _params ;
     //    int _access ;
+
+    EVENT::LCObjectVec _vec; 
 
 }; // class
 } // namespace IMPL
