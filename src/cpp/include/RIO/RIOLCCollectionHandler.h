@@ -81,15 +81,17 @@ namespace RIO{
      
  } else {
 	
-	//FIXME: make split level and 'record size' parameters ....
-	//	_br = tree->Branch( _name.c_str(), &_tv, 16000, RIO_SPLIT_LEVEL );
-
+	// create a string with the typename of the collection used by ROOT I/O
+	// - note the LCIO API still uses LCCollectionVec, i.e. a vector of LCObject*
 	std::stringstream typeStream ;
-	typeStream << "IMPL::LCCollectionTVec<EVENT::" << type << ">" ;
+	//	typeStream << "IMPL::LCCollectionTVec<EVENT::" << type << ">" ;
+	typeStream << "IMPL::LCCollectionTVec<IMPL::" << type << "Impl>" ;
 
+#ifdef DEBUG
 	std::cout << " create branch for type   " << typeStream.str()  << std::endl ;
+#endif
 	
-	_br = tree->Branch( _name.c_str(), typeStream.str().c_str(), (void*) &_tv, 16000, RIO_SPLIT_LEVEL );
+	_br = tree->Branch( _name.c_str(), typeStream.str().c_str(), (void*) &_tv, RIO_RECORD_SIZE, RIO_SPLIT_LEVEL );
 
 
 
