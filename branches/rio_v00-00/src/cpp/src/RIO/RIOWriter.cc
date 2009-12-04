@@ -14,7 +14,8 @@
 #include "IMPL/LCIOExceptionHandler.h"
 #include "UTIL/LCTOOLS.h"
 
-#define DEBUG 1
+//#define DEBUG 1
+
 #ifdef DEBUG
 #include "IMPL/LCTOOLS.h"
 #endif
