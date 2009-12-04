@@ -14,7 +14,7 @@
 #include "IMPL/LCIOExceptionHandler.h"
 #include "UTIL/LCTOOLS.h"
 
-//#define DEBUG 1
+#define DEBUG 1
 #ifdef DEBUG
 #include "IMPL/LCTOOLS.h"
 #endif
@@ -39,7 +39,9 @@ namespace RIO {
   RIOWriter::RIOWriter() : 
     _compressionLevel(-1) ,
     _file(0),
-    _tree(0),_evtImpl(0),
+    _evtTree(0),_runTree(0),
+    _evtImpl(0), _runImpl(0),
+    _runHdrBranch(0),
     _haveBranches( false ) {
     
     	// file needs 
@@ -110,21 +112,27 @@ namespace RIO {
     case EVENT::LCIO::WRITE_NEW : 
       
       _file = new TFile( rioFilename.c_str() , "RECREATE" , " LCIO file " , _compressionLevel );
-      _tree = new TTree( RIO_LCIO_TREENAME , "lcio tree");
+      _evtTree = new TTree( "LCEvent" , "lcio event tree");
+      _runTree = new TTree( "LCRunHeader" , "lcio run header tree");
       break ;
       
     case EVENT::LCIO::WRITE_APPEND : 
       
       _file = new TFile( rioFilename.c_str() , "UPDATE" , " LCIO file " , _compressionLevel );
-      _tree = (TTree*) _file->Get( RIO_LCIO_TREENAME ) ;
+      _evtTree =  (TTree*) _file->Get(  "LCEvent" ) ;
+      _runTree =  (TTree*) _file->Get(  "LCRunHeader" ) ;
       
-      if( _tree == 0 ) {
-	
-	throw IOException( std::string( "[RIOWriter::open()]  LCIO tree not found in file: " 
+      if( _evtTree == 0 ) {
+	throw IOException( std::string( "[RIOWriter::open()]  LCIO event tree not found in file: " 
 					+  rioFilename ) ) ;
       } else {
-	
-	_file->Delete(  RIO_LCIO_TREENAME_CYCLE_1 ) ; // delete the existing old cycle
+	_file->Delete(   "LCEvent;1" ) ; // delete the existing old cycle
+      }
+      if( _runTree == 0 ) {
+	throw IOException( std::string( "[RIOWriter::open()]  LCIO run header tree not found in file: " 
+					+  rioFilename ) ) ;
+      } else {
+	_file->Delete(   "LCRunHeader;1" ) ; // delete the existing old cycle
       }
       
       break ;
@@ -140,7 +148,8 @@ namespace RIO {
 				      +  rioFilename ) ) ;
 
 
-    _tree->SetAutoSave() ;
+    _evtTree->SetAutoSave() ;
+    _runTree->SetAutoSave() ;
   }
   
 
@@ -150,46 +159,37 @@ namespace RIO {
 
 
   void RIOWriter::writeRunHeader(const EVENT::LCRunHeader * hdr)  throw(IOException, std::exception) {
-
-//     // create a new handler for every new run 
     
-// //     if( !_runHandler){
-// //       _runHandler = dynamic_cast<RIORunHeaderHandler*> 
-// // 	( RIO_blockManager::get( LCRIO::RUNBLOCKNAME  ) ) ;
-      
-// //       if( _runHandler == 0 ) 
-// // 	_runHandler = new RIORunHeaderHandler( LCRIO::RUNBLOCKNAME  ) ;
-      
-//     _runRecord->disconnect(LCRIO::RUNBLOCKNAME ) ;
-//     _runRecord->connect( _runHandler );
-// //     }
-//    _file->Close() ;
+#ifdef DEBUG
+    std::cout << "------- RIOWriter::writeRunHeader() "  <<   hdr->getRunNumber() << std::endl ;
+#endif
 
-
-
-//     _runHandler->setRunHeader(  hdr ) ;
-    
-//     if( _stream->getState()== RIO_STATE_OPEN ){
+    if(  !_runHdrBranch ){
       
-//       _hdrRecord->setCompress( _compressionLevel != 0 ) ;
-//       _evtRecord->setCompress( _compressionLevel != 0 ) ;
-//       _runRecord->setCompress( _compressionLevel != 0 ) ; 
-
-//       // write LCRunHeader record
-//       unsigned int status =  _stream->write( LCRIO::RUNRECORDNAME    ) ;
+      _runHdrBranch = (TBranch*) _runTree->GetBranch( RIO_LCRUNHEADER_BRANCHNAME ) ;
       
-//       if( !(status & 1)  )
-// 	throw IOException( std::string( "[RIOWriter::writeRunHeader] couldn't write run header to stream: "
-// 					+  *_stream->getName() ) ) ;
-//     } else {
+      if( _runHdrBranch != 0 ){  // branch allready exists -> update/append  mode 
+	
+	_runHdrBranch->SetAddress( &_runImpl ) ;
+	
+      } else {
+	
+	//FIXME: make split level and 'record size' parameters ....
+	_runHdrBranch = _runTree->Branch( RIO_LCRUNHEADER_BRANCHNAME , &_runImpl, RIO_RECORD_SIZE, RIO_SPLIT_LEVEL );
+      }
+#ifdef DEBUG
+      std::cout << "------- RIOWriter::writeRunHeader() branch : " << _runHdrBranch <<  std::endl ;
+#endif
       
-//       throw IOException( std::string( "[RIOWriter::writeRunHeader] stream not opened: "
-// 				      +  *_stream->getName() ) ) ;
-      
-//     }
+      if( !_runHdrBranch ){
+	throw IOException("[RIOWriter::writeRunHeader] cannot create or find branch for LCRunHeader !" ) ;
+      }
+    } 
+    _runImpl =  dynamic_cast<const LCRunHeaderImpl*>( hdr)  ; 
+    _runTree->Fill() ;
 
   }
-
+  
   void RIOWriter::setUpHandlers(const LCEvent * evt){
    
     if( !_haveBranches ) {
@@ -197,7 +197,7 @@ namespace RIO {
 
       // first we create a branch for the event (header) 
       
-      TBranch* br = (TBranch*) _tree->GetBranch( RIO_LCEVENT_BRANCHNAME ) ;
+      TBranch* br = (TBranch*) _evtTree->GetBranch( RIO_LCEVENT_BRANCHNAME ) ;
       
       if( br != 0 ){  // branch allready exists -> update/append  mode 
 	
@@ -206,7 +206,7 @@ namespace RIO {
       } else {
 	
 	//FIXME: make split level and 'record size' parameters ....
-	br = _tree->Branch( RIO_LCEVENT_BRANCHNAME , &_evtImpl, RIO_RECORD_SIZE, RIO_SPLIT_LEVEL );
+	br = _evtTree->Branch( RIO_LCEVENT_BRANCHNAME , &_evtImpl, RIO_RECORD_SIZE, RIO_SPLIT_LEVEL );
       }
 
       // if we want to have one branch per collection (when pointer isssue is resolved)
@@ -222,7 +222,7 @@ namespace RIO {
 #endif
 	//	if( *name != "RecoMCTruthLink" ) 
 	//	if( *name == "PandoraPFOs" ) 
-	  _branches[ *name ] =  new RIO::RIOLCCollectionHandler( *name, typeName, _tree) ;	 
+	  _branches[ *name ] =  new RIO::RIOLCCollectionHandler( *name, typeName, _evtTree) ;	 
       }
 
       _haveBranches = true ;
@@ -276,7 +276,7 @@ namespace RIO {
     }
     
     _evtImpl = &proxyEvt ; 
-    _tree->Fill() ;
+    _evtTree->Fill() ;
     //_file->Flush() ;
 
     // now we need to take the ownership for the  collections away from proxy Event

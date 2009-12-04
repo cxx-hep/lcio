@@ -12,6 +12,7 @@
 
 class TFile ;
 class TTree ;
+class TBranch ;
 
 namespace RIO {
 
@@ -119,11 +120,14 @@ namespace RIO {
     int _compressionLevel ;
     
     TFile* _file ; 
-    TTree* _tree ;
+    TTree* _evtTree ;
+    TTree* _runTree ;
     
     IMPL::LCEventImpl* _evtImpl ;
     const IMPL::LCRunHeaderImpl* _runImpl ;
     
+    TBranch* _runHdrBranch ;
+
     BranchHandlerMap _branches ;
     bool _haveBranches ; 
     

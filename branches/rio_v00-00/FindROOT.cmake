@@ -50,9 +50,13 @@ MARK_AS_ADVANCED( ROOT_LIB_NAMES ROOT_FINDLIB_FAILED )
 
 # get lib names from 'root-config' output
 EXEC_PROGRAM( "${ROOT_HOME}/bin/root-config" "${ROOT_HOME}/bin"
-    ARGS --noauxlibs --glibs
+    ARGS --noauxlibs --libs  
+#    ARGS --noauxlibs --glibs
     OUTPUT_VARIABLE out_tmp
     RETURN_VALUE out_ret )
+
+#SET( out_tmp  "-L/data/ilcsoft/root/trunk/lib -lCore -lCint -lRIO -lNet  -lHist  -lTree -lMathCore")
+
 # check if everything went ok
 IF( NOT out_ret )
     # create a list out of the output
