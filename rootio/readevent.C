@@ -38,7 +38,7 @@ void readevent() {
    
   if (!f) { return; }
   
-  TTree *t; f->GetObject("LCIO",t);
+  TTree *t; f->GetObject("LCEvent",t);
 
   
 

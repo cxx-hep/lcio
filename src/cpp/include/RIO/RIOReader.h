@@ -18,6 +18,7 @@
 
 class TFile ;
 class TTree ;
+class TBranch ;
 
 namespace RIO {
 
@@ -30,7 +31,7 @@ namespace RIO {
   /** Concrete implementation of LCWriter using ROOT I/O.
    * 
    * @author gaede
-   * @version $Id: RIOReader.h,v 1.1.2.6 2009-12-01 09:19:23 gaede Exp $
+   * @version $Id: RIOReader.h,v 1.1.2.7 2009-12-04 10:03:16 gaede Exp $
    */
   class RIOReader : public IO::LCReader {
     
@@ -165,13 +166,14 @@ namespace RIO {
   protected:
 
     TFile* _file ;
-    TTree* _tree ;
-
+    TTree* _evtTree ;
+    TTree* _runTree ;
+    
+    TBranch* _runHdrBranch ;
     BranchHandlerMap _branches ;
     bool _haveBranches ; 
  
     IMPL::LCEventImpl *_evtImpl ;
-
     IMPL::LCRunHeaderImpl *_runImpl ;
 
     std::set<IO::LCRunListener*> _runListeners ;
@@ -183,7 +185,7 @@ namespace RIO {
     EventMap _evtMap ;
     const bool _readEventMap ;
 
-    int _entry ;
+    int _evtEntry, _runEntry ;
 
   }; // class
 } // namespace

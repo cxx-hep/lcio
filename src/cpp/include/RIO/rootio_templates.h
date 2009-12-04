@@ -15,6 +15,7 @@
 #include "IMPL/ClusterImpl.h"
 #include "IMPL/LCRelationImpl.h"
 #include "IMPL/LCCollectionVec.h"
+#include "IMPL/LCRefVec.h"
 
 #include "TRefArray.h"
 #include <string>

@@ -95,6 +95,7 @@ namespace IMPL {
 
     std::vector<T> _vec;                 //! no RIO
     std::vector<EVENT::long64> _refVec ;
+    //std::vector<long long> _refVec ;
     LCEventImpl* _evt ;                  //! no RIO
     bool _havePtrs ;                     //! no RIO
 

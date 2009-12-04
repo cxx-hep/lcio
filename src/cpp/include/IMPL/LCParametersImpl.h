@@ -128,9 +128,9 @@ namespace IMPL {
 
   protected:
 
-    mutable IntMap _intMap ;    //! no RIO - for debugging
-    mutable FloatMap _floatMap ;  //! no RIO - for debugging
-    mutable StringMap _stringMap ;  //! no RIO - for debugging
+    mutable IntMap _intMap ;    
+    mutable FloatMap _floatMap ;  
+    mutable StringMap _stringMap ;  
     
   }; // class
 } // namespace IMPL

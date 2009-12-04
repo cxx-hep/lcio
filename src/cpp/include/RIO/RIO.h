@@ -11,7 +11,8 @@
 #define RIO_LCIO_TREENAME         "LCIO"
 #define RIO_LCIO_TREENAME_CYCLE_1 "LCIO;1"   // root way of versioning 
 
-#define RIO_LCEVENT_BRANCHNAME    "LCEvent"
+#define RIO_LCEVENT_BRANCHNAME      "LCEvent"
+#define RIO_LCRUNHEADER_BRANCHNAME  "LCRunHeader"
 
 
 #define RIO_RECORD_SIZE    16000

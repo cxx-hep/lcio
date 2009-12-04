@@ -38,14 +38,15 @@ namespace RIO {
 
   RIOReader::RIOReader( int lcReaderFlag ) :
     _file(0),
-    _tree(0),
+    _evtTree(0),
+    _runTree(0),
     _haveBranches( false ),
     _evtImpl(0), 
     _runImpl(0), 
     _myFilenames(0), 
     _currentFileIndex(0),
     _readEventMap( lcReaderFlag & LCReader::directAccess ), 
-    _entry(-1) {
+    _evtEntry(-1), _runEntry(-1) {
     
 #ifdef DEBUG
 #else
@@ -118,11 +119,14 @@ namespace RIO {
 				      +  rioFilename ) ) ;
 
 
-    _tree = (TTree*) _file->Get("LCIO") ;
-    
-    if( !_tree ){
-
-      throw IOException( std::string( "[RIOReader::open()] Couldn't find \"LCIO\"-TTree " 
+    _evtTree = (TTree*) _file->Get("LCEvent") ;
+    if( !_evtTree ){
+      throw IOException( std::string( "[RIOReader::open()] Couldn't find \"LCEvent\"-TTree " 
+				      +  rioFilename ) ) ;
+    }
+    _runTree = (TTree*) _file->Get("LCRunHeader") ;
+    if( !_runTree ){
+      throw IOException( std::string( "[RIOReader::open()] Couldn't find \"LCRunHeader\"-TTree " 
 				      +  rioFilename ) ) ;
     }
     
@@ -199,24 +203,31 @@ namespace RIO {
   }
 
   LCRunHeader* RIOReader::readNextRunHeader(int accessMode) throw (IOException , std::exception ) {
-
-    // ToDo ...
-
-    // //   // set the _runRecord to unpack for this scope
-    // //     //    RIORecordUnpack runUnp( RIOWriter::_runRecord ) ;
-    // //     RIOUnpack runUnp( RIOUnpack::RUN ) ;
-
-
-    // //     // this might throw the exceptions
-    // //     try{ 
-    // //       readRecord() ;
-    // //     }
-    // //     catch(EndOfDataException){
-    // //       return 0 ;
-    // //     }
     
-    // //     // set the proper acces mode before returning the event
-    // //     (*_runP)->setReadOnly(  accessMode == LCIO::READ_ONLY   ) ;
+    _runEntry ++ ;
+
+    // read event header first
+    if( ! _runHdrBranch )   {
+
+      _runHdrBranch = (TBranch*) _runTree->GetBranch( "LCRunHeader" ) ;
+      
+      if( _runHdrBranch == 0 ){        
+	
+	throw IOException( std::string( "[RIOReader::readNextRunHeader()] cant open branch \"LCRunHeader\" " ) ) ;
+      } 
+
+      _runHdrBranch->SetAddress( &_runImpl ) ;
+    }
+    
+
+    Long64_t tentry =  _runTree->LoadTree( _runEntry );
+
+    int nbyte=0 ; 
+    nbyte = _runHdrBranch->GetEntry(tentry);
+
+    if( tentry < 0 ){
+      return 0 ; // EOF ?
+    }
 
     return _runImpl ;
   }
@@ -247,7 +258,7 @@ namespace RIO {
 	// 	if( *name == "MCParticlesSkimmed" )
 	//	if( *name == "PandoraPFOs" )
 
-	_branches[ *name ] =  new RIO::RIOLCCollectionHandler( *name, typeName   , _tree)  ;	
+	_branches[ *name ] =  new RIO::RIOLCCollectionHandler( *name, typeName   , _evtTree)  ;	
 
       }
 
@@ -268,11 +279,11 @@ namespace RIO {
     //------------------------------------------------------  
     
       
-    _entry ++ ;
+    _evtEntry ++ ;
 
     // read event header first
       
-    TBranch* br = (TBranch*) _tree->GetBranch( "LCEvent" ) ;
+    TBranch* br = (TBranch*) _evtTree->GetBranch( "LCEvent" ) ;
       
     if( br == 0 ){        
 	
@@ -281,7 +292,7 @@ namespace RIO {
       
     br->SetAddress( &_evtImpl ) ;
 
-    Long64_t tentry =  _tree->LoadTree( _entry );
+    Long64_t tentry =  _evtTree->LoadTree( _evtEntry );
 
     int nbyte=0 ; 
     nbyte = br->GetEntry(tentry);
@@ -311,7 +322,7 @@ namespace RIO {
     const StrVec& strVec = *( _evtImpl->getCollectionNames() ) ; 
 
     std::cout << " >>>>>>>>> tentry : " << tentry 
-	      << " _entry " << _entry  
+	      << " _evtEntry " << _evtEntry  
 	      << "  eventnum " << _evtImpl->getEventNumber()  
 	      << " ncols: " << strVec.size() 
 	      << " nbyte: " << nbyte
@@ -326,36 +337,7 @@ namespace RIO {
   
   void RIOReader::skipNEvents(int n) {
     
-    _entry += n ;
-
-    //     int eventsSkipped = 0 ;
-    
-    //     RIOUnpack hdrUnp( RIOUnpack::EVENTHDR ) ;
-    
-    //     while( eventsSkipped++ < n ){
-      
-    //       try { 
-	
-    // 	readRecord() ;
-
-    //       }
-    //       catch(EndOfDataException){
-
-    // 	return ;
-    //       }
-    //     }
-
-    //     // now we need to also read the next  record which suposedly is an event record
-    //     // in order to prevent readStream from reading this event (the last to be skipped)
-    //     RIOUnpack evtUnp( RIOUnpack::EVENT ) ;
-    
-    //     try{ 
-    //       readRecord() ;
-    //     }
-    //     catch(EndOfDataException){
-    //       return ;
-    //     }
-    
+    _evtEntry += n ;
   }
 
 
