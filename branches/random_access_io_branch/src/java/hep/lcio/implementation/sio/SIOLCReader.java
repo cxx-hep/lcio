@@ -23,7 +23,7 @@ import java.util.List;
 /**
  *
  * @author Tony Johnson
- * @version $Id: SIOLCReader.java,v 1.16.10.4 2009-11-19 01:15:54 tonyj Exp $
+ * @version $Id: SIOLCReader.java,v 1.16.10.5 2009-12-15 02:17:46 tonyj Exp $
  */
 class SIOLCReader implements LCReader
 {
@@ -31,7 +31,7 @@ class SIOLCReader implements LCReader
    private List runListeners = new ArrayList();
    protected SIOReader reader;
    private List<String> filenames;
-   private int currentFile ;
+   private int currentFile;
 
    public void close() throws IOException
    {
@@ -52,12 +52,12 @@ class SIOLCReader implements LCReader
      *
      * @throws IOException
      */
-    public void open(String[] files) throws IOException{
-	filenames = Arrays.asList(files);
-	currentFile=0;
-	reader = new SIOReader(filenames.get(currentFile));
-    }
-
+   public void open(String[] files) throws IOException
+   {
+      filenames = Arrays.asList(files);
+      currentFile=0;
+      reader = new SIOReader(filenames.get(currentFile));
+   }
 
    public LCEvent readEvent(int runNumber, int evtNumber) throws IOException
    {
@@ -67,7 +67,7 @@ class SIOLCReader implements LCReader
          {            
             SIORecord record = reader.readRecord();
             String name = record.getRecordName();
-            if (SIOFactory.eventHeaderRecordName.equals(name)) continue;
+            if (!SIOFactory.eventHeaderRecordName.equals(name)) continue;
 
             SIOEvent event = new SIOEvent(record,LCIO.READ_ONLY);
             if (event.getRunNumber() == runNumber && event.getEventNumber() == evtNumber)
