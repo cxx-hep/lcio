@@ -28,9 +28,32 @@ class SIOLCRandomAccessReader extends SIOLCReader {
         // Peek at the first record to see if this file supports random access
         SIORecord record = reader.readRecord();
         if ("LCIORandomAccess".equals(record.getRecordName())) {
-            randomAccess = new RandomAccessSupport(reader,record);
+            randomAccess = new FileRandomAccessSupport(reader, record);
         } else {
             reader.seek(0);
+        }
+    }
+
+    @Override
+    public void open(String[] filenames) throws IOException {
+        super.open(filenames);
+        List<FileRandomAccessSupport> fileBlocks = new ArrayList<FileRandomAccessSupport>(filenames.length);
+        for (String filename : filenames) {
+            SIOReader reader = new SIOReader(filename);
+            try {
+                SIORecord record = reader.readRecord();
+                if (!"LCIORandomAccess".equals(record.getRecordName())) {
+                    fileBlocks = null;
+                    break;
+                } else {
+                    fileBlocks.add(new FileRandomAccessSupport(reader,record));
+                }
+            } finally {
+                //reader.close();
+            }
+        }
+        if (fileBlocks != null) {
+            randomAccess = new ChainRandomAccessSupport(fileBlocks);
         }
     }
 
@@ -60,9 +83,11 @@ class SIOLCRandomAccessReader extends SIOLCReader {
     public LCEvent readEvent(int runNumber, int evtNumber) throws IOException {
         if (randomAccess != null) {
             long position = randomAccess.findEvent(runNumber, evtNumber);
-            if (position < 0) throw new IOException(String.format("Run: %d Event: %d not found",runNumber,evtNumber));
+            if (position < 0) {
+                throw new IOException(String.format("Run: %d Event: %d not found", runNumber, evtNumber));
+            }
             SIORecord record = reader.readRecord(position);
-            SIOEvent event = new SIOEvent(record,LCIO.READ_ONLY);
+            SIOEvent event = new SIOEvent(record, LCIO.READ_ONLY);
             event.readData(reader.readRecord());
             return event;
         } else {
@@ -79,7 +104,46 @@ class SIOLCRandomAccessReader extends SIOLCReader {
         }
     }
 
-    private static class RandomAccessSupport {
+    private interface RandomAccessSupport {
+        long findNextRunHeader() throws IOException;
+        void skipNEvents(int n) throws IOException;
+        long findEvent(int run, int event) throws IOException;
+    }
+
+    private class ChainRandomAccessSupport implements RandomAccessSupport {
+        List<RandomAccessBlock> fileRandomAccessBlocks;
+        List<FileRandomAccessSupport> fileBlocks;
+        ChainRandomAccessSupport(List<FileRandomAccessSupport> fileBlocks) {
+            this.fileBlocks = fileBlocks;
+            fileRandomAccessBlocks = new ArrayList<RandomAccessBlock>(fileBlocks.size());
+            for (FileRandomAccessSupport fra : fileBlocks) {
+                fileRandomAccessBlocks.add(fra.fileRandomAccessBlock);
+            }
+        }
+
+        public long findNextRunHeader() throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void skipNEvents(int n) throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public long findEvent(int run, int event) throws IOException {
+            RunEvent re = new RunEvent(run, event);
+
+//            RandomAccessBlock fab = findFileRandomAccessBlock();
+//            if (!fab.contains(re)) {
+//                return -1;
+//            }
+
+            int location = Collections.binarySearch(fileRandomAccessBlocks, re);
+            reader = fileBlocks.get(location).reader;
+            return fileBlocks.get(location).findEvent(run, event);
+        }
+    }
+
+    private static class FileRandomAccessSupport implements RandomAccessSupport {
 
         private RandomAccessBlock fileRandomAccessBlock;
         private List<RandomAccessBlock> indexRandomAccessBlocks = new ArrayList<RandomAccessBlock>();
@@ -88,12 +152,12 @@ class SIOLCRandomAccessReader extends SIOLCReader {
         //FIXME: This should be a softHashMap
         private Map<RandomAccessBlock, IndexBlock> indexHash = new HashMap<RandomAccessBlock, IndexBlock>();
 
-        RandomAccessSupport(SIOReader reader, SIORecord record) throws IOException {
+        FileRandomAccessSupport(SIOReader reader, SIORecord record) throws IOException {
             this.reader = reader;
             fileRandomAccessBlock = new RandomAccessBlock(record);
         }
 
-        private long findNextRunHeader() throws IOException {
+        public long findNextRunHeader() throws IOException {
             List<RandomAccessBlock> iab = findIndexRandomAccessBlocks();
             int iabIndex = findIndexOfRandomAccessBlockContaining(reader.getNextRecordPosition());
             for (RandomAccessBlock rab : iab.subList(iabIndex, iab.size())) {
@@ -108,29 +172,36 @@ class SIOLCRandomAccessReader extends SIOLCReader {
             return -1;
         }
 
-        private void skipNEvents(int n) throws IOException {
-            if (n==0) return;
+        public void skipNEvents(int n) throws IOException {
+            if (n == 0) {
+                return;
+            }
             int iabIndex = findIndexOfRandomAccessBlockContaining(reader.getNextRecordPosition());
             List<RandomAccessBlock> iab = findIndexRandomAccessBlocks();
             IndexBlock ib = findIndexBlock(iab.get(iabIndex));
             // Find how many events are left in current block.
             int recordIndex = ib.findIndexOfRecordLocation(reader.getNextRecordPosition());
-            for (int i = recordIndex; i<ib.getRecordCount(); i++) {
-                if (ib.isEvent(i)) if (n-- == 0) {
-                    reader.seek(ib.getLocation(i));
-                    return;
+            for (int i = recordIndex; i < ib.getRecordCount(); i++) {
+                if (ib.isEvent(i)) {
+                    if (n-- == 0) {
+                        reader.seek(ib.getLocation(i));
+                        return;
+                    }
                 }
             }
 
-            for (RandomAccessBlock rab : iab.subList(iabIndex+1, iab.size())) {
+            for (RandomAccessBlock rab : iab.subList(iabIndex + 1, iab.size())) {
                 ib = findIndexBlock(rab);
                 int nEvents = ib.getEventCount();
-                if (nEvents <= n) n -= nEvents;
-                else {
-                    for (int i=0; i<ib.getRecordCount(); i++) {
-                        if (ib.isEvent(i)) if (n-- == 0) {
-                            reader.seek(ib.getLocation(i));
-                            return;
+                if (nEvents <= n) {
+                    n -= nEvents;
+                } else {
+                    for (int i = 0; i < ib.getRecordCount(); i++) {
+                        if (ib.isEvent(i)) {
+                            if (n-- == 0) {
+                                reader.seek(ib.getLocation(i));
+                                return;
+                            }
                         }
                     }
                 }
@@ -138,8 +209,7 @@ class SIOLCRandomAccessReader extends SIOLCReader {
             throw new EOFException();
         }
 
-
-        private long findEvent(int run, int event) throws IOException {
+        public long findEvent(int run, int event) throws IOException {
             RunEvent re = new RunEvent(run, event);
 
             RandomAccessBlock fab = findFileRandomAccessBlock();
@@ -191,8 +261,10 @@ class SIOLCRandomAccessReader extends SIOLCReader {
         }
 
         private int findIndexOfRandomAccessBlockContaining(long recordLocation) throws IOException {
-            int position = Collections.binarySearch(new RecordLocationList(),recordLocation);
-            if (position<0) position = Math.max(0, -position - 2);
+            int position = Collections.binarySearch(new RecordLocationList(), recordLocation);
+            if (position < 0) {
+                position = Math.max(0, -position - 2);
+            }
             return position;
         }
 
@@ -201,7 +273,7 @@ class SIOLCRandomAccessReader extends SIOLCReader {
             List<RandomAccessBlock> iab;
 
             RecordLocationList() throws IOException {
-               iab = findIndexRandomAccessBlocks();
+                iab = findIndexRandomAccessBlocks();
             }
 
             @Override
@@ -213,7 +285,6 @@ class SIOLCRandomAccessReader extends SIOLCReader {
             public int size() {
                 return iab.size();
             }
-
         }
     }
 }

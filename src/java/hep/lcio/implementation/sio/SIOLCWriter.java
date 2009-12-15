@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  *
  * @author Tony Johnson
- * @version $Id: SIOLCWriter.java,v 1.14.10.1 2009-10-20 23:18:20 tonyj Exp $
+ * @version $Id: SIOLCWriter.java,v 1.14.10.2 2009-12-15 02:17:46 tonyj Exp $
  */
 class SIOLCWriter implements LCWriter
 {
@@ -44,7 +44,7 @@ class SIOLCWriter implements LCWriter
          fileRandomAccessBlock = new RandomAccessBlock();
          fileRandomAccessBlock.write(writer);
          //FIXME: Set more sensible limit
-         indexBlock = new IndexBlock(50);
+         indexBlock = new IndexBlock(5000);
       }
    }
 
