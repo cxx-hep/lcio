@@ -52,7 +52,7 @@ namespace IMPL {
     }
     
     void indexToPtr() {
-      _ptr = reinterpret_cast<T>( _evt->getObjectForIndex(_ref)  )  ;
+      _ptr = ( _evt ? reinterpret_cast<T>( _evt->getObjectForIndex(_ref)  )  : 0 ) ;
     }
 
 
