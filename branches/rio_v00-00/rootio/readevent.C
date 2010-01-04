@@ -53,6 +53,9 @@ void readevent() {
   TH2F *herm = new TH2F("herm","mcp energy vs PFO energy",100,0.,100.,100,0.,100.);
   herm->SetFillColor(40);
 
+  TH2F *hpzrm = new TH2F("hpzrm","mcp pz vs PFO pz",100,0.,100.,100,0.,100.);
+  herm->SetFillColor(40);
+
 
   //   TH1F *htphi = new TH1F("htphi","phi of tracks ",48,-1.6,+3.2);
   //   htphi->SetFillColor(32);
@@ -68,10 +71,9 @@ void readevent() {
   
   std::vector<TBranch*> branches ;
 
-  //---------  loop over particles in the events  ------------
+  //**************  define and read ROOT branches *****************
   
-  IMPL::LCEventImpl* evt =0 ; // new IMPL::LCEventImpl ; // 0 ;
-  //  EVENT::LCEventImpl* evt = 0 ; 
+  IMPL::LCEventImpl* evt =0 ; 
   TBranch* bevt = t->GetBranch("LCEvent") ; 
   bevt->SetAddress( &evt ) ;
   branches.push_back( bevt ) ;
@@ -86,55 +88,32 @@ void readevent() {
   branches.push_back( t->GetBranch("PandoraPFOs") ) ;  
   branches.back()->SetAddress( &cpfo ) ;
   
-  
   IMPL::LCCollectionVec* crml = new IMPL::LCCollectionVec ;
   branches.push_back( t->GetBranch("RecoMCTruthLink") ) ;  
   branches.back()->SetAddress( &crml ) ;
   
-  //evt->setCurrentEvent( evt ) ;
   evt->addCollection( col ,  "MCParticlesSkimmed" ) ; 
   evt->addCollection( cpfo , "PandoraPFOs" ) ; 
   evt->addCollection( crml , "RecoMCTruthLink" ) ; 
 
-
   int nBranches = branches.size() ;
-  
-  
-  
-  
-  //***************************************************************************************************
-  
-  
   int nevt = t->GetEntries();
- 
+  
   for (Int_t i = 0; i < nevt ; i++) {
-    //for (Int_t i = 0; i < 1 ; i++) {
-   
-    
+
     Long64_t tentry = t->LoadTree(i);
-   
 
     for (Int_t k = 0; k < nBranches ; k++) {
-     
       int nbyte  = branches[k]->GetEntry(tentry);
-     
-      //       cout << " read " << nbyte << " bytes for branch " << branches[k]->GetName()  
-      // 	   << std::endl ;
     }
 
-//     EVENT::LCCollection* col  = evt->getCollection("MCParticlesSkimmed") ;
-//     EVENT::LCCollection* cpfo = evt->getCollection("PandoraPFOs") ;
-//     EVENT::LCCollection* crml = evt->getCollection("RecoMCTruthLink") ;
-    
-    
+    //********************   plain LCIO code below this line *************************************    
     
     int nMCP = col->getNumberOfElements() ;
     double eMCP = 0.0 ;
     for(int j=0;j<nMCP ;++j){
       
       EVENT::MCParticle* mcp = dynamic_cast<EVENT::MCParticle*>( col->getElementAt(j) ) ;
-      
-      //      cout << " -- " << mcp << endl ;
       
       if( mcp->getGeneratorStatus() == 1 )
 	eMCP += mcp->getEnergy() ;
@@ -167,9 +146,10 @@ void readevent() {
       
       //      cout << " ++ " << mcp << endl ;
 
-      if( pfo && mcp ) 
+      if( pfo && mcp ) { 
 	herm->Fill( pfo->getEnergy() ,   mcp->getEnergy()   ) ;
-
+	hpzrm->Fill( pfo->getMomentum()[2] ,   mcp->getMomentum()[2]   ) ;
+      }
     }
     
     //    UTIL::LCTOOLS::dumpEvent( evt ) ;
@@ -193,6 +173,8 @@ void readevent() {
   hepfo->Draw();
   c1->cd(3)  ;
   herm->Draw();
+  c1->cd(4)  ;
+  hpzrm->Draw();
   
   
   
