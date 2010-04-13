@@ -93,10 +93,12 @@ SET( LCIO_SIO_SRCS
   ./src/SIO/SIOTrackerHitHandler.cc
   ./src/SIO/SIOTrackerPulseHandler.cc
   ./src/SIO/SIOTrackerRawDataHandler.cc
-  ./src/SIO/SIOUnpack.cc
+#  ./src/SIO/SIOUnpack.cc
   ./src/SIO/SIOVertexHandler.cc
   ./src/SIO/SIOWriter.cc
   ./src/SIO/SIOReader.cc
+  ./src/SIO/SIORandomAccessHandler.cc
+  ./src/SIO/LCIORandomAccess.cc
 )
 
 SET( LCIO_UTIL_SRCS
