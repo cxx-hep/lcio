@@ -125,9 +125,9 @@ namespace SIO {
 
   protected:
     
-    static SIO_record *_evtRecord ;
-    static SIO_record *_hdrRecord ;
-    static SIO_record *_runRecord ;
+    SIO_record *_evtRecord ;
+    SIO_record *_hdrRecord ;
+    SIO_record *_runRecord ;
 
   }; // class
 
