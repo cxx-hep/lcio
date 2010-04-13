@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// CVS $Id: SIO_stream.h,v 1.6 2007-11-09 20:21:09 gaede Exp $
+// CVS $Id: SIO_stream.h,v 1.6.10.1 2010-04-13 10:51:18 gaede Exp $
 // ----------------------------------------------------------------------------
 // => Controller for a single SIO stream.                          
 // ----------------------------------------------------------------------------
@@ -52,7 +52,12 @@ public:
 
     // return the start of the last record read; -1 if not sucessfull
     SIO_64BITINT           lastRecordStart() { return recPos ; }
-    unsigned int           seek(SIO_64BITINT pos) ;
+    
+    unsigned int           seek(SIO_64BITINT pos, int whence=SEEK_SET) ;
+
+    // reset the stream after a non-sucessful attempt to read a record (e.g. from an older file)
+    // set the file position to pos
+    unsigned int              reset( SIO_64BITINT pos=0 ) ;
 
     // set compression level: -1:default, 0, no compression, 1-9 compression
     // note if level==0  user should set compression off for all records !

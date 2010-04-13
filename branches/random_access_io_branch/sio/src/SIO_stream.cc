@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// CVS $Id: SIO_stream.cc,v 1.7 2008-05-28 14:02:09 engels Exp $
+// CVS $Id: SIO_stream.cc,v 1.7.8.1 2010-04-13 10:51:18 gaede Exp $
 // ----------------------------------------------------------------------------
 // => Controller for a single SIO stream.                          
 // ----------------------------------------------------------------------------
@@ -598,7 +598,7 @@ return( SIO_STREAM_SUCCESS );
 //
 //fg: add method to position the file pointer
 //
-unsigned int SIO_stream::seek(SIO_64BITINT pos) {  
+unsigned int SIO_stream::seek(SIO_64BITINT pos, int whence) {  
   
   unsigned int status;
   
@@ -616,7 +616,7 @@ unsigned int SIO_stream::seek(SIO_64BITINT pos) {
     return( SIO_STREAM_WRITEONLY );
   }
 
-  status = FSEEK( handle, pos , SEEK_SET )  ;
+  status = FSEEK( handle, pos , whence )  ;
   
   if( status != 0 ) {
     
@@ -631,7 +631,26 @@ unsigned int SIO_stream::seek(SIO_64BITINT pos) {
     return( SIO_STREAM_EOF );
   }
   
+  //FIXME: debug...
+  std::cout << " SIO_stream::seek( " << pos << ", " << whence << " ) - ftell : " << FTELL( handle ) 
+	    << " stream-state: " << state << std::endl ;
+
   return( SIO_STREAM_SUCCESS );
+}
+
+unsigned int SIO_stream::reset(SIO_64BITINT pos){
+
+  unsigned int status;
+
+  status = seek( pos ) ;
+
+  if( status == SIO_STREAM_SUCCESS ){
+
+    // if we can seek the file  the stream should be fine ...
+    state = SIO_STATE_OPEN ;
+  }
+
+  return status ;
 }
 
 
