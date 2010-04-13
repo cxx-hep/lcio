@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// CVS $Id: SIO_stream.cc,v 1.7.8.1 2010-04-13 10:51:18 gaede Exp $
+// CVS $Id: SIO_stream.cc,v 1.7.8.2 2010-04-13 11:02:54 gaede Exp $
 // ----------------------------------------------------------------------------
 // => Controller for a single SIO stream.                          
 // ----------------------------------------------------------------------------
@@ -631,9 +631,9 @@ unsigned int SIO_stream::seek(SIO_64BITINT pos, int whence) {
     return( SIO_STREAM_EOF );
   }
   
-  //FIXME: debug...
-  std::cout << " SIO_stream::seek( " << pos << ", " << whence << " ) - ftell : " << FTELL( handle ) 
-	    << " stream-state: " << state << std::endl ;
+//   //FIXME: debug...
+//   std::cout << " SIO_stream::seek( " << pos << ", " << whence << " ) - ftell : " << FTELL( handle ) 
+// 	    << " stream-state: " << state << std::endl ;
 
   return( SIO_STREAM_SUCCESS );
 }
