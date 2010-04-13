@@ -82,7 +82,7 @@
                     Relative to baseOffset
                 </data>
              </if>
-             <if condition="(controlWord&amp;2)==1">
+             <if condition="(controlWord&amp;4)==1">
                 <repeat count="nIntParameters">
                     <data type="int" name="value"/>
                 </repeat>
