@@ -24,7 +24,7 @@ class SIOEventHandler ;
 /** Concrete implementation of LCWriter using SIO.
  * 
  * @author gaede
- * @version $Id: SIOReader.h,v 1.26 2008-12-10 08:10:59 gaede Exp $
+ * @version $Id: SIOReader.h,v 1.26.4.1 2010-04-13 11:10:44 gaede Exp $
  */
   class SIOReader : public IO::LCReader {
     
@@ -87,7 +87,7 @@ class SIOEventHandler ;
     /** Skips the next n events from the current position. In fact simply reads the next n
      *  event headers so that the next event read is the (n+1)-th event.
      */
-    virtual void skipNEvents(int n) ;
+    virtual void skipNEvents(int n)   throw (IO::IOException, std::exception )  ;
 
 
     /** Reads the specified event from file. 
