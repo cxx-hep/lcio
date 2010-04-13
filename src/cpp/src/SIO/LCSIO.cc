@@ -2,6 +2,7 @@
 
 #include "SIO_functions.h"
 #include "SIO_definitions.h"
+#include "SIO_recordManager.h"
 #include <cctype>
 #include "Exceptions.h"
 
@@ -12,16 +13,74 @@ using namespace EVENT ;
 
 namespace SIO {
 
+  //-------------------------------
+  SIORecords::SIORecords(){
+   
+    add( _records[ Event ]  , LCSIO_EVENTRECORDNAME ) ;
+    add( _records[ Header ] , LCSIO_HEADERRECORDNAME ) ;
+    add( _records[ Run ]    , LCSIO_RUNRECORDNAME ) ;
+    add( _records[ Access ] , LCSIO_ACCESSRECORDNAME ) ;
+
+  }
+  SIO_record* SIORecords::operator[](size_t idx){
+
+    if( idx > NumberOfRecords ) 
+      throw IO::IOException( " Out of range in SIORecords::operator[](size_t i)" ) ;
+
+    return _records[ idx ] ;
+  }
+
+  void SIORecords::add(SIO_record*& rec , const char* name){
+    
+    rec = SIO_recordManager::add( name ) ; 
+
+    if( rec == 0 ) {
+      std::string err("[LCSIO::SIORecords]: Could not add SIO record: ") ;
+      err+=name ;
+      throw IO::IOException( err ) ;
+    }
+  }
+  
+  void  SIORecords::setCompress( bool flag) {
+
+    for( unsigned i=0; i < NumberOfRecords ; ++i ){
+
+      _records[i]->setCompress( flag ) ;
+    }
+  }
+
+  SIORecords::Unpack::Unpack( unsigned recordFlag ) {
+
+    for( unsigned i=0; i < NumberOfRecords ; ++i ){
+
+      _flags[i] = LCSIO::records()[i]->getUnpack() ;
+    
+      LCSIO::records()[ i ]->setUnpack(   recordFlag & ( 0x0001 << i )  ) ;
+    }
+  }
+  SIORecords::Unpack::~Unpack() {
+
+    for( unsigned i=0; i < NumberOfRecords ; ++i ){
+
+      LCSIO::records()[ i ]->setUnpack( _flags ) ;
+    }
+    
+  }
+
+  //-------------------------------
+ 
+
   int LCSIO::uid = 0 ;
   int LCSIO::dummy_size = LCSIO::dummy_initial_size ;
   char* LCSIO::dummy = new char[ LCSIO::dummy_initial_size ]   ;
   
-  const char* LCSIO::RUNRECORDNAME = "LCRunHeader" ;
-  const char* LCSIO::RUNBLOCKNAME = "RunHeader" ;
-  const char* LCSIO::EVENTRECORDNAME = "LCEvent"  ;
-  const char* LCSIO::EVENTBLOCKNAME="Event" ;
-  const char* LCSIO::HEADERRECORDNAME = "LCEventHeader"  ;
-  const char* LCSIO::HEADERBLOCKNAME="EventHeader" ;
+//   //FIXME: remove these ....
+//   const char* LCSIO::RUNRECORDNAME = "LCRunHeader" ;
+//   const char* LCSIO::RUNBLOCKNAME = "RunHeader" ;
+//   const char* LCSIO::EVENTRECORDNAME = "LCEvent"  ;
+//   const char* LCSIO::EVENTBLOCKNAME="Event" ;
+//   const char* LCSIO::HEADERRECORDNAME = "LCEventHeader"  ;
+//   const char* LCSIO::HEADERBLOCKNAME="EventHeader" ;
 
   const char* LCSIO::FILE_EXTENSION=".slcio" ;
 
@@ -31,38 +90,12 @@ namespace SIO {
       throw IO::IOException(" Old file versions ( < v00-08 ) no longer supported !") ;    
   }
 
-//   unsigned int LCSIO::read( SIO_stream* stream ,char** c, int versionID){
-    
-//     int status ;
-//     int strLen ;
-//     status = SIO_functions::data( stream ,  &strLen  , 1  ) ;
-    
-//     if( !( status & 1 ) ) return status ;
-    
-//     // make sure our string buffer is large enough 
-//     while( strLen + 1 > dummy_size ){
-//       dummy_size += dummy_size  ;
-//       delete[] dummy ;
-//       dummy = new char[ dummy_size  ] ;
-//     }
-    
-//     // fg20030508 old files have trailing '\00' for strings ...
-//     if( SIO_VERSION_MAJOR( versionID ) < 1 && SIO_VERSION_MINOR( versionID ) < 3 ) {
-      
-//       SIO_functions::data( stream ,  dummy  , strLen + 1  ) ;
-      
-//     } else {
-      
-//       SIO_functions::data( stream ,  dummy  , strLen ) ;
-//       dummy[ strLen ] = '\0' ; // still needed for char* ...
-//     }
-    
-//     *c = dummy  ;
-    
-//     return status ;
-    
-//   }
-  
+
+  SIORecords& LCSIO::records() {
+    static SIORecords recs ;
+    return recs ;
+  }
+
   unsigned int LCSIO::read( SIO_stream* stream ,char** c, int* len){
     
     int status ;
