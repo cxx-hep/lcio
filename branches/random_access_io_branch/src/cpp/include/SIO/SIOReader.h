@@ -10,6 +10,8 @@
 
 #include "IOIMPL/LCEventIOImpl.h"
 #include "IOIMPL/LCRunHeaderIOImpl.h"
+
+#include "LCIORandomAccessMgr.h"
 #include "LCIOTypes.h"
 
 class SIO_record ;
@@ -24,7 +26,7 @@ class SIOEventHandler ;
 /** Concrete implementation of LCWriter using SIO.
  * 
  * @author gaede
- * @version $Id: SIOReader.h,v 1.26.4.1 2010-04-13 11:10:44 gaede Exp $
+ * @version $Id: SIOReader.h,v 1.26.4.2 2010-04-22 16:34:09 gaede Exp $
  */
   class SIOReader : public IO::LCReader {
     
@@ -37,6 +39,7 @@ class SIOEventHandler ;
     SIOReader( int lcReaderFlag=0 ) ;
     
     // Destructor
+
     virtual ~SIOReader() ;
     
 
@@ -180,6 +183,9 @@ class SIOEventHandler ;
 
     EventMap _evtMap ;
     const bool _readEventMap ;
+    
+    //    RunEventMap _reMap ;
+    LCIORandomAccessMgr _raMgr ;
 
   }; // class
 } // namespace

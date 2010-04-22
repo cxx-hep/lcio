@@ -4,12 +4,12 @@
 #include "SIO/LCSIO.h"
 #include "SIO/SIOEventHandler.h" 
 #include "SIO/SIOCollectionHandler.h"
-//#include "SIO/SIOLCRelationHandler.h"
+
 #include "SIO/SIORunHeaderHandler.h"
 #include "SIO/SIOParticleHandler.h"
-//#include "SIO/SIOUnpack.h"
-#include "SIO/SIOWriter.h"
+
 #include "SIO/SIOrandomAccessHandler.h"
+#include "SIO/SIOIndexHandler.h"
 
 #include "LCIOSTLTypes.h"
 
@@ -31,16 +31,14 @@
 #include <climits>
 //#include <limits>
 
-
-
-
-
 #include <sys/stat.h> 
 
 using namespace EVENT ;
 using namespace IO ;
 using namespace IOIMPL ;
 using namespace IMPL ;
+
+typedef EVENT::long64 long64 ;
 
 #define EVENTKEY(RN,EN)  ( EVENT::long64( RN ) << 32 ) | EN 
  
@@ -190,21 +188,21 @@ namespace SIO {
     { // scope for reading arbitrary records .... 
       SIORecords::Unpack raUnp( SIORecords::Unpack::All ) ;
       
-      LCIORandomAccess* ra = 0 ;
-      SIORandomAccessHandler raHandler( "LCIORandomAccess",  &ra ) ;
+      SIORandomAccessHandler raHandler( "LCIORandomAccess",  &_raMgr ) ;
       
       SIO_blockManager::remove(  "LCIORandomAccess"  ) ;
       SIO_blockManager::add( &raHandler ) ;
       
       int status =  _stream->read( &_dummyRecord ) ;
-
+      
       if( ! (status & 1)  ){
-
+	
 	status = _stream->reset() ;
-
+	
 	if( status != SIO_STREAM_SUCCESS ){
-
-	  throw IOException( std::string(" io error  reading LCIORandomAccess on stream: ") + *_stream->getName() ) ;
+	  
+	  throw IOException( std::string(" io error  reading LCIORandomAccess on stream: ") 
+			     + *_stream->getName() ) ;
 	}
 
 	std::cout << " ... no LCIORandomAccess record found - old file ??? " << std::endl ;
@@ -212,11 +210,57 @@ namespace SIO {
 	goto RecreateTOC ;  // //fixme - replace goto with function recreateTOC() ....
       }
 
-      std::cout << " ... LCIORandomAccess read from stream : " << *ra << std::endl ;
+    }
 
-      //***************************************************************
-      // TODO: read complete linked list of LCIORandomAccess records ...
-      //***************************************************************
+    const LCIORandomAccess* ra = _raMgr.lastRandomAccess() ;
+
+    std::cout << " ... LCIORandomAccess read from stream : "<< *ra << std::endl ;
+
+
+    //***************************************************************
+    // TODO: read complete linked list of LCIORandomAccess records ...
+    //***************************************************************
+
+    EVENT::long64 indexPos = ra->getIndexLocation() ;
+
+    status = _stream->seek( indexPos ) ; 
+
+    if( status != SIO_STREAM_SUCCESS ) 
+      throw IOException( std::string( "[SIOReader::getEventMap()] Can't seek stream to 0" ) ) ;
+
+
+    { // scope for reading arbitrary records .... 
+      SIORecords::Unpack raUnp( SIORecords::Unpack::All ) ;
+      
+      SIOIndexHandler raHandler( "LCIOIndex",  &_raMgr ) ;
+      
+      SIO_blockManager::remove(  "LCIOIndex"  ) ;
+      SIO_blockManager::add( &raHandler ) ;
+      
+      int status =  _stream->read( &_dummyRecord ) ;
+      
+      if( ! (status & 1)  ){
+	
+	status = _stream->reset() ;
+	
+	if( status != SIO_STREAM_SUCCESS ){
+	  
+	  throw IOException( std::string(" io error  reading LCIOIndex on stream: ") 
+			     + *_stream->getName() ) ;
+	}
+
+	std::cout << " ... no LCIOIndex record found - old file ??? " << std::endl ;
+
+	goto RecreateTOC ;  // //fixme - replace goto with function recreateTOC() ....
+      }
+
+    }
+
+    std::cout << " ... LCIORandomAccessMgr: "<< _raMgr << std::endl ;
+    
+
+
+
 
 
 //       while( true ) {
@@ -263,8 +307,7 @@ namespace SIO {
 // 	  throw IOException( std::string( "[SIOReader::getEventMap()] Can't seek stream to ") ) ;
 
 //       }
-    }
-
+ 
 
     //=============================================================================================
 

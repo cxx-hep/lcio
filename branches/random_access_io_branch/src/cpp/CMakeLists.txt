@@ -97,6 +97,7 @@ SET( LCIO_SIO_SRCS
   ./src/SIO/SIOWriter.cc
   ./src/SIO/SIOReader.cc
   ./src/SIO/SIORandomAccessHandler.cc
+  ./src/SIO/SIOIndexHandler.cc
   ./src/SIO/LCIORandomAccess.cc
   ./src/SIO/LCIORandomAccessMgr.cc
   ./src/SIO/RunEventMap.cc

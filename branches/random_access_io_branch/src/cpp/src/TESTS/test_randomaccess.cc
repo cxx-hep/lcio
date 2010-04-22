@@ -11,6 +11,7 @@
 // #include "IMPL/LCCollectionVec.h"
 
 #include "SIO/LCIORandomAccess.h"
+#include "SIO/LCIORandomAccessMgr.h"
 #include "SIO/RunEventMap.h"
 
 
@@ -73,10 +74,6 @@ int main(int argc, char** argv ){
     MYTEST( v[4] < v[5] , true ,  err.str() )  ;
 
 
-    MYTEST.LOG( "  ---------TO DO !!!!!! ---------------------   testing class LCIORandomAccess"  ) ;
-
-    MYTEST( true , true , " LCIORandomAccess " )  ;
-
     MYTEST.LOG( "  -------------------------------------   testing class RunEventMap"  ) ;
 
     RunEventMap map ;
@@ -100,6 +97,22 @@ int main(int argc, char** argv ){
 
     MYTEST( map.getNumberOfEventRecords(), 4 , "RunEventMap::getNumberOfEventRecords() after addition of duplicate (overwrite) " );
 
+
+
+    MYTEST.LOG( "  ---------TO DO !!!!!! ---------------------   testing class LCIORandomAccess"  ) ;
+
+    MYTEST( true , true , " LCIORandomAccess " )  ;
+
+
+
+    MYTEST.LOG( "  ---------TO DO !!!!!! ---------------------   testing class LCIORandomAccessMgr"  ) ;
+
+    LCIORandomAccessMgr raMgr ;
+
+    raMgr.addRunEventMap( map ) ;
+    
+
+    MYTEST( true , true , " LCIORandomAccessMgr" )  ;
   
 
 

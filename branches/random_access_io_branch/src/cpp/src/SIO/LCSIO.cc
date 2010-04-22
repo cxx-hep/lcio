@@ -20,6 +20,7 @@ namespace SIO {
     add( _records[ Header ] , LCSIO_HEADERRECORDNAME ) ;
     add( _records[ Run ]    , LCSIO_RUNRECORDNAME ) ;
     add( _records[ Access ] , LCSIO_ACCESSRECORDNAME ) ;
+    add( _records[ Index ]  , LCSIO_INDEXRECORDNAME ) ;
 
   }
   SIO_record* SIORecords::operator[](size_t idx){
@@ -45,7 +46,11 @@ namespace SIO {
 
     for( unsigned i=0; i < NumberOfRecords ; ++i ){
 
-      _records[i]->setCompress( flag ) ;
+      if( i != Access )
+	_records[i]->setCompress( flag ) ;
+      else
+	_records[i]->setCompress( false ) ; // random access records are always uncompressed ....
+
     }
   }
 

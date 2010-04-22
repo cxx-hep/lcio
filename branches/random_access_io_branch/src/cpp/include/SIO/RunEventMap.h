@@ -6,16 +6,22 @@
 #include "LCIORandomAccess.h"
 
 namespace SIO {
-    
+  class RunEventMap ; 
+  std::ostream & operator<<(std::ostream& os, const RunEventMap& rm ) ;
+
+
 /** Map that holds positions of Run and Event records.
  * 
  * @author gaede
- * @version $Id: RunEventMap.h,v 1.1.2.1 2010-04-13 19:35:08 gaede Exp $
+ * @version $Id: RunEventMap.h,v 1.1.2.2 2010-04-22 16:34:09 gaede Exp $
  */
   class RunEventMap {
     typedef std::map< long64, long64> MapType ;
     typedef MapType::iterator Map_IT ;
-    
+    typedef MapType::const_iterator Map_cIT ;
+
+    friend std::ostream & operator<<(std::ostream& os, const RunEventMap& rm ) ;
+   
   public:
     static const int NPos = -1 ;
 
@@ -44,6 +50,15 @@ namespace SIO {
 
     // map funcitons
     size_t size() { return _map.size()  ; } 
+
+    Map_IT begin()  { return _map.begin() ; }
+    Map_IT end()  { return _map.end() ; }
+    Map_cIT begin() const  { return _map.begin() ; }
+    Map_cIT end()  const { return _map.end() ; }
+
+    template <class InputIterator>
+    void insert(InputIterator b, InputIterator e) { _map.insert( b , e  ) ; } 
+
   protected: 
 
     MapType _map ;

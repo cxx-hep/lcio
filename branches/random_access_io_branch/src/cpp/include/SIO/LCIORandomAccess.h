@@ -30,7 +30,8 @@ namespace SIO{ // IO or IMPL ?
 
   class SIORandomAccessHandler ;
   class LCIORandomAccess ;
-
+  class LCIORandomAccessMgr ;
+  
   std::ostream & operator<<(std::ostream& os, const LCIORandomAccess& ra ) ;
 
   bool operator < (const LCIORandomAccess ra0, const LCIORandomAccess& other)  ;
@@ -39,12 +40,13 @@ namespace SIO{ // IO or IMPL ?
 /**  Implementation class for LCIORandomAccess records.
  *
  * @author gaede
- * @version $Id: LCIORandomAccess.h,v 1.1.2.2 2010-04-13 19:35:08 gaede Exp $
+ * @version $Id: LCIORandomAccess.h,v 1.1.2.3 2010-04-22 16:34:09 gaede Exp $
  */
 //  class LCIORandomAccess : public EVENT LCObject {
   class LCIORandomAccess {
     
     friend class SIORandomAccessHandler ;
+    friend class LCIORandomAccessMgr ;
     friend std::ostream & operator<<(std::ostream& os, const LCIORandomAccess& ra ) ;
     friend bool operator < (const LCIORandomAccess ra0, const LCIORandomAccess& other)  ;
 
@@ -52,10 +54,10 @@ namespace SIO{ // IO or IMPL ?
     
     virtual ~LCIORandomAccess(){ /* nop */; }
     
-    long64 getIndexLocation() { return _indexLocation ; }
-    long64 getPrevLocation() { return _prevLocation ; }
-    long64 getNextLocation() { return _nextLocation ; }
-    long64 getFirstRecordLocation() { return _firstRecordLocation ; }
+    long64 getIndexLocation() const { return _indexLocation ; }
+    long64 getPrevLocation() const  { return _prevLocation ; }
+    long64 getNextLocation() const  { return _nextLocation ; }
+    long64 getFirstRecordLocation() const  { return _firstRecordLocation ; }
 
   protected:
     RunEvent _minRunEvt ;

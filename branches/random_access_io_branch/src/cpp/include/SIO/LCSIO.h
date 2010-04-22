@@ -18,6 +18,9 @@
 #define LCSIO_ACCESSRECORDNAME "LCIORandomAccess"
 #define LCSIO_ACCESSBLOCKNAME  "LCIORandomAccess"
 
+#define LCSIO_INDEXRECORDNAME "LCIOIndex"
+#define LCSIO_INDEXBLOCKNAME  "LCIOIndex"
+
 
 class SIO_stream ;
 
@@ -40,6 +43,7 @@ namespace SIO {
       Header,
       Run,
       Access,
+      Index,
       NumberOfRecords 
     } ;
     //-----------------------------------------------
@@ -54,6 +58,7 @@ namespace SIO {
       static const unsigned Header = 0x0001 << SIORecords::Header ;
       static const unsigned Run    = 0x0001 << SIORecords::Run ;
       static const unsigned Access = 0x0001 << SIORecords::Access ;
+      static const unsigned Index  = 0x0001 << SIORecords::Index ;
 
       static const unsigned All = 0xFFFFFFFF ; 
       

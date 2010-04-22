@@ -1,6 +1,6 @@
 #include "SIO/SIOIndexHandler.h"
 
-#include "SIO/LCIORandomAccess.h"
+//#include "SIO/LCIORandomAccessMgr.h"
 #include "SIO/LCSIO.h"
 #include "SIO_functions.h"
 
@@ -12,29 +12,13 @@
 namespace SIO  {
 
 
-  SIOIndexHandler::SIOIndexHandler(const std::string& name) : 
+  SIOIndexHandler::SIOIndexHandler(const std::string& name, LCIORandomAccessMgr* raMgr) : 
     SIO_block( name.c_str() ),
-    _raP(0) {
-  }
-
-  SIOIndexHandler::SIOIndexHandler(const std::string& name, LCIORandomAccess** aRhP) : 
-    SIO_block( name.c_str() ),
-    _raP( aRhP ) {
+    _raMgr( raMgr ) {
     
-    *_raP = 0 ;
   }
-
-
+ 
   SIOIndexHandler::~SIOIndexHandler(){ }
-
-  
-  void SIOIndexHandler::setWritePtr(const LCIORandomAccess* rh ){
-    _ra = rh ;
-  }
-  void SIOIndexHandler::setReadPtr( LCIORandomAccess** hdrP ) {
-    _raP= hdrP ;
-  } 
-
 
   unsigned int SIOIndexHandler::xfer( SIO_stream* stream, SIO_operation op, 
 					  unsigned int versionID){
@@ -43,50 +27,97 @@ namespace SIO  {
     
     unsigned int status ; // needed by the SIO_DATA macro
   
+
     if( op == SIO_OP_READ ){ 
 
-      if(!_raP) return EVENT::LCIO::ERROR ;  // in read mode we need an address for the pointer
+      int control ;
+      int runMin ;
+      long64 baseOffset ;
+      int size ;
 
-      // delete the old object 
-      // -> for every handler there will only be one object at any given time
-      if (*_raP != 0 )  delete *_raP ;
-      *_raP = new LCIORandomAccess ;
+      SIO_DATA( stream ,  &control, 1  ) ;
+     
+      bool oneRun     = control & 0x0001 ;
+      bool longOffset = control & 0x0002 ;
 
-      SIO_DATA( stream ,  &( (*_raP)->_minRunEvt.RunNum )   , 1  ) ;
-      SIO_DATA( stream ,  &( (*_raP)->_minRunEvt.EvtNum )   , 1  ) ;
+      //FIXME: do we need this ?
+      if( control & 0x0004 ){  // parameters
 
-      SIO_DATA( stream ,  &( (*_raP)->_maxRunEvt.RunNum )   , 1  ) ;
-      SIO_DATA( stream ,  &( (*_raP)->_maxRunEvt.EvtNum )   , 1  ) ;
+	std::cerr << " WARNING: SIOIndexHandler: parameters not implemented .... " << std::endl ;
 
-      SIO_DATA( stream ,  &( (*_raP)->_nRunHeaders )   , 1  ) ;
-      SIO_DATA( stream ,  &( (*_raP)->_nEvents )   , 1  ) ;
-      SIO_DATA( stream ,  &( (*_raP)->_recordsAreInOrder )   , 1  ) ;
-      
-      SIO_DATA( stream ,  &( (*_raP)->_indexLocation )   , 1  ) ;
-      SIO_DATA( stream ,  &( (*_raP)->_prevLocation )   , 1  ) ;
-      SIO_DATA( stream ,  &( (*_raP)->_nextLocation )   , 1  ) ;
-      SIO_DATA( stream ,  &( (*_raP)->_firstRecordLocation )   , 1  ) ;
+	return SIO_BLOCK_SKIP ; // FIXME: test
+      }
 
-      
+      SIO_DATA( stream ,  &runMin, 1  ) ;
+      SIO_DATA( stream ,  &baseOffset, 1  ) ;
+      SIO_DATA( stream ,  &size, 1  ) ;
+
+
+      int nEvents = 0;
+      int nRunHeaders = 0;
+      //      int maxEntries = size;
+
+      int runNum ;
+      int evtNum ;
+      int runOffset ;
+      long64 pos ;
+
+      int dummy_int; 
+      long64 dummy_long ;
+
+      for (int i = 0; i < size; i++) {
+
+	runNum = runMin ;
+
+	if( !oneRun ) {
+	  SIO_DATA( stream ,  &runOffset, 1  ) ;
+	  runNum += runOffset ;
+	}
+	SIO_DATA( stream ,  &evtNum , 1  ) ;
+
+	if (evtNum >= 0) 
+	  nEvents++;
+	else 
+	  nRunHeaders++;
+
+	if( longOffset ){
+
+	  SIO_DATA( stream ,  &dummy_long , 1  ) ;
+	  pos = dummy_long ;
+
+	} else {
+
+	  SIO_DATA( stream ,  &dummy_int , 1  ) ;
+	  pos = dummy_int ;
+	}
+
+	_raMgr->_runEvtMap.add( RunEvent( runNum , evtNum ) ,  pos ) ;
+      }
+
+//       _raMgr->addLCIORandomAccess( ra ) ;
+//       std::cout << " ... LCIORandomAccess read from stream : " << *ra << std::endl ;
+
+
     }  else if( op == SIO_OP_WRITE ){ 
     
-      if( _ra ){
+      
+//       if( 1 ){
 
-	LCSIO_WRITE( stream ,   _ra->_minRunEvt.RunNum ) ;
-	LCSIO_WRITE( stream ,   _ra->_minRunEvt.EvtNum ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_minRunEvt.RunNum ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_minRunEvt.EvtNum ) ;
 	
-	LCSIO_WRITE( stream ,   _ra->_maxRunEvt.RunNum ) ;
-	LCSIO_WRITE( stream ,   _ra->_maxRunEvt.EvtNum ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_maxRunEvt.RunNum ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_maxRunEvt.EvtNum ) ;
 	
-	LCSIO_WRITE( stream ,   _ra->_nRunHeaders ) ;
-	LCSIO_WRITE( stream ,   _ra->_nEvents ) ;
-	LCSIO_WRITE( stream ,   _ra->_recordsAreInOrder ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_nRunHeaders ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_nEvents ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_recordsAreInOrder ) ;
 	
-	LCSIO_WRITE( stream ,   _ra->_indexLocation ) ;
-	LCSIO_WRITE( stream ,   _ra->_prevLocation ) ;
-	LCSIO_WRITE( stream ,   _ra->_nextLocation ) ;
-	LCSIO_WRITE( stream ,   _ra->_firstRecordLocation  ) ;
-      }
+// 	LCSIO_WRITE( stream ,   _ra->_indexLocation ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_prevLocation ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_nextLocation ) ;
+// 	LCSIO_WRITE( stream ,   _ra->_firstRecordLocation  ) ;
+//       }
     }
     
     
