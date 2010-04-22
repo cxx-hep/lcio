@@ -43,6 +43,17 @@ namespace SIO  {
     return ( it != _map.end() ? it->second  :  NPos ) ;
   } 
   
+  std::ostream & operator<<(std::ostream& os, const RunEventMap& rm ) {
+
+    os << " ------- RunEventMap : " << std::endl ;
+
+    for( RunEventMap::Map_cIT it = rm.begin() ; it != rm.end() ; ++it ){
+      
+      os << "  " << RunEvent( it->first).RunNum 
+	 << ", " << RunEvent( it->first).EvtNum << "  :  " << it->second << std::endl;    }
+    
+    return os ;
+  }
 
 
 }

@@ -3,15 +3,15 @@
 
 //#include <string>
 
-#include "LCIORandomAccess.h"
+#include "LCIORandomAccessMgr.h"
 #include "SIO_block.h"
 
 namespace SIO {
     
-/** Handler for LCIOIndex blocks ...
+/** Handler for LCIOrandomAccess and LCIOIndex objects/blocks.
  * 
  * @author gaede
- * @version $Id: SIOIndexHandler.h,v 1.1.2.1 2010-04-13 19:35:08 gaede Exp $
+ * @version $Id: SIOIndexHandler.h,v 1.1.2.2 2010-04-22 16:34:09 gaede Exp $
  */
   class SIOIndexHandler : public SIO_block{
     
@@ -22,18 +22,25 @@ namespace SIO {
     
     /** C'tor.
      */
-    SIOIndexHandler(const std::string& name, RunEventMap* map) ;
+    SIOIndexHandler(const std::string& name, LCIORandomAccessMgr* raMgr) ; 
 
+//     SIOIndexHandler(const std::string& name, LCIORandomAccess** raP) ;
     virtual ~SIOIndexHandler() ;
     
     // interface from SIO_block
     virtual unsigned int   xfer( SIO_stream*, SIO_operation, unsigned int ) ;
     virtual unsigned int   version() ;
     
+//     void setWritePtr(const LCIORandomAccess* ra ) ; 
+//     void setReadPtr( LCIORandomAccess** raP ) ; 
     
   private: 
-    RunEventMap* _map ;
-    
+//     LCIORandomAccess** _raP ;  // address for reading
+//     const LCIORandomAccess* _ra ;  // object for writing
+
+//     RunEventMap* _reMap ;
+    LCIORandomAccessMgr* _raMgr ;
+
   }; // class
   
 } // namespace
