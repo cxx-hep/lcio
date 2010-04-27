@@ -91,6 +91,11 @@ namespace SIO  {
 	  pos = dummy_int ;
 	}
 
+	pos += baseOffset ;
+
+	//	if( evtNum < 0 ) 
+	  //	  std::cout << " +++++++++++ adding run " << runNum << " evt: " << evtNum << " at " << pos <<std::endl ; 
+
 	_raMgr->_runEvtMap.add( RunEvent( runNum , evtNum ) ,  pos ) ;
       }
 

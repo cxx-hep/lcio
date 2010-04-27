@@ -5,6 +5,11 @@ bool operator < ( const RunEvent& r0, const RunEvent& other) {
   
   //std::cout << r0 << " < " << other << " : [" 
   //<<  ( r0.RunNum == other.RunNum ?  r0.EvtNum < other.EvtNum  :  r0.RunNum < other.RunNum )  << "]" << std::endl;
+  
+  if( r0.EvtNum < 0 ) { // sort run records (evtNu == -1 ) first 
+
+    return ( other.EvtNum < 0 ?  r0.RunNum < other.RunNum : true ) ;
+  }
 
   return ( r0.RunNum == other.RunNum ?  r0.EvtNum < other.EvtNum  :  r0.RunNum < other.RunNum ) ; 
 } 
