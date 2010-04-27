@@ -207,21 +207,21 @@ namespace SIO {
 
 	std::cout << " ... no LCIORandomAccess record found - old file ??? " << std::endl ;
 
-	goto RecreateTOC ;  // //fixme - replace goto with function recreateTOC() ....
+	return recreateEventMap() ; 
       }
 
     }
 
+    //***************************************************************
+    //TODO: read complete linked list of LCIORandomAccess records ...
+    //***************************************************************
+
     const LCIORandomAccess* ra = _raMgr.lastRandomAccess() ;
 
-    std::cout << " ... LCIORandomAccess read from stream : "<< *ra << std::endl ;
-
-
-    //***************************************************************
-    // TODO: read complete linked list of LCIORandomAccess records ...
-    //***************************************************************
+    //    std::cout << " ... LCIORandomAccess read from stream : "<< *ra << std::endl ;
 
     EVENT::long64 indexPos = ra->getIndexLocation() ;
+
 
     status = _stream->seek( indexPos ) ; 
 
@@ -251,7 +251,7 @@ namespace SIO {
 
 	std::cout << " ... no LCIOIndex record found - old file ??? " << std::endl ;
 
-	goto RecreateTOC ;  // //fixme - replace goto with function recreateTOC() ....
+	return recreateEventMap() ;
       }
 
     }
@@ -259,65 +259,14 @@ namespace SIO {
     std::cout << " ... LCIORandomAccessMgr: "<< _raMgr << std::endl ;
     
 
+  }
 
-
-
-
-//       while( true ) {
-// 	// read the next record from the stream
-	  
-// 	  unsigned int status =  _stream->read( &_dummyRecord ) ;
-	  
-// 	  if( ! (status & 1)  ){
-	    
-// 	    if( status & SIO_STREAM_EOF ){
-// 	      break ;
-// 	    }
-	    
-// 	    throw IOException( std::string(" io error on stream: ") + *_stream->getName() ) ;
-// 	  }
-	  
-// 	  if( ra == 0 ){
-
-// 	    //TODO : re-create TOC ....
-// 	    std::cout << " ... no LCIORandomAccess record found - old file ??? " << std::endl ;
-
-// 	  }
-
-	
-// 	std::cout << " ... read direct access object from stream : " << *ra << std::endl ;
-	
-// 	long64 next = ra->getNextLocation() ;
-	
-// 	if( next == 0 ) {
-	  
-// 	  long64 firstRec =  ra->getFirstRecordLocation()  ;
-	  
-// 	  status = _stream->seek( firstRec ) ;
-	  
-// 	  if( status != SIO_STREAM_SUCCESS ){ 
-// 	    std::stringstream err ; err <<  "[SIOReader::getEventMap()] Can't seek stream to " << firstRec ;
-// 	    throw IOException( err.str() ) ;
-// 	  }
-// 	  break ;
-// 	} 
-// 	int status = _stream->seek( next ) ; // go to start - FIXME - should we store the current position ?
-
-// 	if( status != SIO_STREAM_SUCCESS ) 
-// 	  throw IOException( std::string( "[SIOReader::getEventMap()] Can't seek stream to ") ) ;
-
-//       }
- 
-
-    //=============================================================================================
-
-    // FIXME: should become a member function ....
-  RecreateTOC:
+  void SIOReader::recreateEventMap() {
 
      std::cout << " SIOReader::getEventMap() recreating event map for direct access ..." 
 	       << std::endl ;
 
-     status = _stream->seek( 0 ) ; // go to start - FIXME - should we store the current position ?
+     int status = _stream->seek( 0 ) ; // go to start of file
 
      if( status != SIO_STREAM_SUCCESS ) 
        throw IOException( std::string( "[SIOReader::getEventMap()] Can't seek stream to 0 ") ) ;
@@ -353,8 +302,11 @@ namespace SIO {
 	int runNum = (*_evtP)->getRunNumber() ;
 	int evtNum = (*_evtP)->getEventNumber() ;
 	
-        _evtMap[  EVENTKEY( runNum , evtNum ) ] = _stream->lastRecordStart() ;
-	
+	//        _evtMap[  EVENTKEY( runNum , evtNum ) ] = _stream->lastRecordStart() ;
+
+	_raMgr.map().add(   RunEvent( runNum , evtNum ) ,  _stream->lastRecordStart() ) ;
+
+
 //  	EVENT::long64 key  = (EVENT::long64( runNum ) << 32 ) | evtNum ;
 //  	std::cout << "  " <<  key << " - " << _stream->lastRecordStart()  
 //  		  << " evt: " << evtNum << std::endl ;
@@ -576,16 +528,28 @@ namespace SIO {
     throw (IOException , std::exception) {
     
     
-    EventMap::iterator it = _evtMap.find( EVENTKEY( runNumber,evtNumber ) ) ;
-    
-    if( it != _evtMap.end() ) {
+//     EventMap::iterator it = _evtMap.find( EVENTKEY( runNumber,evtNumber ) ) ;
+//     if( it != _evtMap.end() ) {
+//       int status = _stream->seek( it->second ) ;
       
-      int status = _stream->seek( it->second ) ;
+//       if( status != SIO_STREAM_SUCCESS ) 
+// 	throw IOException( std::string( "[SIOReader::readEvent()] Can't seek stream to"
+// 					" requested position" ) ) ;
+//       return readNextEvent() ;
+//     } 
+//     else 
+      
+//       return 0 ;
+
+    EVENT::long64 pos = _raMgr.map().getPosition(  EVENTKEY( runNumber,evtNumber ) ) ; 
+
+    if( pos != RunEventMap::NPos ) {
+      
+      int status = _stream->seek( pos ) ;
       
       if( status != SIO_STREAM_SUCCESS ) 
 	throw IOException( std::string( "[SIOReader::readEvent()] Can't seek stream to"
 					" requested position" ) ) ;
-      
       return readNextEvent() ;
     } 
     else 
@@ -593,6 +557,12 @@ namespace SIO {
       return 0 ;
     
     
+
+
+
+
+
+
     /* ---- OLD code with fast skip -----------
        
        bool runFound = false ;

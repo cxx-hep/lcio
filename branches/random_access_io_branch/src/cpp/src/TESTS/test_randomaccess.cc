@@ -47,7 +47,7 @@ int main(int argc, char** argv ){
     reSet.insert( RunEvent(  123450, -1 ) )  ;
     reSet.insert( RunEvent(  123450, 112345 ) )  ;
 
-    reSet.insert(  EVENT::long64(123400) << 32   | 12345678  ) ;
+    reSet.insert(  EVENT::long64(123400) << 32   | (12345678LL & 0xffffffff)  ) ;
 
     MYTEST( reSet.size() , unsigned(6)  ,  " set< RunEvent>.size() != 6 " )  ;
 
@@ -90,12 +90,15 @@ int main(int argc, char** argv ){
 	    map.size(), "RunEventMap invariant: nRun+nEvt = map.size " );
 
     MYTEST( map.getNumberOfEventRecords(), 4 , "RunEventMap::getNumberOfEventRecords()  " );
+    MYTEST( map.getNumberOfRunRecords(), 2 , "RunEventMap::getNumberOfRunRecords()  " );
 
     map.add(  v[2] , 2048000 ) ; // overwrite existing entry
 
     MYTEST( map.getPosition( v[2] ), 2048000 ,  " test if EventMap::add()  overwrites existing entry "  )  ;
 
     MYTEST( map.getNumberOfEventRecords(), 4 , "RunEventMap::getNumberOfEventRecords() after addition of duplicate (overwrite) " );
+
+
 
 
 

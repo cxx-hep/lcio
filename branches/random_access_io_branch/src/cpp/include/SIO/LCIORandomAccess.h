@@ -16,7 +16,7 @@ struct RunEvent{
   int RunNum ;
   int EvtNum ;
 
-  operator long64() const {  return  ( long64( RunNum ) << 32 ) | EvtNum ; } 
+  operator long64() const {  return  ( long64( RunNum ) << 32  |  ( long64(EvtNum) & 0xffffffff )  ) ; } 
   //bool operator < ( const RunEvent& other) {  return ( RunNum <= other.RunNum && EvtNum < other.EvtNum ) ; } 
 };
 
@@ -40,7 +40,7 @@ namespace SIO{ // IO or IMPL ?
 /**  Implementation class for LCIORandomAccess records.
  *
  * @author gaede
- * @version $Id: LCIORandomAccess.h,v 1.1.2.3 2010-04-22 16:34:09 gaede Exp $
+ * @version $Id: LCIORandomAccess.h,v 1.1.2.4 2010-04-27 12:17:58 gaede Exp $
  */
 //  class LCIORandomAccess : public EVENT LCObject {
   class LCIORandomAccess {

@@ -20,17 +20,21 @@ namespace SIO  {
   void RunEventMap::add(const RunEvent& re, long64 pos ) {
 
     std::pair< Map_IT, bool> p = 
-      _map.insert( std::make_pair( long64( re )  , pos ) ) ; 
+      _map.insert( std::make_pair( (long64) re   , pos ) ) ; 
 
     if( p.second ) {  // if event/run exists don't count as new entry
 
       if( re.EvtNum > -1 ) 
 	++ _nEvt ;
-      else
+      else {
 	++ _nRun ;
-
+	//	std::cout << " *****************RunEventMap::add : " << re << std::endl ;
+      }
     } else {    // overwrite with new entry
       
+      //      std::cout << " *****************RunEventMap::add - overwriting : " << re << " -> "  <<   (long64) re  <<
+      //	std::hex <<  "0x" << (long64) re   << std::dec << std::endl ;
+
       p.first->second = pos ;
 
     }

@@ -13,10 +13,12 @@ namespace SIO {
 /** Map that holds positions of Run and Event records.
  * 
  * @author gaede
- * @version $Id: RunEventMap.h,v 1.1.2.2 2010-04-22 16:34:09 gaede Exp $
+ * @version $Id: RunEventMap.h,v 1.1.2.3 2010-04-27 12:17:58 gaede Exp $
  */
   class RunEventMap {
-    typedef std::map< long64, long64> MapType ;
+
+    typedef std::map< RunEvent, long64> MapType ;
+
     typedef MapType::iterator Map_IT ;
     typedef MapType::const_iterator Map_cIT ;
 

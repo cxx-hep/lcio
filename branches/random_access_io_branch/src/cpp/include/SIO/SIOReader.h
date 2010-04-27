@@ -14,6 +14,7 @@
 #include "LCIORandomAccessMgr.h"
 #include "LCIOTypes.h"
 
+
 class SIO_record ;
 class SIO_stream ;    
 
@@ -26,12 +27,12 @@ class SIOEventHandler ;
 /** Concrete implementation of LCWriter using SIO.
  * 
  * @author gaede
- * @version $Id: SIOReader.h,v 1.26.4.2 2010-04-22 16:34:09 gaede Exp $
+ * @version $Id: SIOReader.h,v 1.26.4.3 2010-04-27 12:17:58 gaede Exp $
  */
   class SIOReader : public IO::LCReader {
     
-    typedef std::map< EVENT::long64 , EVENT::long64 > EventMap ;
-
+    //    typedef std::map< EVENT::long64 , EVENT::long64 > EventMap ;
+    //    typedef RunEventMap EventMap ;
   public:
     
     /** Default constructor.
@@ -157,6 +158,8 @@ class SIOEventHandler ;
 
     void getEventMap() ;
 
+    void recreateEventMap() ;
+
   protected:
     
     // we need an SIO record for every type
@@ -181,7 +184,7 @@ class SIOEventHandler ;
     const std::vector<std::string>* _myFilenames ;
     unsigned int _currentFileIndex ;
 
-    EventMap _evtMap ;
+    //    EventMap _evtMap ;
     const bool _readEventMap ;
     
     //    RunEventMap _reMap ;
