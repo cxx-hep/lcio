@@ -170,7 +170,7 @@ namespace SIO {
     if( ! _raMgr.readLCIORandomAccessAt( _stream , -LCSIO_RANDOMACCESS_SIZE) )  {
 
       // else:
-      recreateEventMap() ; 
+      return recreateEventMap() ; 
     }
 
     //read all remaining LCIORandomAccess records
