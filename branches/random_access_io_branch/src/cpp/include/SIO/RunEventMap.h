@@ -13,18 +13,19 @@ namespace SIO {
 /** Map that holds positions of Run and Event records.
  * 
  * @author gaede
- * @version $Id: RunEventMap.h,v 1.1.2.3 2010-04-27 12:17:58 gaede Exp $
+ * @version $Id: RunEventMap.h,v 1.1.2.4 2010-04-30 21:30:52 gaede Exp $
  */
   class RunEventMap {
 
-    typedef std::map< RunEvent, long64> MapType ;
-
-    typedef MapType::iterator Map_IT ;
-    typedef MapType::const_iterator Map_cIT ;
 
     friend std::ostream & operator<<(std::ostream& os, const RunEventMap& rm ) ;
    
   public:
+
+    typedef std::map< RunEvent, long64> MapType ;
+    typedef MapType::iterator Map_IT ;
+    typedef MapType::const_iterator Map_cIT ;
+
     static const int NPos = -1 ;
 
     RunEventMap() ; 
@@ -46,6 +47,15 @@ namespace SIO {
     long64 getPosition( long64 re ) ; 
    
 
+    /* Return the minimal run event object - (-1,-1) if empty.
+    */
+    RunEvent minRunEvent() ;
+    
+    /* Return the maximum run event object - (-1,-1) if empty.
+    */
+    RunEvent maxRunEvent() ;
+
+
     int getNumberOfEventRecords() { return _nEvt ; }
 
     int getNumberOfRunRecords()  { return _nRun ; }
@@ -57,6 +67,7 @@ namespace SIO {
     Map_IT end()  { return _map.end() ; }
     Map_cIT begin() const  { return _map.begin() ; }
     Map_cIT end()  const { return _map.end() ; }
+    bool empty() const { return _map.empty() ; }
 
     template <class InputIterator>
     void insert(InputIterator b, InputIterator e) { _map.insert( b , e  ) ; } 

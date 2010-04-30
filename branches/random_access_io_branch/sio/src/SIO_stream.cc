@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// CVS $Id: SIO_stream.cc,v 1.7.8.2 2010-04-13 11:02:54 gaede Exp $
+// CVS $Id: SIO_stream.cc,v 1.7.8.3 2010-04-30 21:30:52 gaede Exp $
 // ----------------------------------------------------------------------------
 // => Controller for a single SIO stream.                          
 // ----------------------------------------------------------------------------
@@ -594,6 +594,11 @@ return( SIO_STREAM_SUCCESS );
 }
 
 
+//fg: need ftell for direct access 
+SIO_64BITINT SIO_stream::currentPosition() { 
+
+  return  FTELL( handle ) ; 
+}
 
 //
 //fg: add method to position the file pointer
@@ -1196,6 +1201,11 @@ rec_name = i_name;
 // Initialize the buffer.
 //
 buffer = bufloc;
+
+//
+// Save begin of record (current file end) 
+//
+recPos = FTELL( handle ) ;
 
 //
 // Output: 1) A placeholder for the record header length.

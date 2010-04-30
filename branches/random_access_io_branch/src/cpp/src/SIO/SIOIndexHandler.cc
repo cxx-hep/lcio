@@ -7,7 +7,7 @@
 #include "EVENT/LCIO.h"
 
 #include <iostream>
-
+#include <limits.h>
 
 namespace SIO  {
 
@@ -37,11 +37,11 @@ namespace SIO  {
 
       SIO_DATA( stream ,  &control, 1  ) ;
      
-      bool oneRun     = control & 0x0001 ;
-      bool longOffset = control & 0x0002 ;
+      bool oneRun     = control & 1 ;
+      bool longOffset = control & 2 ;
 
       //FIXME: do we need this ?
-      if( control & 0x0004 ){  // parameters
+      if( control & 4 ){  // parameters
 
 	std::cerr << " WARNING: SIOIndexHandler: parameters not implemented .... " << std::endl ;
 
@@ -53,9 +53,8 @@ namespace SIO  {
       SIO_DATA( stream ,  &size, 1  ) ;
 
 
-      int nEvents = 0;
-      int nRunHeaders = 0;
-      //      int maxEntries = size;
+//       int nEvents = 0;
+//       int nRunHeaders = 0;
 
       int runNum ;
       int evtNum ;
@@ -75,10 +74,10 @@ namespace SIO  {
 	}
 	SIO_DATA( stream ,  &evtNum , 1  ) ;
 
-	if (evtNum >= 0) 
-	  nEvents++;
-	else 
-	  nRunHeaders++;
+// 	if (evtNum >= 0) 
+// 	  nEvents++;
+// 	else 
+// 	  nRunHeaders++;
 
 	if( longOffset ){
 
@@ -102,30 +101,93 @@ namespace SIO  {
 //       _raMgr->addLCIORandomAccess( ra ) ;
 //       std::cout << " ... LCIORandomAccess read from stream : " << *ra << std::endl ;
 
+      //****************************************************************************************************
 
     }  else if( op == SIO_OP_WRITE ){ 
-    
-      
-//       if( 1 ){
 
-// 	LCSIO_WRITE( stream ,   _ra->_minRunEvt.RunNum ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_minRunEvt.EvtNum ) ;
+
+//       std::cout << " -- SIOindexHandler - write called - runeventmap :" 
+// 		<< _raMgr->_runEvtMap << std::endl ;
+
+      unsigned control = 0 ;
+
+      RunEvent minEntry  = _raMgr->_runEvtMap.minRunEvent() ;
+      RunEvent maxEntry  = _raMgr->_runEvtMap.maxRunEvent() ;
+      
+      bool oneRun = minEntry.RunNum == maxEntry.RunNum ;
+      
+      if( oneRun )
+	control |= 1 ;
+
+      long64 posMin = _raMgr->_runEvtMap.getPosition( minEntry ) ;
+      long64 posMax = _raMgr->_runEvtMap.getPosition( maxEntry ) ;
+      
+      bool longOffset =   ( posMax - posMin ) > INT_MAX ;
+      
+      if( longOffset )
+	control |= 2 ;
+
+      //+++++ if we would add parameters to the LCIO index record
+      //+++++ control |= 4 ;
+
+      SIO_DATA( stream ,  &control, 1  ) ;
+
+      int runMin = minEntry.RunNum ;
+      SIO_DATA( stream ,  &runMin, 1  ) ;
+
+
+      long64 baseOffset = posMin ;
+      SIO_DATA( stream ,  &baseOffset, 1  ) ;
+
+
+      int size =  _raMgr->_runEvtMap.size() ;
+
+//       std::cout << " -- SIOindexHandler - write : " 
+// 		<< " control : " << control 
+// 		<< " baseoffset : " << baseOffset 
+// 		<< " size: " << size 
+// 		<< " min: " << minEntry 
+// 		<< " max: " << maxEntry
+// 		<< std::endl ;
+
+      
+      SIO_DATA( stream ,  &size, 1  ) ;
+      
+      for( RunEventMap::Map_IT it =  _raMgr->_runEvtMap.begin() ; it !=  _raMgr->_runEvtMap.end() ; ++it ){
 	
-// 	LCSIO_WRITE( stream ,   _ra->_maxRunEvt.RunNum ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_maxRunEvt.EvtNum ) ;
+	const RunEvent& re = it->first ;
 	
-// 	LCSIO_WRITE( stream ,   _ra->_nRunHeaders ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_nEvents ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_recordsAreInOrder ) ;
+	if( !oneRun ) {
+
+	  int runOffset =  re.RunNum - runMin ;
+
+	  SIO_DATA( stream ,  &runOffset, 1  ) ;
+	}
 	
-// 	LCSIO_WRITE( stream ,   _ra->_indexLocation ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_prevLocation ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_nextLocation ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_firstRecordLocation  ) ;
-//       }
+	int evtNum = re.EvtNum ;
+	SIO_DATA( stream ,  &evtNum , 1  ) ;
+	
+	// 	if (evtNum >= 0) 
+	// 	  nEvents++;
+	// 	else 
+	// 	  nRunHeaders++;
+	
+	
+	if( longOffset ){
+	  
+	  long64 dummyL = it->second - baseOffset ;
+	  SIO_DATA( stream ,  &dummyL , 1  ) ;
+	  
+	} else {
+	  
+	  int dummyI = it->second - baseOffset ;
+	  SIO_DATA( stream ,  &dummyI , 1  ) ;
+	}
+	
+      }
+
     }
-    
-    
+  
     return ( SIO_BLOCK_SUCCESS ) ;
   }
   

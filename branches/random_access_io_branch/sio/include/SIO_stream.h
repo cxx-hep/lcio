@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// CVS $Id: SIO_stream.h,v 1.6.10.1 2010-04-13 10:51:18 gaede Exp $
+// CVS $Id: SIO_stream.h,v 1.6.10.2 2010-04-30 21:30:51 gaede Exp $
 // ----------------------------------------------------------------------------
 // => Controller for a single SIO stream.                          
 // ----------------------------------------------------------------------------
@@ -52,6 +52,8 @@ public:
 
     // return the start of the last record read; -1 if not sucessfull
     SIO_64BITINT           lastRecordStart() { return recPos ; }
+
+    SIO_64BITINT           currentPosition()  ;
     
     unsigned int           seek(SIO_64BITINT pos, int whence=SEEK_SET) ;
 

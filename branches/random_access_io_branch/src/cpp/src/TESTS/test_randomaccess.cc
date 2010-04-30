@@ -112,7 +112,7 @@ int main(int argc, char** argv ){
 
     LCIORandomAccessMgr raMgr ;
 
-    raMgr.addRunEventMap( map ) ;
+    //    raMgr.addRunEventMap( map ) ;
     
 
     MYTEST( true , true , " LCIORandomAccessMgr" )  ;
