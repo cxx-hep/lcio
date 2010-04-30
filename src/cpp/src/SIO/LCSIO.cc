@@ -1,7 +1,7 @@
 #include "SIO/LCSIO.h"
 
 #include "SIO_functions.h"
-#include "SIO_definitions.h"
+#include "SIO_stream.h"
 #include "SIO_recordManager.h"
 #include <cctype>
 #include "Exceptions.h"
@@ -88,6 +88,29 @@ namespace SIO {
 //   const char* LCSIO::HEADERBLOCKNAME="EventHeader" ;
 
   const char* LCSIO::FILE_EXTENSION=".slcio" ;
+
+
+  void LCSIO::seekStream( SIO_stream* stream , long64 pos) {
+
+    if( stream->getState() != SIO_STATE_OPEN ){
+      
+      throw IO::IOException( std::string(" stream not open: ")+ *stream->getName() ) ;
+    }
+    
+    int status ;
+    
+    if( pos < 0 ) 
+      status = stream->seek( pos , SEEK_END ) ; 
+    else
+      status = stream->seek( pos ) ;
+    
+    if( status != SIO_STREAM_SUCCESS ) {
+      std::stringstream s("[SIOReader::getEventMap()] Can't seek stream to ") ;
+      s << pos ;
+      throw IO::IOException( s.str() ) ;
+    }
+
+  }
 
 
   void LCSIO::checkVersion(int versionID){

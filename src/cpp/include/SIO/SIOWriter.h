@@ -7,6 +7,8 @@
 #include "EVENT/LCEvent.h"
 #include "EVENT/LCRunHeader.h"
 
+#include "LCIORandomAccessMgr.h"
+
 #include "SIO_block.h"
 
 class SIO_record ;
@@ -100,6 +102,13 @@ namespace SIO {
      */
     virtual void flush() throw (IO::IOException, std::exception) ;
 
+
+    /** Write random access records: LCIOIndex and LCIORandomAccess.
+     *
+     *@throws IOException
+     */
+    void writeRandomAccessRecords() throw (IO::IOException, std::exception) ;
+
   protected:
 
     /** Sets up the handlers for writing the current event.
@@ -125,9 +134,11 @@ namespace SIO {
 
   protected:
     
-    SIO_record *_evtRecord ;
-    SIO_record *_hdrRecord ;
-    SIO_record *_runRecord ;
+//     SIO_record *_evtRecord ;
+//     SIO_record *_hdrRecord ;
+//     SIO_record *_runRecord ;
+
+    LCIORandomAccessMgr _raMgr ;
 
   }; // class
 

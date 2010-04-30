@@ -158,6 +158,7 @@ namespace SIO {
     LCSIO::records() ;
 
     if( _readEventMap ){
+
       getEventMap() ;
     }
 
@@ -165,102 +166,51 @@ namespace SIO {
   
   void SIOReader::getEventMap() {
 
-    if( _stream->getState() != SIO_STATE_OPEN ){
+    // check if the last record is LCIORandomAccess
+    if( ! _raMgr.readLCIORandomAccessAt( _stream , -LCSIO_RANDOMACCESS_SIZE) )  {
 
-      throw IOException( std::string(" stream not open: ")+ *_stream->getName() ) ;
+      // else:
+      recreateEventMap() ; 
     }
 
-    //========= read the new LCIORandomAccess objects - if they exist ....
+    //read all remaining LCIORandomAccess records
 
-    // go to the end and see if the last record is of type LCIORandomAccess 
-    const int LCIORandomAccess_Size = 132  ; //FIXME - define globally or store at end of file ....
+    const LCIORandomAccess* ra = _raMgr.lastLCIORandomAccess() ;
 
-    int status = _stream->seek( -LCIORandomAccess_Size , SEEK_END ) ; 
+    EVENT::long64 raPos = ra->getPrevLocation() ;
 
-    if( status != SIO_STREAM_SUCCESS ) 
-      throw IOException( std::string( "[SIOReader::getEventMap()] Can't seek stream to 0" ) ) ;
+    EVENT::long64 indexPos = ra->getIndexLocation() ;
     
-    // TODO: check for LCIO version number when released ....
-    
-    std::cout << " SIOReader::getEventMap() reading TOC for direct access ..." 
-	      << std::endl ;
+    _raMgr.readLCIOIndexAt( _stream , indexPos ) ;
 
-    { // scope for reading arbitrary records .... 
-      SIORecords::Unpack raUnp( SIORecords::Unpack::All ) ;
-      
-      SIORandomAccessHandler raHandler( "LCIORandomAccess",  &_raMgr ) ;
-      
-      SIO_blockManager::remove(  "LCIORandomAccess"  ) ;
-      SIO_blockManager::add( &raHandler ) ;
-      
-      int status =  _stream->read( &_dummyRecord ) ;
-      
-      if( ! (status & 1)  ){
-	
-	status = _stream->reset() ;
-	
-	if( status != SIO_STREAM_SUCCESS ){
-	  
-	  throw IOException( std::string(" io error  reading LCIORandomAccess on stream: ") 
-			     + *_stream->getName() ) ;
-	}
+    while( raPos != 0 ){
 
-	std::cout << " ... no LCIORandomAccess record found - old file ??? " << std::endl ;
+      if( _raMgr.readLCIORandomAccessAt( _stream , raPos) ){
 
-	return recreateEventMap() ; 
-      }
+	ra = _raMgr.lastLCIORandomAccess() ;
 
+	raPos = ra->getPrevLocation() ;	
+
+	//	std::cout << " read ra at " << ra << " : " << *ra << "  - prevPos : " << raPos << std::endl ;
+
+	EVENT::long64 indexPos = ra->getIndexLocation() ;
+
+	_raMgr.readLCIOIndexAt( _stream , indexPos ) ;
+
+      }else{
+	throw IOException( std::string( "[SIOReader::getEventMap()] Could not read previous LCIORandomAccess record" ) ) ;
+      }      
     }
-
-    //***************************************************************
-    //TODO: read complete linked list of LCIORandomAccess records ...
-    //***************************************************************
-
-    const LCIORandomAccess* ra = _raMgr.lastRandomAccess() ;
 
     //    std::cout << " ... LCIORandomAccess read from stream : "<< *ra << std::endl ;
 
-    EVENT::long64 indexPos = ra->getIndexLocation() ;
 
-
-    status = _stream->seek( indexPos ) ; 
-
-    if( status != SIO_STREAM_SUCCESS ) 
-      throw IOException( std::string( "[SIOReader::getEventMap()] Can't seek stream to 0" ) ) ;
-
-
-    { // scope for reading arbitrary records .... 
-      SIORecords::Unpack raUnp( SIORecords::Unpack::All ) ;
-      
-      SIOIndexHandler raHandler( "LCIOIndex",  &_raMgr ) ;
-      
-      SIO_blockManager::remove(  "LCIOIndex"  ) ;
-      SIO_blockManager::add( &raHandler ) ;
-      
-      int status =  _stream->read( &_dummyRecord ) ;
-      
-      if( ! (status & 1)  ){
-	
-	status = _stream->reset() ;
-	
-	if( status != SIO_STREAM_SUCCESS ){
-	  
-	  throw IOException( std::string(" io error  reading LCIOIndex on stream: ") 
-			     + *_stream->getName() ) ;
-	}
-
-	std::cout << " ... no LCIOIndex record found - old file ??? " << std::endl ;
-
-	return recreateEventMap() ;
-      }
-
-    }
-
-    std::cout << " ... LCIORandomAccessMgr: "<< _raMgr << std::endl ;
+    //std::cout << " ... LCIORandomAccessMgr: "<< _raMgr << std::endl ;
     
 
   }
 
+  //-------------------------------------------------------------------------------------------
   void SIOReader::recreateEventMap() {
 
      std::cout << " SIOReader::getEventMap() recreating event map for direct access ..." 

@@ -8,19 +8,20 @@
 #include <map>
 #include <list>
 
+class SIO_stream ;
 
 namespace SIO{ // IO or IMPL ?
 
   class LCIORandomAccessMgr ;
   class SIOIndexHandler ;
   class SIORandomAccessHandler ;
-
+   
   std::ostream & operator<<(std::ostream& os, const LCIORandomAccessMgr& ra ) ;
 
 /**  Manager class for LCIORandomAccess objects and direct access
  *
  * @author gaede
- * @version $Id: LCIORandomAccessMgr.h,v 1.1.2.3 2010-04-27 12:17:58 gaede Exp $
+ * @version $Id: LCIORandomAccessMgr.h,v 1.1.2.4 2010-04-30 21:30:52 gaede Exp $
  */
 
   class LCIORandomAccessMgr {
@@ -35,32 +36,32 @@ namespace SIO{ // IO or IMPL ?
     
     virtual ~LCIORandomAccessMgr() ;
  
-    void addRunEventMap( const RunEventMap& reMap)  {  _runEvtMap.insert( reMap.begin() , reMap.end()  ) ; }
+    //    void addRunEventMap( const RunEventMap& reMap)  {  _runEvtMap.insert( reMap.begin() , reMap.end()  ) ; }
     
     RunEventMap& map() {  return _runEvtMap ;  } 
 
-    LCIORandomAccess createFromEventMap() ;
+    LCIORandomAccess* createFromEventMap() ;
     
-    const LCIORandomAccess* lastRandomAccess() { return _list.back() ; } 
+    const LCIORandomAccess* lastLCIORandomAccess() {
+
+      return (_list.empty() ?  0 : _list.back() )  ; 
+    } 
 
     void addLCIORandomAccess( LCIORandomAccess* ra ) { _list.push_back( ra ) ;  }
     
+
+    //    bool readLastLCIORandomAccess( SIO_stream* stream ) ;
+
+    bool readLCIORandomAccessAt( SIO_stream* stream , long64 pos) ;
+
+    bool readLCIOIndexAt( SIO_stream* stream , long64 pos) ;
+
   protected:
 
-    //    void update() ;
+    bool readLCIORandomAccess( SIO_stream* stream ) ;
 
-    //     RunEvent _minRunEvt ;
-    //     RunEvent _maxRunEvt ;
-    //     int  _nRunHeaders ;
-    //     int  _nEvents ;
-    
-    //    int  _recordsAreInOrder ;  
-    //     long64  _indexLocation ;
-    //     long64  _prevLocation ;
-    //     long64  _nextLocation ;
-    //     long64  _firstRecordLocation ;
-    
-    
+    bool readLCIOIndex( SIO_stream* stream ) ;
+   
     RunEventMap _runEvtMap ;
     
     std::list< LCIORandomAccess* > _list ;

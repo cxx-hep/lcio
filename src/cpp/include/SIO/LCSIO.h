@@ -4,6 +4,7 @@
 #include "LCIOTypes.h"
 
 #include "SIO_record.h" 
+#include "SIO_definitions.h"
 
 #include <string>
 
@@ -17,7 +18,7 @@
 
 #define LCSIO_ACCESSRECORDNAME "LCIORandomAccess"
 #define LCSIO_ACCESSBLOCKNAME  "LCIORandomAccess"
-
+#define LCSIO_RANDOMACCESS_SIZE 132 
 #define LCSIO_INDEXRECORDNAME "LCIOIndex"
 #define LCSIO_INDEXBLOCKNAME  "LCIOIndex"
 
@@ -169,6 +170,13 @@ namespace SIO {
      */
     static std::string getValidSIOName(const std::string& aName ) ;
     //    static const char* getValidSIOName(const std::string& aName ) ;
+
+
+    /**Seek stream to the given absolute position - if pos<0 from end of file.
+     * @throw IOException
+     */
+    static void seekStream( SIO_stream* stream , EVENT::long64 pos) ;
+
 
   private:
 

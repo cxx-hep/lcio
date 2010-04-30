@@ -40,7 +40,7 @@ namespace SIO{ // IO or IMPL ?
 /**  Implementation class for LCIORandomAccess records.
  *
  * @author gaede
- * @version $Id: LCIORandomAccess.h,v 1.1.2.4 2010-04-27 12:17:58 gaede Exp $
+ * @version $Id: LCIORandomAccess.h,v 1.1.2.5 2010-04-30 21:30:52 gaede Exp $
  */
 //  class LCIORandomAccess : public EVENT LCObject {
   class LCIORandomAccess {
@@ -54,10 +54,15 @@ namespace SIO{ // IO or IMPL ?
     
     virtual ~LCIORandomAccess(){ /* nop */; }
     
-    long64 getIndexLocation() const { return _indexLocation ; }
-    long64 getPrevLocation() const  { return _prevLocation ; }
-    long64 getNextLocation() const  { return _nextLocation ; }
+    long64 getIndexLocation() const  { return _indexLocation ; }
+    long64 getPrevLocation()  const  { return _prevLocation ; }
+    long64 getNextLocation()  const  { return _nextLocation ; }
     long64 getFirstRecordLocation() const  { return _firstRecordLocation ; }
+
+
+    void setIndexLocation(long64 il)       { _indexLocation = il ; }
+    void setPreviousLocation(long64 pl)    {  _prevLocation = pl ; }
+    void setFirstRecordLocation(long64 fl) { _firstRecordLocation = fl ; }
 
   protected:
     RunEvent _minRunEvt ;

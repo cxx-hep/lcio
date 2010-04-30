@@ -22,6 +22,10 @@ namespace SIO  {
     std::pair< Map_IT, bool> p = 
       _map.insert( std::make_pair( (long64) re   , pos ) ) ; 
 
+//     std::cout << " *****************RunEventMap::add : " << re.RunNum <<", "<< re.EvtNum 
+// 	      << " this: " << this
+// 	      << *this << std::endl ;
+
     if( p.second ) {  // if event/run exists don't count as new entry
 
       if( re.EvtNum > -1 ) 
@@ -46,7 +50,30 @@ namespace SIO  {
 
     return ( it != _map.end() ? it->second  :  NPos ) ;
   } 
+
+
+  RunEvent RunEventMap::minRunEvent() {
+    
+    if( _map.empty() )
+      return RunEvent( -1 , -1 ) ;
+
+    return _map.begin()->first ;
+
+  }
   
+  RunEvent RunEventMap::maxRunEvent() {
+
+    if( _map.empty() )
+      return RunEvent( -1 , -1 ) ;
+
+    Map_IT it =  _map.end() ;
+
+    --it ;
+
+    return it->first ;
+
+  }
+
   std::ostream & operator<<(std::ostream& os, const RunEventMap& rm ) {
 
     os << " ------- RunEventMap : " << std::endl ;

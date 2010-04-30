@@ -10,6 +10,7 @@ bool operator < ( const RunEvent& r0, const RunEvent& other) {
 
     return ( other.EvtNum < 0 ?  r0.RunNum < other.RunNum : true ) ;
   }
+  else if( other.EvtNum < 0 ) return false ;
 
   return ( r0.RunNum == other.RunNum ?  r0.EvtNum < other.EvtNum  :  r0.RunNum < other.RunNum ) ; 
 } 

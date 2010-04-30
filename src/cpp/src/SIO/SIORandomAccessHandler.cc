@@ -51,12 +51,11 @@ namespace SIO  {
       
       _raMgr->addLCIORandomAccess( ra ) ;
 
-      //std::cout << " ... LCIORandomAccess read from stream : " << *ra << std::endl ;
-
-
     }  else if( op == SIO_OP_WRITE ){ 
     
-      LCIORandomAccess* ra = new LCIORandomAccess ;  // FIXME: get from EventMap
+
+      LCIORandomAccess* ra = const_cast<LCIORandomAccess*> ( _raMgr->lastLCIORandomAccess() ) ;
+      // these SIO functions really should also exist for const arguments ....
 
       SIO_DATA( stream ,  &(ra->_minRunEvt.RunNum) , 1  ) ;
       SIO_DATA( stream ,  &(ra->_minRunEvt.EvtNum) , 1  ) ;
@@ -73,23 +72,6 @@ namespace SIO  {
       SIO_DATA( stream ,  &( ra->_nextLocation) , 1  ) ;
       SIO_DATA( stream ,  &( ra->_firstRecordLocation) , 1  ) ;
       
-//       if( 1 ){
-
-// 	LCSIO_WRITE( stream ,   _ra->_minRunEvt.RunNum ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_minRunEvt.EvtNum ) ;
-	
-// 	LCSIO_WRITE( stream ,   _ra->_maxRunEvt.RunNum ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_maxRunEvt.EvtNum ) ;
-	
-// 	LCSIO_WRITE( stream ,   _ra->_nRunHeaders ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_nEvents ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_recordsAreInOrder ) ;
-	
-// 	LCSIO_WRITE( stream ,   _ra->_indexLocation ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_prevLocation ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_nextLocation ) ;
-// 	LCSIO_WRITE( stream ,   _ra->_firstRecordLocation  ) ;
-//       }
     }
     
     
