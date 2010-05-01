@@ -188,6 +188,7 @@ ADD_LCIO_BIN( recjob )
 ADD_LCIO_BIN( dumpevent ) 
 ADD_LCIO_BIN( copyfix ) 
 ADD_LCIO_BIN( stdhepjob ) 
+ADD_LCIO_BIN( addRandomAccess ) 
 
 
 IF( BUILD_LCIO_EXAMPLES )
@@ -236,11 +237,6 @@ ENDMACRO()
 #===================================================================
 
 
-ADD_LCIO_CTEST( test_example ) 
-ADD_LCIO_CTEST( test_calohit )
-ADD_LCIO_CTEST( test_randomaccess) 
-
-
 #------------- install the library and the (public) header files -------
 
 INSTALL( TARGETS lib_LCIO DESTINATION lib PERMISSIONS
@@ -260,13 +256,22 @@ INSTALL(DIRECTORY ${LCIO_SOURCE_DIR}/src/cpp/include/ DESTINATION include
   PATTERN "*CPPFORT*" EXCLUDE
   PATTERN "*CVS*" EXCLUDE)
 
-
 #------------- ctest stuff (call with ctest or 'make test') ------------
 
 ADD_TEST( t_simjob "${EXECUTABLE_OUTPUT_PATH}/simjob" )
+
+ADD_LCIO_CTEST( test_example ) 
+ADD_LCIO_CTEST( test_calohit )
+ADD_LCIO_CTEST( test_randomaccess) 
+
+
+ADD_TEST( t_dumpevent "${EXECUTABLE_OUTPUT_PATH}/dumpevent" simjob.slcio 4 5 )
+#ADD_TEST( t_randomaccessrecords "${PROJECT_SOURCE_DIR}/bin/runSIODump.sh" -v 1 ${PROJECT_SOURCE_DIR}/doc/lcio.xml simjob.slcio | grep RandomAccess )
 ADD_TEST( t_anajob_sim "${EXECUTABLE_OUTPUT_PATH}/anajob" simjob.slcio )
 ADD_TEST( t_recjob "${EXECUTABLE_OUTPUT_PATH}/recjob" simjob.slcio recjob.slcio )
 ADD_TEST( t_anajob_rec "${EXECUTABLE_OUTPUT_PATH}/anajob" recjob.slcio )
+
+
 
 SET_TESTS_PROPERTIES( t_simjob PROPERTIES PASS_REGULAR_EXPRESSION
     "created  10 runs with  100 events" )
@@ -276,6 +281,11 @@ SET_TESTS_PROPERTIES( t_recjob PROPERTIES PASS_REGULAR_EXPRESSION
     "added collection: 'SomeClusters' and 'SomeTracks' to   100 events and added one extra MCParticle to each event." )
 SET_TESTS_PROPERTIES( t_anajob_rec PROPERTIES PASS_REGULAR_EXPRESSION
     "100 events read from files:" )
+SET_TESTS_PROPERTIES( t_dumpevent PROPERTIES PASS_REGULAR_EXPRESSION
+    "Event  : 5 - run:  4" )
+
+#SET_TESTS_PROPERTIES( t_randomaccessrecords PROPERTIES PASS_REGULAR_EXPRESSION
+#    "Event  : 5 - run:  4" )
 
 IF( BUILD_F77_TESTJOBS )
     ADD_TEST( t_simjob_F "${EXECUTABLE_OUTPUT_PATH}/simjob_F" )

@@ -40,7 +40,7 @@ using namespace IMPL ;
 
 typedef EVENT::long64 long64 ;
 
-#define EVENTKEY(RN,EN)  ( EVENT::long64( RN ) << 32 ) | EN 
+//#define EVENTKEY(RN,EN)  ( EVENT::long64( RN ) << 32 ) | EN 
  
 namespace SIO {
 
@@ -166,112 +166,10 @@ namespace SIO {
   
   void SIOReader::getEventMap() {
 
-    // check if the last record is LCIORandomAccess
-    if( ! _raMgr.readLCIORandomAccessAt( _stream , -LCSIO_RANDOMACCESS_SIZE) )  {
-
-      // else:
-      return recreateEventMap() ; 
-    }
-
-    //read all remaining LCIORandomAccess records
-
-    const LCIORandomAccess* ra = _raMgr.lastLCIORandomAccess() ;
-
-    EVENT::long64 raPos = ra->getPrevLocation() ;
-
-    EVENT::long64 indexPos = ra->getIndexLocation() ;
-    
-    _raMgr.readLCIOIndexAt( _stream , indexPos ) ;
-
-    while( raPos != 0 ){
-
-      if( _raMgr.readLCIORandomAccessAt( _stream , raPos) ){
-
-	ra = _raMgr.lastLCIORandomAccess() ;
-
-	raPos = ra->getPrevLocation() ;	
-
-	//	std::cout << " read ra at " << ra << " : " << *ra << "  - prevPos : " << raPos << std::endl ;
-
-	EVENT::long64 indexPos = ra->getIndexLocation() ;
-
-	_raMgr.readLCIOIndexAt( _stream , indexPos ) ;
-
-      }else{
-	throw IOException( std::string( "[SIOReader::getEventMap()] Could not read previous LCIORandomAccess record" ) ) ;
-      }      
-    }
-
-    //    std::cout << " ... LCIORandomAccess read from stream : "<< *ra << std::endl ;
-
-
-    //std::cout << " ... LCIORandomAccessMgr: "<< _raMgr << std::endl ;
-    
-
+    _raMgr.getEventMap( _stream ) ;
   }
 
   //-------------------------------------------------------------------------------------------
-  void SIOReader::recreateEventMap() {
-
-     std::cout << " SIOReader::getEventMap() recreating event map for direct access ..." 
-	       << std::endl ;
-
-     int status = _stream->seek( 0 ) ; // go to start of file
-
-     if( status != SIO_STREAM_SUCCESS ) 
-       throw IOException( std::string( "[SIOReader::getEventMap()] Can't seek stream to 0 ") ) ;
-    
-    { // -- scope for unpacking evt header --------
-      //      SIOUnpack hdrUnp( SIOUnpack::EVENTHDR ) ;
-      SIORecords::Unpack hdrUnp( SIORecords::Unpack::Header ) ;
-
-      while( true ){
-	
-	SIO_blockManager::remove(  LCSIO_HEADERBLOCKNAME ) ;
-	SIO_blockManager::add( _evtHandler ) ;
-
-	//----	  readRecord() ;
-	// read the next record from the stream
-	if( _stream->getState()== SIO_STATE_OPEN ){
-      
-	  unsigned int status =  _stream->read( &_dummyRecord ) ;
-	  
-	  if( ! (status & 1)  ){
-
-	    if( status & SIO_STREAM_EOF ){
-	      break ;
-	    }
-	    
-	    throw IOException( std::string(" io error on stream: ") + *_stream->getName() ) ;
-	  }
-	} else {
-	  throw IOException( std::string(" stream not open: ")+ *_stream->getName() ) ;
-	}
-	
-	//--
-	int runNum = (*_evtP)->getRunNumber() ;
-	int evtNum = (*_evtP)->getEventNumber() ;
-	
-	//        _evtMap[  EVENTKEY( runNum , evtNum ) ] = _stream->lastRecordStart() ;
-
-	_raMgr.map().add(   RunEvent( runNum , evtNum ) ,  _stream->lastRecordStart() ) ;
-
-
-//  	EVENT::long64 key  = (EVENT::long64( runNum ) << 32 ) | evtNum ;
-//  	std::cout << "  " <<  key << " - " << _stream->lastRecordStart()  
-//  		  << " evt: " << evtNum << std::endl ;
-	
-      } // while
-
-      _stream->seek(0) ; // go to start - FIXME - should we store the current 
-
-      if( status != SIO_STREAM_SUCCESS ) 
-	throw IOException( std::string( "[SIOReader::getEventMap()] Can't seek stream to 0" ) ) ;
-
-    }// -- end of scope for unpacking evt header --
-
-//    std::cout << " SIOReader::getEventMap() : done " << std::endl ;
-  }
 
   void SIOReader::readRecord() throw (IOException , EndOfDataException , std::exception) {
 
@@ -491,92 +389,101 @@ namespace SIO {
       
 //       return 0 ;
 
-    EVENT::long64 pos = _raMgr.map().getPosition(  EVENTKEY( runNumber,evtNumber ) ) ; 
-
-    if( pos != RunEventMap::NPos ) {
+    if( _readEventMap ) {
       
-      int status = _stream->seek( pos ) ;
+ 
+      EVENT::long64 pos = _raMgr.getPosition(  RunEvent( runNumber,evtNumber ) ) ; 
       
-      if( status != SIO_STREAM_SUCCESS ) 
-	throw IOException( std::string( "[SIOReader::readEvent()] Can't seek stream to"
-					" requested position" ) ) ;
-      return readNextEvent() ;
-    } 
-    else 
+      if( pos != RunEventMap::NPos ) {
+	
+	int status = _stream->seek( pos ) ;
+	
+	if( status != SIO_STREAM_SUCCESS ) 
+	  throw IOException( std::string( "[SIOReader::readEvent()] Can't seek stream to"
+					  " requested position" ) ) ;
+	return readNextEvent() ;
+      } 
+      else {
+	
+	//       std::cout << " could not find event " << runNumber <<  "," << evtNumber << std::endl 
+	// 		<< _raMgr ;
+	
+	return 0 ;
+      }
+
+
+    } else {  // no event map ------------------
+
+
+      std::cout << " WARNING : LCReader::readEvent(run,evt) called but not in direct access Mode  - " << std::endl 
+		<< " use fast skip mechanism instead ..." << std::endl 
+		<< " Too avoid this WARNING create the LCReader with: " << std::endl 
+		<< "       LCFactory::getInstance()->createLCReader( IO::LCReader::directAccess ) ; " << std::endl ;
+
+      // ---- OLD code with fast skip -----------
+       
+      bool runFound = false ;
+      bool evtFound = false ;
+      // check current run - if any
+      if( *_runP != 0 ){
+	if( (*_runP)->getRunNumber() == runNumber ) runFound = true ;
+      }
+      // skip through run headers until run found or EOF
+      while (!runFound ) {
+	if( readNextRunHeader() == 0 ) break ; 
+	runFound = ( (*_runP)->getRunNumber() == runNumber ) ;
+      }
+      if( !runFound ){
+	//       std::stringstream message ;
+	//       message << " run not found: " << runNumber << std::ends ;
+	//       throw NotAvailableException( message.str()  ) ;
+	return 0 ;
+      }
+      { // -- scope for unpacking evt header --------
+	//      SIORecordUnpack hdrUnp( SIOWriter::_hdrRecord ) ;
+	SIORecords::Unpack hdrUnp( SIORecords::Unpack::Header ) ;
+
+	while( !evtFound ){
+	  
+	  try{ 
+	    readRecord() ;
+	  }
+	  catch(EndOfDataException){
+	    return 0 ;
+	  }
+	  
+	  evtFound = ( (*_evtP)->getEventNumber() == evtNumber ) ;
+	}
+      }// -- end of scope for unpacking evt header --
       
-      return 0 ;
-    
-    
+      if( !evtFound ) return 0 ;
+      
+      { // now read the event record
+	SIORecords::Unpack evtUnp( SIORecords::Unpack::Event ) ;
 
+	try{ 
+	  readRecord() ;
+	}
+	catch(EndOfDataException){
+	  return 0 ;
+	}
+	
+	// set the proper acces mode before returning the event
+	// FIXME : need update mode as well
+	// (*_evtP)->setAccessMode( accessMode ) ;
+	(*_evtP)->setAccessMode( LCIO::READ_ONLY ) ;
+	
+	//       // restore the daughter relations from the parent relations
+	//       SIOParticleHandler::restoreParentDaughterRelations( *_evtP ) ;
+	postProcessEvent() ;
+	
+	return *_evtP ;      
+      }
+     
 
-
-
-
-
-    /* ---- OLD code with fast skip -----------
-       
-       bool runFound = false ;
-       bool evtFound = false ;
-       // check current run - if any
-       if( *_runP != 0 ){
-       if( (*_runP)->getRunNumber() == runNumber ) runFound = true ;
-       }
-       // skip through run headers until run found or EOF
-       while (!runFound ) {
-       if( readNextRunHeader() == 0 ) break ; 
-       runFound = ( (*_runP)->getRunNumber() == runNumber ) ;
-       }
-       if( !runFound ){
-       //       std::stringstream message ;
-       //       message << " run not found: " << runNumber << std::ends ;
-       //       throw NotAvailableException( message.str()  ) ;
-       return 0 ;
-       }
-       { // -- scope for unpacking evt header --------
-       //      SIORecordUnpack hdrUnp( SIOWriter::_hdrRecord ) ;
-       SIOUnpack hdrUnp( SIOUnpack::EVENTHDR ) ;
-       
-       while( !evtFound ){
-       
-       try{ 
-       readRecord() ;
-       }
-       catch(EndOfDataException){
-       return 0 ;
-       }
-       
-       evtFound = ( (*_evtP)->getEventNumber() == evtNumber ) ;
-       }
-       }// -- end of scope for unpacking evt header --
-       
-       if( !evtFound ) return 0 ;
-       
-       { // now read the event record
-       //      SIORecordUnpack evtUnp( SIOWriter::_evtRecord ) ;
-       SIOUnpack evtUnp( SIOUnpack::EVENT ) ;
-       
-       try{ 
-       readRecord() ;
-       }
-       catch(EndOfDataException){
-       return 0 ;
-       }
-       
-       // set the proper acces mode before returning the event
-       // FIXME : need update mode as well
-       // (*_evtP)->setAccessMode( accessMode ) ;
-       (*_evtP)->setAccessMode( LCIO::READ_ONLY ) ;
-       
-       //       // restore the daughter relations from the parent relations
-       //       SIOParticleHandler::restoreParentDaughterRelations( *_evtP ) ;
-       postProcessEvent() ;
-       
-       return *_evtP ;      
-       }
-       
-    */
+    } //----------   end fast skip --------------------------------------------------   
+   
   }
-  
   
   void SIOReader::close() throw (IOException, std::exception ){
   

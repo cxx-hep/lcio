@@ -9,24 +9,25 @@
 
 typedef EVENT::long64 long64 ;
 
-struct RunEvent{
-  RunEvent(): RunNum( 0 ), EvtNum( 0 ) {}
-  RunEvent(int run, int evt): RunNum( run ), EvtNum( evt ) {}
-  RunEvent(long64 runEvt): RunNum( (runEvt >> 32 ) & 0xffffffff  ), EvtNum( runEvt &  0xffffffff ) {}
-  int RunNum ;
-  int EvtNum ;
-
-  operator long64() const {  return  ( long64( RunNum ) << 32  |  ( long64(EvtNum) & 0xffffffff )  ) ; } 
-  //bool operator < ( const RunEvent& other) {  return ( RunNum <= other.RunNum && EvtNum < other.EvtNum ) ; } 
-};
-
-std::ostream & operator<<(std::ostream& os, const RunEvent& re ) ;
-
-bool operator < ( const RunEvent& r0, const RunEvent& other)  ;
-
-
-
 namespace SIO{ // IO or IMPL ?
+
+  /** Helper struct that stores run and event positions in the file. The operator<() defines a lexicographical ordering
+   *  in RunNum and EvtNum where all run records (EvtNum=-1) are orderd first. 
+   */
+  struct RunEvent{
+    RunEvent(): RunNum( 0 ), EvtNum( 0 ) {}
+    RunEvent(int run, int evt): RunNum( run ), EvtNum( evt ) {}
+    RunEvent(long64 runEvt): RunNum( (runEvt >> 32 ) & 0xffffffff  ), EvtNum( runEvt &  0xffffffff ) {}
+    int RunNum ;
+    int EvtNum ;
+    
+    operator long64() const {  return  ( long64( RunNum ) << 32  |  ( long64(EvtNum) & 0xffffffff )  ) ; } 
+  };
+  
+  std::ostream & operator<<(std::ostream& os, const RunEvent& re ) ;
+  
+  bool operator < ( const RunEvent& r0, const RunEvent& other)  ;
+  
 
   class SIORandomAccessHandler ;
   class LCIORandomAccess ;
@@ -40,7 +41,7 @@ namespace SIO{ // IO or IMPL ?
 /**  Implementation class for LCIORandomAccess records.
  *
  * @author gaede
- * @version $Id: LCIORandomAccess.h,v 1.1.2.5 2010-04-30 21:30:52 gaede Exp $
+ * @version $Id: LCIORandomAccess.h,v 1.1.2.6 2010-05-01 11:12:41 gaede Exp $
  */
 //  class LCIORandomAccess : public EVENT LCObject {
   class LCIORandomAccess {
@@ -56,12 +57,13 @@ namespace SIO{ // IO or IMPL ?
     
     long64 getIndexLocation() const  { return _indexLocation ; }
     long64 getPrevLocation()  const  { return _prevLocation ; }
-    long64 getNextLocation()  const  { return _nextLocation ; }
+    //   long64 getNextLocation()  const  { return _nextLocation ; }
     long64 getFirstRecordLocation() const  { return _firstRecordLocation ; }
 
 
     void setIndexLocation(long64 il)       { _indexLocation = il ; }
-    void setPreviousLocation(long64 pl)    {  _prevLocation = pl ; }
+    void setPreviousLocation(long64 pl)    { _prevLocation = pl ; }
+    //    void setNextLocation(long64 nl)        { _nextLocation = nl ; }
     void setFirstRecordLocation(long64 fl) { _firstRecordLocation = fl ; }
 
   protected:
