@@ -6,14 +6,16 @@
 #include "LCIORandomAccess.h"
 
 namespace SIO {
+
   class RunEventMap ; 
+
   std::ostream & operator<<(std::ostream& os, const RunEventMap& rm ) ;
 
 
 /** Map that holds positions of Run and Event records.
  * 
  * @author gaede
- * @version $Id: RunEventMap.h,v 1.1.2.4 2010-04-30 21:30:52 gaede Exp $
+ * @version $Id: RunEventMap.h,v 1.1.2.5 2010-05-01 11:12:41 gaede Exp $
  */
   class RunEventMap {
 

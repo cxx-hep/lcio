@@ -103,12 +103,6 @@ namespace SIO {
     virtual void flush() throw (IO::IOException, std::exception) ;
 
 
-    /** Write random access records: LCIOIndex and LCIORandomAccess.
-     *
-     *@throws IOException
-     */
-    void writeRandomAccessRecords() throw (IO::IOException, std::exception) ;
-
   protected:
 
     /** Sets up the handlers for writing the current event.

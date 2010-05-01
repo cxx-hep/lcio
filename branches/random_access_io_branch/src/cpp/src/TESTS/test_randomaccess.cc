@@ -4,6 +4,7 @@
 
 #include "tutil.h"
 #include "lcio.h"
+#include <cstdlib>
 
 // #include "EVENT/LCIO.h"
 // #include "IO/LCWriter.h"
@@ -14,6 +15,7 @@
 #include "SIO/LCIORandomAccessMgr.h"
 #include "SIO/RunEventMap.h"
 
+#include "UTIL/LCTOOLS.h"
 
 #include <iostream>
 #include <set>
@@ -100,46 +102,43 @@ int main(int argc, char** argv ){
 
 
 
-
-
-    MYTEST.LOG( "  ---------TO DO !!!!!! ---------------------   testing class LCIORandomAccess"  ) ;
-
-    MYTEST( true , true , " LCIORandomAccess " )  ;
-
-
-
-    MYTEST.LOG( "  ---------TO DO !!!!!! ---------------------   testing class LCIORandomAccessMgr"  ) ;
-
-    LCIORandomAccessMgr raMgr ;
-
-    //    raMgr.addRunEventMap( map ) ;
-    
-
-    MYTEST( true , true , " LCIORandomAccessMgr" )  ;
-  
-
-
-
-    //MYTEST( true , true , " LCIORandomAccess " )  ;
-
     //if( true ){
     if( false ){
         // force test program to fail in this way:
         MYTEST.FAILED( "oops, something went wrong..." );
     }
 
-    // example with a try&catch fail condition:
-    //
-    ///////////////////////////////////////////////////////////////////////
-    //LCReader* lcReader = LCFactory::getInstance()->createLCReader() ;
-    //try{
-    //    lcReader->open( "blub.slcio" ) ;
-    //}
-    //catch( Exception &e ){
-    //    MYTEST.FAILED( e.what() );
-    //}
-    //lcReader->close();
-    //delete lcReader;
+
+    MYTEST.LOG( "  -------------------------------------    test random access in file simjob.slcio - file must exist ...."  ) ;
+
+    // simjob.slcio has written 100 events in 10 runs, closing and re-opening the file after every run 
+    //  this tests writing the random access records in append mode ...
+    //  here we make just one simple test of reading a given event
+
+    LCReader* lcReader = LCFactory::getInstance()->createLCReader( IO::LCReader::directAccess ) ;
+
+    //    LCReader* lcReader = LCFactory::getInstance()->createLCReader( ) ;
+
+    try{
+      
+      //      std::system("pwd") ;
+      lcReader->open( "simjob.slcio" ) ;
+      
+      LCEvent* evt = lcReader->readEvent( 3 , 4 ) ;
+
+      MYTEST( evt !=0  , true  , " LCReader::readEvent( 3 , 4  ) - evt is NULL" );
+      MYTEST( evt->getRunNumber() , 3 , " LCReader::readEvent( 3, 4  ) - run number is not 3" );
+      MYTEST( evt->getEventNumber() , 4 , " LCReader::readEvent( 3, 4  ) - event number is not 4" );
+
+    }
+    catch( Exception &e ){
+      
+      MYTEST.FAILED( e.what() );
+    }
+
+    lcReader->close();
+    
+    delete lcReader;
     ///////////////////////////////////////////////////////////////////////
 
     return 0;
