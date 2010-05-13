@@ -8,7 +8,7 @@
 #include "SIO/SIORunHeaderHandler.h"
 #include "SIO/SIOParticleHandler.h"
 
-#include "SIO/SIOrandomAccessHandler.h"
+#include "SIO/SIORandomAccessHandler.h"
 #include "SIO/SIOIndexHandler.h"
 
 #include "LCIOSTLTypes.h"
