@@ -160,6 +160,9 @@ namespace SIO {
 	// --- open the file in append mode 	
 	status  = _stream->open( sioFilename.c_str() , SIO_MODE_WRITE_APPEND ) ; 
 
+	// the file record will be overwritten with the next record ...
+	//	LCSIO::seekStream( _stream, -LCSIO_RANDOMACCESS_SIZE ) ; 
+
 	break ;
       }
 

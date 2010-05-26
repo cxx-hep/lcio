@@ -32,7 +32,7 @@ namespace SIO {
  *   
  *
  * @author gaede
- * @version $Id: LCIORandomAccessMgr.h,v 1.1.2.5 2010-05-01 11:12:41 gaede Exp $
+ * @version $Id: LCIORandomAccessMgr.h,v 1.1.2.6 2010-05-26 10:22:21 gaede Exp $
  */
 
   class LCIORandomAccessMgr {
@@ -81,7 +81,7 @@ namespace SIO {
     LCIORandomAccess* createFromEventMap() ;
 
     /** Add a new LCIORandomAccess object to the list */
-    void addLCIORandomAccess( LCIORandomAccess* ra ) { _list.push_back( ra ) ;  }
+    void addLCIORandomAccess( LCIORandomAccess* ra ) ;
     
     /** Read the LCIORandomAccess record at the specified position */
     bool readLCIORandomAccessAt( SIO_stream* stream , long64 pos) ;
@@ -98,6 +98,10 @@ namespace SIO {
     /** Helper for reading the next LCIOIndex record (need preceeding call to LCSIO::seek() ) */
     bool readLCIOIndex( SIO_stream* stream ) ;
    
+
+    /** Create file record from all LCIORandomAccess records */
+    void createFileRecord() ;
+
     /**Pointer to the last LCIORandomAccess in the list */
     const LCIORandomAccess* lastLCIORandomAccess() {
       return (_list.empty() ?  0 : _list.back() )  ; 
@@ -108,7 +112,9 @@ namespace SIO {
     
     // ----- list of LCIORandomAccess objects 
     std::list< LCIORandomAccess* > _list ;
-    
+
+    LCIORandomAccess* _fileRecord ;
+
   }; // class
   
   
