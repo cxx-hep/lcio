@@ -109,7 +109,8 @@ int main(int argc, char** argv ){
     }
 
 
-    MYTEST.LOG( "  -------------------------------------    test random access in file simjob.slcio - file must exist ...."  ) ;
+    MYTEST.LOG( "  -------------------------------------    test random access in file simjob.slcio - file must exist in : "  ) ;
+    std::system("pwd") ;
 
     // simjob.slcio has written 100 events in 10 runs, closing and re-opening the file after every run 
     //  this tests writing the random access records in append mode ...
@@ -120,9 +121,8 @@ int main(int argc, char** argv ){
     //    LCReader* lcReader = LCFactory::getInstance()->createLCReader( ) ;
 
     try{
-      
-      //      std::system("pwd") ;
-      lcReader->open( "simjob.slcio" ) ;
+
+       lcReader->open( "simjob.slcio" ) ;
       
       LCEvent* evt = lcReader->readEvent( 3 , 4 ) ;
 

@@ -20,7 +20,7 @@ using namespace IO ;
 namespace SIO{
 
 
-  LCIORandomAccessMgr::LCIORandomAccessMgr() {
+  LCIORandomAccessMgr::LCIORandomAccessMgr() : _fileRecord(0) {
   }
 
   LCIORandomAccessMgr::~LCIORandomAccessMgr() {
@@ -31,8 +31,9 @@ namespace SIO{
       delete *i ; 
     }
 
+    if( _fileRecord != 0 ) 
+      delete _fileRecord ;
   }
-
 
   LCIORandomAccess* LCIORandomAccessMgr::createFromEventMap() {
 
@@ -40,8 +41,8 @@ namespace SIO{
     
     ra->_minRunEvt =   _runEvtMap.minRunEvent() ;
     ra->_maxRunEvt =   _runEvtMap.maxRunEvent() ;
-    ra->_nRunHeaders = _runEvtMap.getNumberOfEventRecords() ;
-    ra->_nEvents =     _runEvtMap.getNumberOfRunRecords() ;
+    ra->_nRunHeaders = _runEvtMap.getNumberOfRunRecords() ;
+    ra->_nEvents =     _runEvtMap.getNumberOfEventRecords() ;
     
     ra->_recordsAreInOrder =  true ;  //  ???? how is this defined ????  
     ra->_indexLocation = 0 ;
@@ -51,16 +52,61 @@ namespace SIO{
 
     return ra ;
   }
- 
-//   bool LCIORandomAccessMgr::readLastLCIORandomAccess( SIO_stream* stream ) {
-//     // go to the end and see if the last record is of type LCIORandomAccess 
-//     const int LCIORandomAccess_Size = 132  ; //FIXME - define globally or store at end of file ....
 
-//     LCSIO::seekStream( stream,  -LCIORandomAccess_Size ) ;
 
-//     return readLCIORandomAccess( stream ) ;
-//   }
 
+  void LCIORandomAccessMgr::createFileRecord(){
+
+    if( _fileRecord == 0 ) {
+
+      _fileRecord = new LCIORandomAccess ;
+      
+      _fileRecord->_minRunEvt = RunEvent( 2147483647L, 2147483647L ) ; // 2**31-1  - largest 32 bit signed 
+      _fileRecord->_maxRunEvt = 0 ;
+      _fileRecord->_nRunHeaders = 0 ;
+      _fileRecord->_nEvents = 0 ;
+      _fileRecord->_recordsAreInOrder = 1 ;  
+      _fileRecord->_indexLocation = 0 ; // defines file record
+      _fileRecord->_prevLocation = 9223372036854775807LL ; // 2**63-1  - largest 64 bit signed 
+      _fileRecord->_nextLocation = 0 ;
+      _fileRecord->_firstRecordLocation = 0 ;
+      
+    } 
+    
+    
+    for( std::list<LCIORandomAccess* >::const_iterator i = _list.begin() ; i != _list.end() ; ++i ){
+      LCIORandomAccess* ra = *i ; 
+      
+	_fileRecord->_minRunEvt = ( ra->_minRunEvt < _fileRecord->_minRunEvt ?  ra->_minRunEvt : _fileRecord->_minRunEvt  ) ;
+	_fileRecord->_maxRunEvt = ( ra->_maxRunEvt > _fileRecord->_maxRunEvt ?  ra->_maxRunEvt : _fileRecord->_maxRunEvt  ) ;
+	_fileRecord->_nRunHeaders += ra->_nRunHeaders ;
+	_fileRecord->_nEvents += ra->_nEvents ;
+	_fileRecord->_recordsAreInOrder = ( _fileRecord->_recordsAreInOrder * ra->_recordsAreInOrder  ) ; // should be 0 if any record is 0  
+	_fileRecord->_indexLocation = 0 ; // defines file record
+
+	if( ra->_nextLocation > _fileRecord->_nextLocation )
+	  _fileRecord->_nextLocation  =  ra->_nextLocation ;
+	
+	if( 0 < ra->_prevLocation  &&  ra->_prevLocation < _fileRecord->_prevLocation )
+	  _fileRecord->_prevLocation  =  ra->_prevLocation ;
+	
+	
+	//  _fileRecord->_firstRecordLocation = 0 ;
+	    
+    }
+	  
+  }
+
+  void  LCIORandomAccessMgr::addLCIORandomAccess( LCIORandomAccess* ra ) { 
+    
+    _list.push_back( ra ) ; 
+    
+    //       _list.sort() ;
+    //       for( std::list<LCIORandomAccess* >::const_iterator i = _list.begin() ; i != _list.end() ; ++i ){
+// 	std::cout << "++++++++++++++++++++++++++++++++++++++ "  << **i ; 
+//       }
+
+    }
 
 
   bool LCIORandomAccessMgr::readLCIORandomAccessAt( SIO_stream* stream , long64 pos) {
@@ -94,11 +140,13 @@ namespace SIO{
 			   + *stream->getName() ) ;
       }
       
-//       std::cout << " ... no LCIORandomAccess record found - old file ??? " << std::endl ;
+      // std::cout << " ... no LCIORandomAccess record found - old file ??? " << std::endl ;
       
       return false ;
     }
     
+    //    std::cout << " ...  LCIORandomAccess record found - return true ;-) " << std::endl ;
+
     return true ;
   }
 
@@ -142,26 +190,41 @@ namespace SIO{
 
 
   void LCIORandomAccessMgr::initAppend( SIO_stream* stream ) {
-
-    // check if the last record is LCIORandomAccess
+    
+    // check if the last record is LCIORandomAccess  (the file record )
     if( ! readLCIORandomAccessAt( stream , -LCSIO_RANDOMACCESS_SIZE) )  {
-
-      // else:
+      
       recreateEventMap( stream ) ; 
+      
       return ;
     }
+    
+    // store the file record separately 
+    _fileRecord = _list.back() ;
+    _list.pop_back()  ;
+
+    // no read first LCIORandomAccess record 
+    readLCIORandomAccessAt( stream ,   _fileRecord->_nextLocation    ) ; // start of last LCIORandomAccessRecord	
   }
+
 
   bool LCIORandomAccessMgr::getEventMap( SIO_stream* stream ) {
 
-    // check if the last record is LCIORandomAccess
+    // check if the last record is LCIORandomAccess ( the file record )
     if( ! readLCIORandomAccessAt( stream , -LCSIO_RANDOMACCESS_SIZE) )  {
 
-      // else:
       return recreateEventMap( stream ) ; 
     }
 
-    //read all remaining LCIORandomAccess records
+    // store the file record separately 
+    _fileRecord = _list.back() ;
+    _list.pop_back()  ;
+
+    // no read first LCIORandomAccess record 
+    readLCIORandomAccessAt( stream ,   _fileRecord->_nextLocation    ) ; // start of last LCIORandomAccessRecord	
+
+
+    // and then read all remaining LCIORandomAccess records
 
     const LCIORandomAccess* ra = lastLCIORandomAccess() ;
 
@@ -311,7 +374,8 @@ namespace SIO{
     ra->setIndexLocation( stream->lastRecordStart() ) ;
 
     //FIXME: mis-use getFirstRecordLocation for now - should become an attribute : "thisLocation"
-    ra->setFirstRecordLocation(  stream->currentPosition()  ) ;
+    long64 thisPos = stream->currentPosition() ;
+    ra->setFirstRecordLocation(  thisPos  ) ;
 
     const LCIORandomAccess* lRa  = lastLCIORandomAccess() ;
 
@@ -335,8 +399,29 @@ namespace SIO{
     
 
 
-  }
+    //--------  now we write the file record at the end -------------------------------------
 
+    createFileRecord() ;
+
+    if( thisPos > _fileRecord->_nextLocation )
+      _fileRecord->_nextLocation  =  thisPos ;
+    
+    if( _fileRecord->_prevLocation > thisPos )
+      _fileRecord->_prevLocation  =  thisPos ;
+
+    addLCIORandomAccess( _fileRecord ) ; 
+    
+    status =  stream->write( LCSIO_ACCESSRECORDNAME    ) ;
+    
+    if( !(status & 1)  )
+      throw IOException( std::string( "[LCIORandomAccessMgr::writeRandomAccessRecords] couldn't write LCIORandomAccess file record to stream: "
+				      +  *stream->getName() ) ) ;
+    
+    
+    _list.pop_back()  ;
+
+  }
+  
 
 
   //---------------------------------------------
