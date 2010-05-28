@@ -32,7 +32,7 @@ namespace SIO {
  *   
  *
  * @author gaede
- * @version $Id: LCIORandomAccessMgr.h,v 1.1.2.6 2010-05-26 10:22:21 gaede Exp $
+ * @version $Id: LCIORandomAccessMgr.h,v 1.1.2.7 2010-05-28 14:51:43 gaede Exp $
  */
 
   class LCIORandomAccessMgr {
@@ -68,7 +68,7 @@ namespace SIO {
     /** Initialize random access for append mode: read last LCIORandomAccess record if it exists - 
      *  recreate the RunEvent map from the file if not (old files).
      */
-    void initAppend( SIO_stream* s) ;
+    bool initAppend( SIO_stream* s) ;
 
 
     /** Write the current random access records LCIOIndex and LCIORandomAccess to the stream.
