@@ -153,15 +153,20 @@ namespace SIO {
 	  throw IOException( std::string( "[SIOWriter::open()] Can't open stream for reading TOC: "
 					  + sioFilename ) ) ;
 
-	_raMgr.initAppend( _stream ) ;
+	bool hasRandomAccess = _raMgr.initAppend( _stream ) ;
+	
+ 	_stream->close() ;
 
-	_stream->close() ;
+	if( hasRandomAccess ) {
+	  status  = _stream->open( sioFilename.c_str() , SIO_MODE_READ_WRITE ) ; // SIO_MODE_WRITE_APPEND ) ; 
+	  // position at the beginnning of the file record which will then be overwritten with the next record ...
+	  LCSIO::seekStream( _stream, -LCSIO_RANDOMACCESS_SIZE ) ; 
+	} else {
 
-	// --- open the file in append mode 	
-	status  = _stream->open( sioFilename.c_str() , SIO_MODE_WRITE_APPEND ) ; 
+	  // --- old files: ll simjopen the file in append mode 	
+	  status  = _stream->open( sioFilename.c_str() , SIO_MODE_WRITE_APPEND ) ; 
 
-	// the file record will be overwritten with the next record ...
-	//	LCSIO::seekStream( _stream, -LCSIO_RANDOMACCESS_SIZE ) ; 
+	}
 
 	break ;
       }

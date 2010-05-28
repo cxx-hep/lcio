@@ -189,22 +189,24 @@ namespace SIO{
   }
 
 
-  void LCIORandomAccessMgr::initAppend( SIO_stream* stream ) {
+  bool LCIORandomAccessMgr::initAppend( SIO_stream* stream ) {
     
     // check if the last record is LCIORandomAccess  (the file record )
     if( ! readLCIORandomAccessAt( stream , -LCSIO_RANDOMACCESS_SIZE) )  {
       
       recreateEventMap( stream ) ; 
       
-      return ;
+      return false;
     }
     
     // store the file record separately 
     _fileRecord = _list.back() ;
     _list.pop_back()  ;
 
-    // no read first LCIORandomAccess record 
+    // now read first LCIORandomAccess record 
     readLCIORandomAccessAt( stream ,   _fileRecord->_nextLocation    ) ; // start of last LCIORandomAccessRecord	
+
+    return true ;
   }
 
 
@@ -260,8 +262,8 @@ namespace SIO{
 
   bool LCIORandomAccessMgr::recreateEventMap( SIO_stream* stream ) {
 
-//      std::cout << " LCIORandomAccessMgr::getEventMap() recreating event map for direct access ..." 
-// 	       << std::endl ;
+    std::cout << " LCIORandomAccessMgr::getEventMap() recreating event map for direct access (old file) ..." 
+	      << std::endl ;
 
     LCSIO::seekStream( stream, 0 ) ;// go to start of file
     

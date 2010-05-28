@@ -4,6 +4,7 @@
 #include "SIO_stream.h"
 #include "SIO_recordManager.h"
 #include <cctype>
+#include <cerrno>
 #include "Exceptions.h"
 
 #include <iostream>
@@ -105,8 +106,7 @@ namespace SIO {
       status = stream->seek( pos ) ;
     
     if( status != SIO_STREAM_SUCCESS ) {
-      std::stringstream s("[SIOReader::getEventMap()] Can't seek stream to ") ;
-      s << pos ;
+      std::stringstream s ;  s << "[LCSIO::seekStream] Can't seek stream to " << pos << "  errno : " << errno ;
       throw IO::IOException( s.str() ) ;
     }
 

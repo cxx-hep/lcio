@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// CVS $Id: SIO_stream.cc,v 1.7.8.3 2010-04-30 21:30:52 gaede Exp $
+// CVS $Id: SIO_stream.cc,v 1.7.8.4 2010-05-28 14:51:43 gaede Exp $
 // ----------------------------------------------------------------------------
 // => Controller for a single SIO stream.                          
 // ----------------------------------------------------------------------------
@@ -454,7 +454,7 @@ int
     z_stat;
 
 static char
-    SIO_filemode[3][3] = { "rb", "wb", "ab" };
+  SIO_filemode[4][3] = { "rb", "wb", "ab","r+" };
 
 //
 // Can't open what ain't closed!
@@ -473,17 +473,17 @@ if( state == SIO_STATE_OPEN || state == SIO_STATE_ERROR )
 //
 // Can't open in mode undefined.
 //
-if( i_mode == SIO_MODE_UNDEFINED )
-{
-    if( verbosity >= SIO_ERRORS )
-    {
-        std::cout << "SIO: ["  << name << "//] "
-                  << "Cannot open in mode SIO_MODE_UNDEFINED"
-                  << std::endl;
-    }
-    return( SIO_STREAM_BADMODE );
-}
-
+ if( i_mode == SIO_MODE_UNDEFINED )
+   {
+     if( verbosity >= SIO_ERRORS )
+       {
+	 std::cout << "SIO: ["  << name << "//] "
+		   << "Cannot open in mode SIO_MODE_UNDEFINED"
+		   << std::endl;
+       }
+     return( SIO_STREAM_BADMODE );
+   }
+ 
 //
 // Open the file.
 //
@@ -607,19 +607,21 @@ unsigned int SIO_stream::seek(SIO_64BITINT pos, int whence) {
   
   unsigned int status;
   
-  //
-  // This must be a readable stream!
-  //
-  if( mode != SIO_MODE_READ ) {
+  //fg:  also need the seek in 'append' mode ( delete old file record )
+//   //
+//   // This must be a readable stream!
+//   //
+//   if( mode != SIO_MODE_READ ) {
     
-    if( verbosity >= SIO_ERRORS ) {
+//     //    if( verbosity >= SIO_ERRORS ) {
+//     if( true ) {
       
-      std::cout << "SIO: ["  << name << "//] "
-		<< "Cannot seek (stream is write only)"
-		<< std::endl;
-    }
-    return( SIO_STREAM_WRITEONLY );
-  }
+//       std::cout << "SIO: ["  << name << "//] "
+// 		<< "Cannot seek (stream is write only)"
+// 		<< std::endl;
+//     }
+//     return( SIO_STREAM_WRITEONLY );
+//   }
 
   status = FSEEK( handle, pos , whence )  ;
   

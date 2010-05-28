@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// CVS $Id: SIO_definitions.h,v 1.1 2003-03-06 11:01:23 gaede Exp $
+// CVS $Id: SIO_definitions.h,v 1.1.24.1 2010-05-28 14:51:43 gaede Exp $
 // ----------------------------------------------------------------------------
 // => Assorted definitions for the SIO package.
 // ----------------------------------------------------------------------------
@@ -85,6 +85,7 @@ typedef enum {
     SIO_MODE_READ,
     SIO_MODE_WRITE_NEW,
     SIO_MODE_WRITE_APPEND,
+    SIO_MODE_READ_WRITE,
     SIO_MODE_UNDEFINED
 } SIO_stream_mode; 
 
