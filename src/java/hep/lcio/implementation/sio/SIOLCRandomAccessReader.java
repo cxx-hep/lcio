@@ -25,35 +25,44 @@ class SIOLCRandomAccessReader extends SIOLCReader {
 
     public void open(String filename) throws IOException {
         super.open(filename);
-        // Peek at the first record to see if this file supports random access
-        SIORecord record = reader.readRecord();
-        if ("LCIORandomAccess".equals(record.getRecordName())) {
-            randomAccess = new FileRandomAccessSupport(reader, record);
-        } else {
+        // Peek at the last record to see if this file supports random access
+        try {
+            //FIXME: Should not hardwire record length
+            SIORecord record = reader.readRecord(-132);
+            if ("LCIORandomAccess".equals(record.getRecordName())) {
+                randomAccess = new FileRandomAccessSupport(reader, record);
+            }
             reader.seek(0);
+        } catch (IOException x) {
+            // OK, just assume random access is not supported
         }
+
     }
 
     @Override
     public void open(String[] filenames) throws IOException {
-        super.open(filenames);
-        List<FileRandomAccessSupport> fileBlocks = new ArrayList<FileRandomAccessSupport>(filenames.length);
-        for (String filename : filenames) {
-            SIOReader reader = new SIOReader(filename);
-            try {
-                SIORecord record = reader.readRecord();
-                if (!"LCIORandomAccess".equals(record.getRecordName())) {
-                    fileBlocks = null;
-                    break;
-                } else {
-                    fileBlocks.add(new FileRandomAccessSupport(reader,record));
+        if (filenames.length == 1) {
+            open(filenames[0]);
+        } else {
+            super.open(filenames);
+            List<FileRandomAccessSupport> fileBlocks = new ArrayList<FileRandomAccessSupport>(filenames.length);
+            for (String filename : filenames) {
+                SIOReader reader = new SIOReader(filename);
+                try {
+                    SIORecord record = reader.readRecord(-132);
+                    if (!"LCIORandomAccess".equals(record.getRecordName())) {
+                        fileBlocks = null;
+                        break;
+                    } else {
+                        fileBlocks.add(new FileRandomAccessSupport(reader, record));
+                    }
+                } finally {
+                    //reader.close();
                 }
-            } finally {
-                //reader.close();
             }
-        }
-        if (fileBlocks != null) {
-            randomAccess = new ChainRandomAccessSupport(fileBlocks);
+            if (fileBlocks != null) {
+                randomAccess = new ChainRandomAccessSupport(fileBlocks);
+            }
         }
     }
 
@@ -105,14 +114,19 @@ class SIOLCRandomAccessReader extends SIOLCReader {
     }
 
     private interface RandomAccessSupport {
+
         long findNextRunHeader() throws IOException;
+
         void skipNEvents(int n) throws IOException;
+
         long findEvent(int run, int event) throws IOException;
     }
 
     private class ChainRandomAccessSupport implements RandomAccessSupport {
+
         List<RandomAccessBlock> fileRandomAccessBlocks;
         List<FileRandomAccessSupport> fileBlocks;
+
         ChainRandomAccessSupport(List<FileRandomAccessSupport> fileBlocks) {
             this.fileBlocks = fileBlocks;
             fileRandomAccessBlocks = new ArrayList<RandomAccessBlock>(fileBlocks.size());
@@ -231,18 +245,20 @@ class SIOLCRandomAccessReader extends SIOLCReader {
             if (!indexBlocksRead) {
                 long originalPosition = reader.getNextRecordPosition();
                 RandomAccessBlock fab = findFileRandomAccessBlock();
+                //NB: We read the records in reverse order since c++ implementation only
+                // fills the backward pointers.
                 if (indexRandomAccessBlocks.isEmpty()) {
-                    SIORecord record = reader.readRecord(fab.getPreviousLocation());
+                    SIORecord record = reader.readRecord(fab.getNextLocation());
                     RandomAccessBlock rab = new RandomAccessBlock(record);
-                    indexRandomAccessBlocks.add(rab);
-                    indexBlocksRead = rab.getNextLocation() == 0;
+                    indexRandomAccessBlocks.add(0, rab);
+                    indexBlocksRead = rab.getPreviousLocation() == 0;
                 }
                 while (!indexBlocksRead) {
-                    long nextLocation = indexRandomAccessBlocks.get(indexRandomAccessBlocks.size() - 1).getNextLocation();
-                    SIORecord record = reader.readRecord(nextLocation);
+                    long previousLocation = indexRandomAccessBlocks.get(0).getPreviousLocation();
+                    SIORecord record = reader.readRecord(previousLocation);
                     RandomAccessBlock rab = new RandomAccessBlock(record);
-                    indexRandomAccessBlocks.add(rab);
-                    indexBlocksRead = rab.getNextLocation() == 0;
+                    indexRandomAccessBlocks.add(0, rab);
+                    indexBlocksRead = rab.getPreviousLocation() == 0;
                 }
                 reader.seek(originalPosition);
             }
