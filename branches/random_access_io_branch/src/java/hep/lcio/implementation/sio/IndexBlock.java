@@ -6,6 +6,7 @@ import hep.io.sio.SIOOutputStream;
 import hep.io.sio.SIORecord;
 import hep.io.sio.SIOWriter;
 import hep.lcio.event.LCEvent;
+import hep.lcio.event.LCIO;
 import hep.lcio.event.LCRunHeader;
 import java.io.IOException;
 import java.util.AbstractList;
@@ -20,8 +21,8 @@ import java.util.List;
 class IndexBlock {
 
     private static final String LCIOINDEX = "LCIOIndex";
-    private static final int minorVersion = 0;
-    private static final int majorVersion = 1;
+    private static final int minorVersion = LCIO.MINORVERSION;
+    private static final int majorVersion = LCIO.MAJORVERSION;
     private boolean recordsAreInOrder = true;
     private IndexEntry lastEntry;
     private IndexEntry minEntry;
@@ -119,7 +120,7 @@ class IndexBlock {
 
     private void read(SIORecord record) throws IOException {
         SIOBlock block = record.getBlock();
-        if (!block.getBlockName().equals(LCIOINDEX) || block.getMajorVersion() != 1 || block.getMinorVersion() != 0) {
+        if (!block.getBlockName().equals(LCIOINDEX)) {
             throw new IOException("Unexpected block in LCIOIndex record");
         }
         SIOInputStream sio = block.getData();

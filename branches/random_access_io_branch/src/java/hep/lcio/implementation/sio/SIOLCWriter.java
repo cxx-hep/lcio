@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  *
  * @author Tony Johnson
- * @version $Id: SIOLCWriter.java,v 1.14.10.2 2009-12-15 02:17:46 tonyj Exp $
+ * @version $Id: SIOLCWriter.java,v 1.14.10.3 2010-06-09 00:14:39 tonyj Exp $
  */
 class SIOLCWriter implements LCWriter
 {
@@ -24,6 +24,7 @@ class SIOLCWriter implements LCWriter
    public void close() throws IOException
    {
       flush();
+      fileRandomAccessBlock.write(writer);
       writer.close();
    }
 
@@ -42,7 +43,6 @@ class SIOLCWriter implements LCWriter
       if (randomAccess)
       {
          fileRandomAccessBlock = new RandomAccessBlock();
-         fileRandomAccessBlock.write(writer);
          //FIXME: Set more sensible limit
          indexBlock = new IndexBlock(5000);
       }
@@ -93,8 +93,6 @@ class SIOLCWriter implements LCWriter
             previousRandomAccessBlock = randomAccessBlock;
             
             fileRandomAccessBlock.add(randomAccessBlock);
-            fileRandomAccessBlock.flush();
-
             indexBlock.clear();
          }
       }

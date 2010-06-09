@@ -5,6 +5,7 @@ import hep.io.sio.SIOInputStream;
 import hep.io.sio.SIOOutputStream;
 import hep.io.sio.SIORecord;
 import hep.io.sio.SIOWriter;
+import hep.lcio.event.LCIO;
 import java.io.IOException;
 
 /**
@@ -14,8 +15,8 @@ import java.io.IOException;
 class RandomAccessBlock implements Comparable<RunEvent> {
 
     private static final String LCIORANDOMACCESS = "LCIORandomAccess";
-    private static final int minorVersion = 0;
-    private static final int majorVersion = 1;
+    private static final int minorVersion = LCIO.MINORVERSION;
+    private static final int majorVersion = LCIO.MAJORVERSION;
     private static final RunEvent NOTSET = new RunEvent(0, 0);
     private RunEvent minRunEvent = NOTSET;
     private RunEvent maxRunEvent = NOTSET;
@@ -65,9 +66,7 @@ class RandomAccessBlock implements Comparable<RunEvent> {
 
     private void read(SIORecord record) throws IOException {
         SIOBlock block = record.getBlock();
-        if (!block.getBlockName().equals(LCIORANDOMACCESS) ||
-                block.getMajorVersion() != majorVersion ||
-                block.getMinorVersion() != minorVersion) {
+        if (!block.getBlockName().equals(LCIORANDOMACCESS)) {
             throw new IOException("Unexpected LCIORandomAccess block");
         }
         SIOInputStream sio = block.getData();
