@@ -15,6 +15,9 @@
 #include "Exceptions.h"
 #include <sstream>
 
+#include <stdio.h>
+#include <string.h>
+
 using namespace IO ;
 
 namespace SIO{
