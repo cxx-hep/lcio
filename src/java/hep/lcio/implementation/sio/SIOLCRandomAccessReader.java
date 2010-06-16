@@ -28,7 +28,7 @@ class SIOLCRandomAccessReader extends SIOLCReader {
         // Peek at the last record to see if this file supports random access
         try {
             //FIXME: Should not hardwire record length
-            SIORecord record = reader.readRecord(-132);
+            SIORecord record = reader.readRecord( - RandomAccessBlock.LCRANDOMACCESSRECORDSIZE );
             if ("LCIORandomAccess".equals(record.getRecordName())) {
                 randomAccess = new FileRandomAccessSupport(reader, record);
             }
@@ -49,7 +49,7 @@ class SIOLCRandomAccessReader extends SIOLCReader {
             for (String filename : filenames) {
                 SIOReader reader = new SIOReader(filename);
                 try {
-                    SIORecord record = reader.readRecord(-132);
+                    SIORecord record = reader.readRecord( - RandomAccessBlock.LCRANDOMACCESSRECORDSIZE );
                     if (!"LCIORandomAccess".equals(record.getRecordName())) {
                         fileBlocks = null;
                         break;
