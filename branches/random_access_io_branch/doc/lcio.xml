@@ -38,6 +38,7 @@
          <data type="long" name="firstRecordLocation">
              For index record location of the first record associated with this block
          </data>
+	 <data type="int" name="recordSize"> ( 0xabcd0000 | sizeOfLCIORandomAccessRecord ) </data>
      </block>
   </record>
   <record name="LCIOIndex">

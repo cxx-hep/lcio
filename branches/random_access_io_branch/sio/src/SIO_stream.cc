@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// CVS $Id: SIO_stream.cc,v 1.7.8.4 2010-05-28 14:51:43 gaede Exp $
+// CVS $Id: SIO_stream.cc,v 1.7.8.5 2010-06-16 15:30:20 gaede Exp $
 // ----------------------------------------------------------------------------
 // => Controller for a single SIO stream.                          
 // ----------------------------------------------------------------------------
@@ -1265,6 +1265,12 @@ if( !(status & 1) )
 ucmp_length = (buffer - bufloc) - head_length;
 SIO_functions::copy( UCHR_CAST(&ucmp_length), (bufloc + ucmp_length_off),
                      SIO_LEN_QB,              1                        );
+
+// //debug
+// std::cout << "*************** SIO: ["  << name << "/" << rec_name << "/] "
+// << "writing record -  compressed : "  << compress 
+// << std::endl;
+
 
 //
 // Write out the complete record.

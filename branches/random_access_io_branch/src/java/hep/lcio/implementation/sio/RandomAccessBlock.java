@@ -17,6 +17,9 @@ class RandomAccessBlock implements Comparable<RunEvent> {
     private static final String LCIORANDOMACCESS = "LCIORandomAccess";
     private static final int minorVersion = LCIO.MINORVERSION;
     private static final int majorVersion = LCIO.MAJORVERSION;
+
+    public static final int LCRANDOMACCESSRECORDSIZE = 136 ;
+
     private static final RunEvent NOTSET = new RunEvent(0, 0);
     private RunEvent minRunEvent = NOTSET;
     private RunEvent maxRunEvent = NOTSET;
@@ -29,6 +32,7 @@ class RandomAccessBlock implements Comparable<RunEvent> {
     private long myLocation;
     private long firstRecordLocation;
     private SIOWriter writer;
+
 
     RandomAccessBlock() {
     }
@@ -61,6 +65,10 @@ class RandomAccessBlock implements Comparable<RunEvent> {
         sio.writeLong(previousAccessBlockLocation);
         sio.writeLong(nextAccessBlockLocation);
         sio.writeLong(firstRecordLocation);
+
+	// write the random access record size - with 0xabcd as 'check marker' in bits 31-16
+	sio.writeInt( 0xabcd0000 | LCRANDOMACCESSRECORDSIZE ) ; 
+
         sio.close();
     }
 
@@ -80,6 +88,9 @@ class RandomAccessBlock implements Comparable<RunEvent> {
         previousAccessBlockLocation = sio.readLong();
         nextAccessBlockLocation = sio.readLong();
         firstRecordLocation = sio.readLong();
+
+	sio.readInt() ;   // read record size - ignored for now ...
+
         sio.close();
     }
 

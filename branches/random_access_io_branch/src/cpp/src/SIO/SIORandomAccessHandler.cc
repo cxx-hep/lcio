@@ -48,6 +48,12 @@ namespace SIO  {
       SIO_DATA( stream ,  &( ra->_prevLocation) , 1  ) ;
       SIO_DATA( stream ,  &( ra->_nextLocation) , 1  ) ;
       SIO_DATA( stream ,  &( ra->_firstRecordLocation) , 1  ) ;
+
+ 
+      // read record size - ignored for now - need to read if record size changes in the future ...
+      int recSize ;
+      SIO_DATA( stream ,  &recSize , 1  ) ;
+
       
       _raMgr->addLCIORandomAccess( ra ) ;
 
@@ -72,6 +78,11 @@ namespace SIO  {
       SIO_DATA( stream ,  &( ra->_nextLocation) , 1  ) ;
       SIO_DATA( stream ,  &( ra->_firstRecordLocation) , 1  ) ;
       
+
+      // write the current size of the LCIORandomAccess record as last word - incl. check at bits 31-16: 0xabcd
+      int recSize = (   0xabcd0000 | LCSIO_RANDOMACCESS_SIZE ) ;
+      SIO_DATA( stream ,  &recSize , 1  ) ;
+     
     }
     
     
