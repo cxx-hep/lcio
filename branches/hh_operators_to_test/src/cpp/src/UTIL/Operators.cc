@@ -346,18 +346,18 @@ namespace UTIL{
 //-------------------------
 //-------------------------
   const std::string& header(const EVENT::LCIntVec *){ //hauke
-    static std::string _vtxh("|[   id   ]| val0, val1, ...\n");
+    static std::string _vtxh("| [   id   ] | val0, val1, ...\n");
     return _vtxh;
   }
   const std::string& tail(const EVENT::LCIntVec *){ //hauke
-    static std::string _vtxt("|----------|----------------\n");
+    static std::string _vtxt("|------------|----------------\n");
     return _vtxt;
   }
   std::ostream& operator<<( std::ostream& out, const UTIL::lcio_short<EVENT::LCIntVec>& sV){ //hauke
     using namespace std;
     const EVENT::LCIntVec* vec = sV.obj;
     out << noshowpos; 
-    out << "|[" << setfill('0') << setw(8) << hex << vec->id() << "]|";
+    out << "| [" << setfill('0') << setw(8) << hex << vec->id() << "] |";
     for(unsigned int j=0;j< vec->size();j++){
       out << setfill(' ') << right << setw(8) << (*vec)[j];
       if( j<vec->size()-1){ 
@@ -915,7 +915,7 @@ namespace UTIL{
     return _vtxh;
   }
   const std::string& tail(const EVENT::TrackerPulse *){ //hauke
-    static std::string _vtxt("---------|---------|--------|--------|---------\n");
+    static std::string _vtxt("------------|----------|----------|------|--------|----------|----------|----------------|------------------------------\n");
     return _vtxt;
   }
   std::ostream& operator<<( std::ostream& out, const UTIL::lcio_short<EVENT::TrackerPulse>& sV){ //hauke
@@ -1165,6 +1165,7 @@ namespace UTIL{
         }catch(exception& e){
             out << e.what() << endl ;
         }
+        if(k <  hit->getNMCContributions()-1 ){ out << endl; }
     }
 
     out << endl;
@@ -1226,12 +1227,12 @@ namespace UTIL{
 
 
   const std::string& header(const EVENT::TrackerHit *){ //hauke
-    static std::string _vtxh("    [id]    | position (x,y,z)            | time    |[type]| EDep    | EDepError \n");
+    static std::string _vtxh(" [   id   ] | position (x,y,z)            | time    |[type]| EDep    |EDepError|  cov(x,x),  cov(y,x),  cov(y,y),  cov(z,x),  cov(z,y),  cov(z,z)\n");
     return _vtxh;
   }
   
   const std::string& tail(const EVENT::TrackerHit *){ //hauke
-    static std::string _vtxt("------------|-----------------------------|---------|------|---------|-----------\n");
+    static std::string _vtxt("------------|-----------------------------|---------|------|---------|---------|-----------------------------------------------------------------\n");
     return _vtxt;
   }
 
@@ -1243,8 +1244,24 @@ namespace UTIL{
     out << part->getTime() << "|";
     out << "[" << noshowpos << setw(4) << part->getType() << "]|";
     out << showpos << part->getEDep() << "|";
-    out << part->getEDepError();
-    out << endl;
+    out << part->getEDepError() << "|";
+    unsigned int i;
+    for(i=0;i<(part->getCovMatrix().size()-1);i++){
+        out << " " << showpos << scientific << setprecision(2) << part->getCovMatrix()[i] << ",";
+    }
+    out << " " << showpos << scientific << setprecision(2) << part->getCovMatrix()[part->getCovMatrix().size()] << endl;
+
+    /*
+    const LCObjectVec& rawHits = part->getRawHits();
+    cout << "    rawHits: ";
+    try{
+        for( i=0 ; i < rawHits.size() ; i++ ){
+            cout << hex << "[" << rawHits[i]->id() << "], " <<  dec << endl;
+        }
+    }catch(std::exception& e){}
+    */
+
+    out << noshowpos << fixed;
     return out;
   }
 
@@ -1401,12 +1418,12 @@ namespace UTIL{
 */
 
   const std::string& header(const EVENT::MCParticle *){ //hauke
-    static std::string _vtxh("[   id   ]|      PDG |     px,     py,        pz     | energy |gen|[simstat]|  vertex x,     y   ,   z      |  endpoint x,    y  ,   z      |    mass |  charge |  [parents] - [daughters] \n");
+    static std::string _vtxh(" [   id   ] |      PDG |     px,     py,        pz     | energy |gen|[simstat]|  vertex x,     y   ,   z      |  endpoint x,    y  ,   z      |    mass |  charge |  [parents] - [daughters] \n");
     return _vtxh;
   }
   
   const std::string& tail(const EVENT::MCParticle *){ //hauke
-    static std::string _vtxt("----------|----------|-------------------------------|--------|---|---------|-------------------------------|-------------------------------|---------|---------|--------------------------\n");
+    static std::string _vtxt("------------|----------|-------------------------------|--------|---|---------|-------------------------------|-------------------------------|---------|---------|--------------------------\n");
     return _vtxt;
   }
 
@@ -1415,7 +1432,7 @@ namespace UTIL{
 
     using namespace std;
 
-      cout << "[" << hex << setfill('0') << setw(8) << part->id() << "]";
+      cout << " [" << hex << setfill('0') << setw(8) << part->id() << "] ";
       //cout << setfill (' ') << dec << setw(5) << index << "|";
       cout << "|";
       cout << setw(10) << part->getPDG() << "|"; 
@@ -1455,7 +1472,7 @@ namespace UTIL{
   }
 
   const std::string& header(const EVENT::ReconstructedParticle *){ //hauke
-    static std::string _vtxh("    [id]    |com|type|     momentum( px,py,pz)       | energy | mass   | charge |        position ( x,y,z)      |pidUsed\n");
+    static std::string _vtxh(" [   id   ] |com|type|     momentum( px,py,pz)       | energy | mass   | charge |        position ( x,y,z)      |pidUsed\n");
     return _vtxh;
   }
   
@@ -1741,14 +1758,14 @@ namespace UTIL{
 
   const std::string& header(const EVENT::Vertex *){
     static std::string _vtxh(
-      "\n    [id]    |pri|     alg. type     |    chi2   |    prob.  |       position ( x, y, z)       | [par] |  [idRecP]  \n");
+      "\n [   id   ] |pri|     alg. type     |    chi2   |    prob.  |       position ( x, y, z)       | [par] |  [idRecP]  \n");
     //_vtxh+=tail(v);
     return _vtxh;
   }
   
   const std::string& tail(const EVENT::Vertex *){
     static std::string _vtxt(
-	"------------|---|-------------------|-----------|-----------|---------------------------------|-------|------------\n");
+	    "------------|---|-------------------|-----------|-----------|---------------------------------|-------|------------\n");
     return _vtxt;
   }
 
@@ -1811,13 +1828,13 @@ namespace UTIL{
   }
 //#######################
   const std::string& header(const EVENT::LCFloatVec *){
-    static std::string _vtxh("|[   id   ]| val0, val1, ...\n");
+    static std::string _vtxh(" [   id   ] | val0, val1, ...\n");
     //_vtxh+=tail(v);
     return _vtxh;
   }
   
   const std::string& tail(const EVENT::LCFloatVec *){
-    static std::string _vtxt("|----------|------------------\n");
+    static std::string _vtxt("------------|------------------\n");
     return _vtxt;
   }
 
@@ -1825,7 +1842,7 @@ namespace UTIL{
     using namespace std;
     const EVENT::LCFloatVec* vec = sV.obj;
     out << noshowpos; 
-    out << "|[" << setfill('0') << setw(8) << hex << vec->id() << "]|";
+    out << " [" << setfill('0') << setw(8) << hex << vec->id() << "] |";
     for(unsigned int j=0;j< vec->size();j++){
       out << setfill(' ') << right << setw(8) << (*vec)[j];
       if( j<vec->size()-1){ 
@@ -1847,7 +1864,6 @@ namespace UTIL{
     return out;
   }
 
-//#######################
 std::ostream& operator<<( std::ostream& out, const LCIO_LONG<EVENT::CalorimeterHit> l) {
     const EVENT::CalorimeterHit *hit = l.object();
     const EVENT::LCCollection *col = l.collection();
