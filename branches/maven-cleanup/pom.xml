@@ -9,9 +9,8 @@
     <version>1.5.2-SNAPSHOT</version>
     <description>Compilation, tests, and dependencies for LCIO Java Library.</description>
     <scm>
-        <connection>scm:cvs:pserver:${maven.username}@cvs.freehep.org:/cvs/lcd:lcio</connection>
-        <developerConnection>scm:cvs:pserver:${maven.username}@cvs.freehep.org:/cvs/lcd:lcio</developerConnection>
-        <url>http://source.freehep.org/jcvsweb/ilc/LCSIM/list/lcio</url>
+        <connection>scm:svn:svn://svn.freehep.org/lcio/trunk</connection>
+        <url>http://java.freehep.org/svn/repos/lcio/list/</url>
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
