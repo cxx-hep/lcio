@@ -69,15 +69,23 @@ ENDMACRO( PREPARE_ROOT_DICT_HEADERS )
 # ----------------------------------------------------------------------------
 MACRO( GEN_ROOT_DICT_LINKDEF_HEADER _namespace )
 
+    SET( _input_headers ${ARGN} )
     SET( _linkdef_header "${ROOT_DICT_OUTPUT_DIR}/${_namespace}_Linkdef.h" )
 
-    IF( NOT EXISTS "${_linkdef_header}" )
-        FOREACH( _header ${ARGN} )
-            FILE( APPEND "${_linkdef_header}" "#pragma link C++ defined_in \"${_header}\";\n" )
-        ENDFOREACH()
-    ENDIF()
+    FOREACH( _header ${_input_headers} )
+        SET( ${_namespace}_file_contents "${${_namespace}_file_contents} #pragma link C++ defined_in \\\"${_header}\\\"\\;\\\\n" )
+        #FILE( APPEND "${_linkdef_header}" "#pragma link C++ defined_in \"${_header}\";\n" )
+    ENDFOREACH()
 
-    SET( ROOT_DICT_INPUT_HEADERS ${ARGN} ${_linkdef_header} )
+    ADD_CUSTOM_COMMAND(
+        OUTPUT ${_linkdef_header}
+        COMMAND mkdir ARGS -p ${ROOT_DICT_OUTPUT_DIR}
+        COMMAND echo -e "${${_namespace}_file_contents}" > ${_linkdef_header}
+        DEPENDS ${_input_headers}
+        COMMENT "generating: ${_linkdef_header}"
+    )
+
+    SET( ROOT_DICT_INPUT_HEADERS ${_input_headers} ${_linkdef_header} )
 
 ENDMACRO()
 
