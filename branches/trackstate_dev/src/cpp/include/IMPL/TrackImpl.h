@@ -12,7 +12,7 @@
 
 typedef std::map< std::string , EVENT::IntVec* > IndexMap ; 
 
-#define NCOVMATRIX 15
+#define TRKNCOVMATRIX 15
 
 namespace IMPL {
 

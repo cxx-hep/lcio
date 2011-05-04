@@ -19,7 +19,7 @@ namespace IMPL {
     _dEdxError(0),
     _radiusOfInnermostHit(0) { 
 
-    for(int i=0 ; i < NCOVMATRIX ; i++ ) {
+    for(int i=0 ; i < TRKNCOVMATRIX ; i++ ) {
       _covMatrix.push_back( 0.0 ) ; 
     }
     _reference[0] = 0.0 ;
@@ -121,13 +121,13 @@ namespace IMPL {
 
   void  TrackImpl::setCovMatrix( float* cov ){ 
     checkAccess("TrackImpl::setCovMatrix") ;
-    for(int i=0;i<NCOVMATRIX;i++) {
+    for(int i=0;i<TRKNCOVMATRIX;i++) {
       _covMatrix[i] = cov[i]  ; 
     }
   } 
   void  TrackImpl::setCovMatrix( const FloatVec& cov ){ 
     checkAccess("TrackImpl::setCovMatrix") ;
-    for(int i=0;i<NCOVMATRIX;i++) {
+    for(int i=0;i<TRKNCOVMATRIX;i++) {
       _covMatrix[i] = cov[i]  ; 
     }
   } 

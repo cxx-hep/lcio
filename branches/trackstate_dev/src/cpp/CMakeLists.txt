@@ -51,6 +51,7 @@ SET( LCIO_IMPL_SRCS
   ./src/IMPL/SimTrackerHitImpl.cc
   ./src/IMPL/TPCHitImpl.cc
   ./src/IMPL/TrackImpl.cc
+  ./src/IMPL/TrackStateImpl.cc
   ./src/IMPL/TrackerDataImpl.cc
   ./src/IMPL/TrackerHitImpl.cc
   ./src/IMPL/TrackerPulseImpl.cc

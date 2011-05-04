@@ -48,8 +48,8 @@ namespace SIO{
     SIO_DATA( stream ,  &(trk->_tanLambda)  , 1 ) ;
 
 
-    float cov[NCOVMATRIX] ;
-    SIO_DATA( stream ,  cov  ,  NCOVMATRIX ) ;
+    float cov[TRKNCOVMATRIX] ;
+    SIO_DATA( stream ,  cov  ,  TRKNCOVMATRIX ) ;
     trk->setCovMatrix( cov ) ;
 
     SIO_DATA( stream ,  trk->_reference  , 3 ) ;
