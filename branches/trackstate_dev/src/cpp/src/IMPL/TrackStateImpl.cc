@@ -6,6 +6,7 @@ using namespace EVENT ;
 namespace IMPL {
 
     TrackStateImpl::TrackStateImpl() :
+        _location(0),
         _d0(0),
         _phi(0),
         _omega(0),
@@ -16,7 +17,7 @@ namespace IMPL {
             _covMatrix.push_back( 0.0 ) ; 
         }
 
-        for(int i=0 ; i < 3 ; i++ ) {
+        for(int i=0 ; i < TRKSTATENREFSIZE ; i++ ) {
             _reference[i] = 0.0 ;
         }
 
@@ -24,6 +25,7 @@ namespace IMPL {
 
     TrackStateImpl::~TrackStateImpl() { /* no-op */ } 
 
+    int TrackStateImpl::getLocation() const { return _location ;}
     float TrackStateImpl::getD0() const { return _d0 ;}
     float TrackStateImpl::getPhi() const { return _phi ; }
     float TrackStateImpl::getOmega() const { return _omega ; }
@@ -34,6 +36,10 @@ namespace IMPL {
     const float* TrackStateImpl::getReferencePoint() const { return _reference ; }
 
 
+    void  TrackStateImpl::setLocation( int location ){
+        checkAccess("TrackStateImpl::setLocation") ;
+        _location = location  ;
+    } 
     void  TrackStateImpl::setD0( float d0 ){
         checkAccess("TrackStateImpl::setD0") ;
         _d0 = d0  ;
@@ -54,24 +60,22 @@ namespace IMPL {
         checkAccess("TrackStateImpl::setTanLambda") ;
         _tanLambda = tanLambda ; 
     } 
-
-
-    void  TrackStateImpl::setCovMatrix( float* cov ){ 
+    void  TrackStateImpl::setCovMatrix( const float* cov ){ 
         checkAccess("TrackStateImpl::setCovMatrix") ;
-        for(int i=0;i<TRKSTATENCOVMATRIX;i++) {
+        for( int i=0 ; i<TRKSTATENCOVMATRIX ; i++ ){
             _covMatrix[i] = cov[i]  ; 
         }
     } 
     void  TrackStateImpl::setCovMatrix( const FloatVec& cov ){ 
         checkAccess("TrackStateImpl::setCovMatrix") ;
-        for(int i=0;i<TRKSTATENCOVMATRIX;i++) {
+        for( int i=0 ; i<TRKSTATENCOVMATRIX ; i++ ){
             _covMatrix[i] = cov[i]  ; 
         }
     } 
 
-    void  TrackStateImpl::setReferencePoint( float* rPnt){ 
+    void  TrackStateImpl::setReferencePoint( const float* rPnt ){ 
         checkAccess("TrackStateImpl::setReferencePoint") ;
-        for(int i=0;i<3;i++) {
+        for( int i=0 ; i<TRKSTATENREFSIZE ; i++ ){
             _reference[i] = rPnt[i]  ; 
         }
     } 

@@ -8,6 +8,7 @@
 
 
 #define TRKSTATENCOVMATRIX 15
+#define TRKSTATENREFSIZE 3
 
 namespace IMPL {
 
@@ -18,8 +19,11 @@ namespace IMPL {
  * @version $Id:$
  */
 
+
+  enum TrackStateLocationEnum{ AtCustomLocation, AtIP, AtfFirstHit, AtLastHit, AtCalorimeter, AtVertex } ;
+
   class TrackStateImpl : public EVENT::TrackState, public AccessChecked {
-    
+
   public: 
     
     /** Default constructor, initializes values to 0.
@@ -32,6 +36,11 @@ namespace IMPL {
 
     virtual int id() const { return simpleUID() ; }
 
+
+    /** The location of the track state.
+     *  Location defined by enum: TrackStateLocationEnum{ AtCustomLocation, AtIP, AtfFirstHit, AtLastHit, AtCalorimeter, AtVertex }
+     */
+    virtual int getLocation() const ;
 
     /** Impact paramter of the track
      *  in (r-phi).
@@ -70,20 +79,22 @@ namespace IMPL {
    
 
     // setters 
+    virtual void  setLocation( int location ) ;
     virtual void  setD0( float d0 ) ;
     virtual void  setPhi( float phi ) ;
     virtual void  setOmega( float omega ) ;
     virtual void  setZ0( float z0 ) ;
     virtual void  setTanLambda( float tanLambda ) ;
 
-    virtual void  setCovMatrix( float* cov ) ;
+    virtual void  setCovMatrix( const float* cov ) ;
     virtual void  setCovMatrix( const EVENT::FloatVec& cov ) ;
 
-    virtual void  setReferencePoint( float* rPnt) ;
+    virtual void  setReferencePoint( const float* rPnt) ;
 
 
   protected:
 
+    int _location ; // location defined by TrackStateLocationEnum
     float _d0 ;
     float _phi ;
     float _omega ;
@@ -91,7 +102,7 @@ namespace IMPL {
     float _tanLambda ;
 
     EVENT::FloatVec _covMatrix ;
-    float  _reference[3] ;
+    float  _reference[TRKSTATENREFSIZE] ;
 
 }; // class
 

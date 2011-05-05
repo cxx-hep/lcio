@@ -24,6 +24,10 @@ public interface TrackState extends LCObject {
 }
 @endif
 
+     /** The location of the track state.
+     *   Location defined by enum: TrackStateLocationEnum{ AtCustomLocation, AtIP, AtfFirstHit, AtLastHit, AtCalorimeter, AtVertex }
+     */
+    public int getLocation() const ;	
    
     /** Impact paramter of the track
      *  in (r-phi).

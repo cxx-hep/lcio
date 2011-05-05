@@ -19,7 +19,10 @@ namespace IOIMPL {
  */
   class TrackStateIOImpl : public IMPL::TrackStateImpl {
     
-    friend class SIO::SIOTrackStateHandler ;
+    // TrackStates are handled by the SIOTrackHandler !!
+    // -> no collections of TrackStates in the event
+
+    friend class SIO::SIOTrackHandler ;
     
   }; // class
 

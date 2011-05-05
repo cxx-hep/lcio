@@ -3,6 +3,7 @@
 
 
 #include "EVENT/Track.h"
+#include "EVENT/TrackState.h"
 #include "AccessChecked.h"
 #include <map>
 #include <bitset>
@@ -12,7 +13,7 @@
 
 typedef std::map< std::string , EVENT::IntVec* > IndexMap ; 
 
-#define TRKNCOVMATRIX 15
+//#define TRKNCOVMATRIX 15 // defined in TrackState
 
 namespace IMPL {
 
@@ -56,38 +57,42 @@ namespace IMPL {
 //      */
 //     virtual bool testType(int bitIndex) const ;
 
-    /** Impact paramter of the track
-     *  in (r-phi).
+    /** Impact paramter of the track in (r-phi).
+     *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     virtual float getD0() const ;
 
     /** Phi of the track at reference point.
+     *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     virtual float getPhi() const ;
 
     /** Omega is the signed curvature of the track in [1/mm].
-     * The sign is that of the particle's charge.
+     *  The sign is that of the particle's charge.
+     *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     virtual float getOmega() const ;
 
-    /** Impact paramter of the track
-     *  in (r-z).
+    /** Impact paramter of the track in (r-z).
+     *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     virtual float getZ0() const ;
 
     /** Lambda is the dip angle of the track in r-z at the reference point.
+     *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     virtual float getTanLambda() const ;
 
     /** Covariance matrix of the track parameters. Stored as lower triangle matrix where
-     * the order of parameters is:   d0, phi, omega, z0, tan(lambda).
-     * So we have cov(d0,d0), cov( phi, d0 ), cov( phi, phi), ...
+     *  the order of parameters is:   d0, phi, omega, z0, tan(lambda).
+     *  So we have cov(d0,d0), cov( phi, d0 ), cov( phi, phi), ...
+     *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     virtual const EVENT::FloatVec & getCovMatrix() const ;
 
     /** Reference point of the track parameters.
-     *  The default for the reference point is the point of closest approach.
-     *  @see isReferencPointPCA() 
+     *  The default for the reference point is the point of closest approach. @see isReferencPointPCA() 
+     *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     virtual const float* getReferencePoint() const ;
 
@@ -131,6 +136,23 @@ namespace IMPL {
      */
     virtual const EVENT::TrackVec & getTracks() const ;
 
+
+    /** Returns track states associtated with this track. @see TrackState.
+     */
+    virtual const EVENT::TrackStateVec & getTrackStates() const ;
+
+
+    /** Returns track state closest to the given point. @see TrackState.
+     */
+    virtual const EVENT::TrackState* getClosestTrackState( float x, float y, float z ) const ;
+
+
+    /** Returns track state for location with given enum - or NULL if not found. @see TrackState.
+     *  location can be: AtIP, AtfFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtCustomLocation
+     */
+    virtual const EVENT::TrackState* getTrackState( int location ) const ;
+
+
     /** Optionaly ( check/set flag(LCIO::TRBIT_HITS)==1)  return the hits that have been used 
      *  to create this track.
      */
@@ -140,16 +162,15 @@ namespace IMPL {
     // setters 
     virtual void  setTypeBit( int index , bool val=true) ;
 
-    virtual void  setD0( float d0 ) ;
-    virtual void  setPhi( float phi ) ;
-    virtual void  setOmega( float omega ) ;
-    virtual void  setZ0( float z0 ) ;
-    virtual void  setTanLambda( float tanLambda ) ;
+    virtual void  setD0( float d0 ) ;                           // stored in TrackState
+    virtual void  setPhi( float phi ) ;                         // stored in TrackState
+    virtual void  setOmega( float omega ) ;                     // stored in TrackState
+    virtual void  setZ0( float z0 ) ;                           // stored in TrackState
+    virtual void  setTanLambda( float tanLambda ) ;             // stored in TrackState
+    virtual void  setCovMatrix( float* cov ) ;                  // stored in TrackState
+    virtual void  setCovMatrix( const EVENT::FloatVec& cov ) ;  // stored in TrackState
+    virtual void  setReferencePoint( float* rPnt) ;             // stored in TrackState
 
-    virtual void  setCovMatrix( float* cov ) ;
-    virtual void  setCovMatrix( const EVENT::FloatVec& cov ) ;
-
-    virtual void  setReferencePoint( float* rPnt) ;
     virtual void  setIsReferencePointPCA( bool val ) ;
 
     virtual void  setChi2( float chi2 ) ;
@@ -158,6 +179,7 @@ namespace IMPL {
     virtual void  setdEdxError( float dEdxError ) ;
 
     virtual void  addTrack( EVENT::Track* trk ) ;
+    virtual void  addTrackState( EVENT::TrackState* trkstate ) ;
     virtual void  addHit( EVENT::TrackerHit* hit) ;
 
 
@@ -175,14 +197,17 @@ namespace IMPL {
 
     //    std::string _type ;
     std::bitset<32> _type ;
-    float _d0 ;
-    float _phi ;
-    float _omega ;
-    float _z0 ;
-    float _tanLambda ;
 
-    EVENT::FloatVec _covMatrix ;
-    float  _reference[3] ;
+    
+    //float _d0 ;                       // stored in TrackState
+    //float _phi ;                      // stored in TrackState
+    //float _omega ;                    // stored in TrackState
+    //float _z0 ;                       // stored in TrackState
+    //float _tanLambda ;                // stored in TrackState
+    //EVENT::FloatVec _covMatrix ;      // stored in TrackState
+    //float  _reference[3] ;            // stored in TrackState
+
+
     bool _isReferencePointPCA ;
 
     float _chi2 ;
@@ -194,6 +219,8 @@ namespace IMPL {
 
     EVENT::TrackVec _tracks ;
     EVENT::TrackerHitVec _hits ;
+
+    EVENT::TrackStateVec _trackStates ;
 
 }; // class
 
