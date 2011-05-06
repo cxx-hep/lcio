@@ -148,7 +148,7 @@ namespace IMPL {
 
 
     /** Returns track state for location with given enum - or NULL if not found. @see TrackState.
-     *  location can be: AtIP, AtfFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtCustomLocation
+     *  location can be: AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtCustomLocation
      */
     virtual const EVENT::TrackState* getTrackState( int location ) const ;
 

@@ -13,6 +13,8 @@
 #include "IMPL/TrackImpl.h"
 #include "IMPL/TrackStateImpl.h"
 
+#include "UTIL/Operators.h"
+
 #include <sstream>
 
 using namespace std ;
@@ -243,9 +245,10 @@ int main(int argc, char** argv ){
                 // more than one trackstate
                 const TrackStateVec& trackstates = trk->getTrackStates() ;
 
-                for( unsigned int k=1 ; k<(trackstates.size()-1) ; k++ ){
+                for( unsigned int k=1 ; k<trackstates.size() ; k++ ){
 
                     //std::cout << " testing trackstate " << k << std::endl ;
+                    //std::cout << " testing trackstate " <<  endl << header(trackstates[k]) << lcio_short<EVENT::TrackState>(trackstates[k]) << endl ;
 
                     MYTEST( trackstates[k]->getOmega(),  float( (i+j+k) * .1 ), "getOmega" ) ;
                     MYTEST( trackstates[k]->getTanLambda(),  float( (i+j+k) * .2 ), "getTanLambda" ) ;
@@ -269,8 +272,30 @@ int main(int argc, char** argv ){
                         MYTEST( ref[l] , float(k*(l+1)) , ss.str() ) ;
                     }
                 }
-                // TODO test getClosestTrackState( x, y, z )
-                // TODO test getTrackState( location )
+                
+                // Test getClosestTrackState( float x, float y, float z )
+                const TrackState* t = trk->getClosestTrackState( 0, 0, 0 ) ;
+                ref = t->getReferencePoint() ;
+
+                //std::cout << " closest trackstate " <<  endl << header(t) << lcio_short<EVENT::TrackState>(t) << endl ;
+
+                for( unsigned int k=0 ; k<3 ; k++ ){
+                    stringstream ss;
+                    ss << " closest trackstate ref[" << k << "] " ;
+                    MYTEST( ref[k] , float(k+1) , ss.str() ) ;
+                }
+
+                // Test getTrackState( int location )
+                t = trk->getTrackState( AtIP ) ;
+                ref = t->getReferencePoint() ;
+
+                //std::cout << " trackstate AtIP" <<  endl << header(t) << lcio_short<EVENT::TrackState>(t) << endl ;
+
+                for( unsigned int k=0 ; k<3 ; k++ ){
+                    stringstream ss;
+                    ss << " trackstate AtIP ref[" << k << "] " ;
+                    MYTEST( ref[k] , float(k+1) , ss.str() ) ;
+                }
             }
 
         }
