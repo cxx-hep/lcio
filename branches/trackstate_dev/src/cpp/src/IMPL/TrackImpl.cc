@@ -98,7 +98,7 @@ namespace IMPL {
         float shortest_distance_square = pow( ( x - refP[0] ) , 2 ) + pow( ( y - refP[1] ) , 2 ) + pow( ( z - refP[2] ) , 2 ) ;
         float current_distance_square = 0 ;
 
-        for( unsigned int i=1 ; i < (_trackStates.size() - 1) ; i++ ){
+        for( unsigned int i=1 ; i < _trackStates.size() ; i++ ){
             refP = _trackStates[i]->getReferencePoint() ;
             current_distance_square = pow( ( x - refP[0] ) , 2 ) + pow( ( y - refP[1] ) , 2 ) + pow( ( z - refP[2] ) , 2 ) ;
             if( current_distance_square < shortest_distance_square ){

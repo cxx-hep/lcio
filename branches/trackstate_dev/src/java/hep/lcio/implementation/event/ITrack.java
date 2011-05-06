@@ -153,7 +153,7 @@ public class ITrack extends ILCObject implements Track
         double shortest_distance_square = Math.pow( ( x - refP[0] ) , 2 ) + Math.pow( ( y - refP[1] ) , 2 ) + Math.pow( ( z - refP[2] ) , 2 ) ;
         double current_distance_square = 0 ;
 
-        for( int i=1 ; i < (trackStates.size() - 1) ; i++ ){
+        for( int i=1 ; i < trackStates.size() ; i++ ){
             refP = ((ITrackState)trackStates.get(i)).getReferencePoint() ;
             current_distance_square = Math.pow( ( x - refP[0] ) , 2 ) + Math.pow( ( y - refP[1] ) , 2 ) + Math.pow( ( z - refP[2] ) , 2 ) ;
             if( current_distance_square < shortest_distance_square ){
