@@ -40,10 +40,6 @@ public class ITrack extends ILCObject implements Track
    public final static int BITISREFERENCEPOINTPCA = 31;
    protected int[] subdetectorHitNumbers = null0;
    
-   public ITrack(){  // is the constructor needed to create the first TrackState object ?
-      trackStates.add( new ITrackState() ) ;
-   }
-
    public float getD0()
    {
       //return d0;
@@ -53,6 +49,10 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //this.d0 = d0;
+      if (trackStates.size() == 0){
+          // create a first TrackState for backwards compatibility
+          trackStates.add( new ITrackState() ) ;
+      }
       if (trackStates.size() != 1){
           throw new IllegalArgumentException("trying to use setD0 within Track object containing more than one TrackState.");
       }
@@ -68,6 +68,10 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //this.phi = phi;
+      if (trackStates.size() == 0){
+          // create a first TrackState for backwards compatibility
+          trackStates.add( new ITrackState() ) ;
+      }
       if (trackStates.size() != 1){
           throw new IllegalArgumentException("trying to use setPhi within Track object containing more than one TrackState.");
       }
@@ -83,6 +87,10 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //omega = f;
+      if (trackStates.size() == 0){
+          // create a first TrackState for backwards compatibility
+          trackStates.add( new ITrackState() ) ;
+      }
       if (trackStates.size() != 1){
           throw new IllegalArgumentException("trying to use setOmega within Track object containing more than one TrackState.");
       }
@@ -98,6 +106,10 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //this.z0 = z0;
+      if (trackStates.size() == 0){
+          // create a first TrackState for backwards compatibility
+          trackStates.add( new ITrackState() ) ;
+      }
       if (trackStates.size() != 1){
           throw new IllegalArgumentException("trying to use setZ0 within Track object containing more than one TrackState.");
       }
@@ -113,6 +125,10 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //tanLambda = f;
+      if (trackStates.size() == 0){
+          // create a first TrackState for backwards compatibility
+          trackStates.add( new ITrackState() ) ;
+      }
       if (trackStates.size() != 1){
           throw new IllegalArgumentException("trying to use setTanLambda within Track object containing more than one TrackState.");
       }
@@ -129,6 +145,10 @@ public class ITrack extends ILCObject implements Track
       //checkAccess();
       //if (covMatrix.length != 15) throw new IllegalArgumentException("covMatrix.length != 15");
       //this.covMatrix = covMatrix;
+      if (trackStates.size() == 0){
+          // create a first TrackState for backwards compatibility
+          trackStates.add( new ITrackState() ) ;
+      }
       if (trackStates.size() != 1){
           throw new IllegalArgumentException("trying to use setCovMatrix within Track object containing more than one TrackState.");
       }
@@ -145,6 +165,10 @@ public class ITrack extends ILCObject implements Track
       //checkAccess();
       //if (referencePoint.length != 3) throw new IllegalArgumentException("referencePoint.lenhgth != 3");
       //this.referencePoint = referencePoint;
+      if (trackStates.size() == 0){
+          // create a first TrackState for backwards compatibility
+          trackStates.add( new ITrackState() ) ;
+      }
       if (trackStates.size() != 1){
           throw new IllegalArgumentException("trying to use setReferencePoint within Track object containing more than one TrackState.");
       }

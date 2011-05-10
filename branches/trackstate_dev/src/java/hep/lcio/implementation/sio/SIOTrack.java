@@ -40,46 +40,25 @@ class SIOTrack extends ITrack
       for( int i=0 ; i<nTrackStates ; i++ ){
 
         // TODO put this code into SIOTrackState.java ?
-        if( i == 0 ){ // first TrackState
+        ITrackState ts = new ITrackState() ;
 
-            if( SIOVersion.encode(major,minor) >= SIOVersion.encode(2,0)){
-                ((ITrackState)trackStates.get(0)).setLocation( in.readInt() );
-            }
-
-            ((ITrackState)trackStates.get(0)).setD0( in.readFloat() );
-            ((ITrackState)trackStates.get(0)).setPhi( in.readFloat() );
-            ((ITrackState)trackStates.get(0)).setOmega( in.readFloat() );
-            ((ITrackState)trackStates.get(0)).setZ0( in.readFloat() );
-            ((ITrackState)trackStates.get(0)).setTanLambda( in.readFloat() );
-            float[] covMatrix = new float[15]; // FIXME hardcoded 15 
-            for (int j=0; j<covMatrix.length; j++) covMatrix[j] = in.readFloat();
-            ((ITrackState)trackStates.get(0)).setCovMatrix( covMatrix ) ;
-            float[] referencePoint = new float[3]; // FIXME hardcoded 3
-            for (int j=0; j<referencePoint.length; j++) referencePoint[j] = in.readFloat();
-            ((ITrackState)trackStates.get(0)).setReferencePoint( referencePoint ) ;
+        if( SIOVersion.encode(major,minor) >= SIOVersion.encode(2,0)){
+            ts.setLocation( in.readInt() );
         }
-        else{ // more than one TrackState found
 
-            ITrackState ts = new ITrackState() ;
-
-            if( SIOVersion.encode(major,minor) >= SIOVersion.encode(2,0)){
-                ts.setLocation( in.readInt() );
-            }
-
-            ts.setD0( in.readFloat() );
-            ts.setPhi( in.readFloat() );
-            ts.setOmega( in.readFloat() );
-            ts.setZ0( in.readFloat() );
-            ts.setTanLambda( in.readFloat() );
-            float[] covMatrix = new float[15]; // FIXME hardcoded 15 
-            for (int j=0; j<covMatrix.length; j++) covMatrix[j] = in.readFloat();
-            ts.setCovMatrix( covMatrix ) ;
-            float[] referencePoint = new float[3]; // FIXME hardcoded 3
-            for (int j=0; j<referencePoint.length; j++) referencePoint[j] = in.readFloat();
-            ts.setReferencePoint( referencePoint ) ;
-            
-            getTrackStates().add( ts ) ;
-        }
+        ts.setD0( in.readFloat() );
+        ts.setPhi( in.readFloat() );
+        ts.setOmega( in.readFloat() );
+        ts.setZ0( in.readFloat() );
+        ts.setTanLambda( in.readFloat() );
+        float[] covMatrix = new float[15]; // FIXME hardcoded 15 
+        for (int j=0; j<covMatrix.length; j++) covMatrix[j] = in.readFloat();
+        ts.setCovMatrix( covMatrix ) ;
+        float[] referencePoint = new float[3]; // FIXME hardcoded 3
+        for (int j=0; j<referencePoint.length; j++) referencePoint[j] = in.readFloat();
+        ts.setReferencePoint( referencePoint ) ;
+        
+        getTrackStates().add( ts ) ;
       }
 
       //d0 = in.readFloat();

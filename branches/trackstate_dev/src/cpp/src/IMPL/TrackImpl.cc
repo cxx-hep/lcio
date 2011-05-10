@@ -19,10 +19,6 @@ namespace IMPL {
 
             _type.set( BIT_ISREFERENCEPOINTDCA ) ;
 
-            // create a first TrackState for backwards compatibility
-            TrackState* ts = new TrackStateImpl() ;
-            _trackStates.push_back( ts ) ;
-
         }
 
     TrackImpl::~TrackImpl() { 
@@ -138,41 +134,81 @@ namespace IMPL {
     void  TrackImpl::setD0( float d0 ){
         //checkAccess("TrackImpl::setD0") ;
         //_d0 = d0  ;
+
+        if( _trackStates.size() == 0 ){
+            // create a first TrackState for backwards compatibility
+            TrackState* ts = new TrackStateImpl() ;
+            _trackStates.push_back( ts ) ;
+        }
+
         if( _trackStates.size() != 1 ){
             throw( Exception( " trying to use setD0 within Track object containing more than one TrackState." )) ;
         }
+
         ((TrackStateImpl*)_trackStates[0])->setD0( d0 ) ;
     } 
     void  TrackImpl::setPhi( float phi ){ 
         //checkAccess("TrackImpl::setPhi") ;
         //_phi = phi ; 
+
+        if( _trackStates.size() == 0 ){
+            // create a first TrackState for backwards compatibility
+            TrackState* ts = new TrackStateImpl() ;
+            _trackStates.push_back( ts ) ;
+        }
+
         if( _trackStates.size() != 1 ){
             throw( Exception( " trying to use setPhi within Track object containing more than one TrackState." )) ;
         }
+
         ((TrackStateImpl*)_trackStates[0])->setPhi( phi ) ;
     } 
     void  TrackImpl::setOmega( float omega ) { 
         //checkAccess("TrackImpl::setOmega") ;
         //_omega = omega  ;
+
+        if( _trackStates.size() == 0 ){
+            // create a first TrackState for backwards compatibility
+            TrackState* ts = new TrackStateImpl() ;
+            _trackStates.push_back( ts ) ;
+        }
+
         if( _trackStates.size() != 1 ){
             throw( Exception( " trying to use setOmega within Track object containing more than one TrackState." )) ;
         }
+
         ((TrackStateImpl*)_trackStates[0])->setOmega( omega ) ;
     } 
     void  TrackImpl::setZ0( float z0 ){
         //checkAccess("TrackImpl::setZ0") ;
         //_z0 = z0 ; 
+
+        if( _trackStates.size() == 0 ){
+            // create a first TrackState for backwards compatibility
+            TrackState* ts = new TrackStateImpl() ;
+            _trackStates.push_back( ts ) ;
+        }
+
         if( _trackStates.size() != 1 ){
             throw( Exception( " trying to use setZ0 within Track object containing more than one TrackState." )) ;
         }
+
         ((TrackStateImpl*)_trackStates[0])->setZ0( z0 ) ;
     } 
     void  TrackImpl::setTanLambda( float tanLambda ){
         //checkAccess("TrackImpl::setTanLambda") ;
         //_tanLambda = tanLambda ; 
+
+        if( _trackStates.size() == 0 ){
+            // create a first TrackState for backwards compatibility
+            TrackState* ts = new TrackStateImpl() ;
+            _trackStates.push_back( ts ) ;
+        }
+
         if( _trackStates.size() != 1 ){
             throw( Exception( " trying to use setTanLambda within Track object containing more than one TrackState." )) ;
         }
+
         ((TrackStateImpl*)_trackStates[0])->setTanLambda( tanLambda ) ;
     } 
 
@@ -181,9 +217,17 @@ namespace IMPL {
         //for(int i=0;i<TRKNCOVMATRIX;i++) {
         //  _covMatrix[i] = cov[i]  ; 
         //}
+
+        if( _trackStates.size() == 0 ){
+            // create a first TrackState for backwards compatibility
+            TrackState* ts = new TrackStateImpl() ;
+            _trackStates.push_back( ts ) ;
+        }
+
         if( _trackStates.size() != 1 ){
             throw( Exception( " trying to use setCovMatrix within Track object containing more than one TrackState." )) ;
         }
+
         ((TrackStateImpl*)_trackStates[0])->setCovMatrix( cov ) ;
     } 
     void  TrackImpl::setCovMatrix( const FloatVec& cov ){ 
@@ -191,9 +235,17 @@ namespace IMPL {
         //for(int i=0;i<TRKNCOVMATRIX;i++) {
         //  _covMatrix[i] = cov[i]  ; 
         //}
+
+        if( _trackStates.size() == 0 ){
+            // create a first TrackState for backwards compatibility
+            TrackState* ts = new TrackStateImpl() ;
+            _trackStates.push_back( ts ) ;
+        }
+
         if( _trackStates.size() != 1 ){
             throw( Exception( " trying to use setCovMatrix within Track object containing more than one TrackState." )) ;
         }
+
         ((TrackStateImpl*)_trackStates[0])->setCovMatrix( cov ) ;
     } 
 
@@ -202,9 +254,17 @@ namespace IMPL {
         //for(int i=0;i<3;i++) {
         //  _reference[i] = rPnt[i]  ; 
         //}
+
+        if( _trackStates.size() == 0 ){
+            // create a first TrackState for backwards compatibility
+            TrackState* ts = new TrackStateImpl() ;
+            _trackStates.push_back( ts ) ;
+        }
+
         if( _trackStates.size() != 1 ){
             throw( Exception( " trying to use setReferencePoint within Track object containing more than one TrackState." )) ;
         }
+
         ((TrackStateImpl*)_trackStates[0])->setReferencePoint( rPnt ) ;
     } 
 

@@ -54,50 +54,27 @@ namespace SIO{
 
     for( int i=0 ; i<nTrackStates ; i++ ){
 
-        if( i == 0 ){ // first TrackState (already allocated in constructor from the Track class)
+        // create new TrackState object
+        TrackStateIOImpl* trackstate = new TrackStateIOImpl ;
 
-            if( _vers >= SIO_VERSION_ENCODE( 2, 0)   ) {
-                SIO_DATA( stream ,  &(((TrackStateIOImpl*)trk->getTrackStates()[0])->_location)  , 1 ) ;
-            }
-
-            SIO_DATA( stream ,  &(((TrackStateIOImpl*)trk->getTrackStates()[0])->_d0)  , 1 ) ;
-            SIO_DATA( stream ,  &(((TrackStateIOImpl*)trk->getTrackStates()[0])->_phi)  , 1 ) ;
-            SIO_DATA( stream ,  &(((TrackStateIOImpl*)trk->getTrackStates()[0])->_omega)  , 1 ) ;
-            SIO_DATA( stream ,  &(((TrackStateIOImpl*)trk->getTrackStates()[0])->_z0)  , 1 ) ;
-            SIO_DATA( stream ,  &(((TrackStateIOImpl*)trk->getTrackStates()[0])->_tanLambda)  , 1 ) ;
-
-
-            float cov[15] ; // FIXME hardcoded 15
-            SIO_DATA( stream ,  cov  ,  15 ) ; // FIXME hardcoded 15
-            ((TrackStateIOImpl*)trk->getTrackStates()[0])->setCovMatrix( cov ) ;
-
-            SIO_DATA( stream ,  ((TrackStateIOImpl*)trk->getTrackStates()[0])->_reference , 3 ) ; // FIXME hardcoded 3
-
+        if( _vers >= SIO_VERSION_ENCODE( 2, 0)   ) {
+            SIO_DATA( stream ,  &(trackstate->_location)  , 1 ) ;
         }
-        else{ // more than one TrackState was found
 
-            // create new TrackState object
-            TrackStateIOImpl* trackstate = new TrackStateIOImpl ;
+        SIO_DATA( stream ,  &(trackstate->_d0)  , 1 ) ;
+        SIO_DATA( stream ,  &(trackstate->_phi)  , 1 ) ;
+        SIO_DATA( stream ,  &(trackstate->_omega)  , 1 ) ;
+        SIO_DATA( stream ,  &(trackstate->_z0)  , 1 ) ;
+        SIO_DATA( stream ,  &(trackstate->_tanLambda)  , 1 ) ;
 
-            if( _vers >= SIO_VERSION_ENCODE( 2, 0)   ) {
-                SIO_DATA( stream ,  &(trackstate->_location)  , 1 ) ;
-            }
+        float cov[15] ; // FIXME hardcoded 15
+        SIO_DATA( stream ,  cov  ,  15 ) ; // FIXME hardcoded 15
+        trackstate->setCovMatrix( cov ) ;
 
-            SIO_DATA( stream ,  &(trackstate->_d0)  , 1 ) ;
-            SIO_DATA( stream ,  &(trackstate->_phi)  , 1 ) ;
-            SIO_DATA( stream ,  &(trackstate->_omega)  , 1 ) ;
-            SIO_DATA( stream ,  &(trackstate->_z0)  , 1 ) ;
-            SIO_DATA( stream ,  &(trackstate->_tanLambda)  , 1 ) ;
+        SIO_DATA( stream ,  trackstate->_reference  , 3 ) ; // FIXME hardcoded 3
 
-            float cov[15] ; // FIXME hardcoded 15
-            SIO_DATA( stream ,  cov  ,  15 ) ; // FIXME hardcoded 15
-            trackstate->setCovMatrix( cov ) ;
+        trk->addTrackState( trackstate );
 
-            SIO_DATA( stream ,  trackstate->_reference  , 3 ) ; // FIXME hardcoded 3
-
-            trk->addTrackState( trackstate );
-
-        }
     }
 
 
