@@ -16,6 +16,7 @@
 #include "UTIL/Operators.h"
 
 #include <sstream>
+#include <assert.h>
 
 using namespace std ;
 using namespace lcio ;
@@ -274,10 +275,11 @@ int main(int argc, char** argv ){
                 }
                 
                 // Test getClosestTrackState( float x, float y, float z )
-                const TrackState* t = trk->getClosestTrackState( 0, 0, 0 ) ;
-                ref = t->getReferencePoint() ;
+                const TrackState* trackstate = trk->getClosestTrackState( 0, 0, 0 ) ;
+                assert( trackstate != NULL );
+                ref = trackstate->getReferencePoint() ;
 
-                //std::cout << " closest trackstate " <<  endl << header(t) << lcio_short<EVENT::TrackState>(t) << endl ;
+                //std::cout << " closest trackstate " <<  endl << header(trackstate) << lcio_short<EVENT::TrackState>(trackstate) << endl ;
 
                 for( unsigned int k=0 ; k<3 ; k++ ){
                     stringstream ss;
@@ -286,10 +288,11 @@ int main(int argc, char** argv ){
                 }
 
                 // Test getTrackState( int location )
-                t = trk->getTrackState( AtIP ) ;
-                ref = t->getReferencePoint() ;
+                trackstate = trk->getTrackState( AtIP ) ;
+                assert( trackstate != NULL );
+                ref = trackstate->getReferencePoint() ;
 
-                //std::cout << " trackstate AtIP" <<  endl << header(t) << lcio_short<EVENT::TrackState>(t) << endl ;
+                //std::cout << " trackstate AtIP" <<  endl << header(trackstate) << lcio_short<EVENT::TrackState>(trackstate) << endl ;
 
                 for( unsigned int k=0 ; k<3 ; k++ ){
                     stringstream ss;

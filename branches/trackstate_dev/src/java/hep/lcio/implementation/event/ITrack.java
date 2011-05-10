@@ -53,6 +53,9 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //this.d0 = d0;
+      if (trackStates.size() != 1){
+          throw new IllegalArgumentException("trying to use setD0 within Track object containing more than one TrackState.");
+      }
       ((ITrackState)trackStates.get(0)).setD0( d0 ) ;
    }
 
@@ -65,6 +68,9 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //this.phi = phi;
+      if (trackStates.size() != 1){
+          throw new IllegalArgumentException("trying to use setPhi within Track object containing more than one TrackState.");
+      }
       ((ITrackState)trackStates.get(0)).setPhi( phi ) ;
    }
    
@@ -77,6 +83,9 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //omega = f;
+      if (trackStates.size() != 1){
+          throw new IllegalArgumentException("trying to use setOmega within Track object containing more than one TrackState.");
+      }
       ((ITrackState)trackStates.get(0)).setOmega( f ) ;
    }
  
@@ -89,6 +98,9 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //this.z0 = z0;
+      if (trackStates.size() != 1){
+          throw new IllegalArgumentException("trying to use setZ0 within Track object containing more than one TrackState.");
+      }
       ((ITrackState)trackStates.get(0)).setZ0( z0 ) ;
    }
   
@@ -101,6 +113,9 @@ public class ITrack extends ILCObject implements Track
    {
       //checkAccess();
       //tanLambda = f;
+      if (trackStates.size() != 1){
+          throw new IllegalArgumentException("trying to use setTanLambda within Track object containing more than one TrackState.");
+      }
       ((ITrackState)trackStates.get(0)).setTanLambda( f ) ;
    }
 
@@ -114,6 +129,9 @@ public class ITrack extends ILCObject implements Track
       //checkAccess();
       //if (covMatrix.length != 15) throw new IllegalArgumentException("covMatrix.length != 15");
       //this.covMatrix = covMatrix;
+      if (trackStates.size() != 1){
+          throw new IllegalArgumentException("trying to use setCovMatrix within Track object containing more than one TrackState.");
+      }
       ((ITrackState)trackStates.get(0)).setCovMatrix( covMatrix ) ;
    }
   
@@ -127,6 +145,9 @@ public class ITrack extends ILCObject implements Track
       //checkAccess();
       //if (referencePoint.length != 3) throw new IllegalArgumentException("referencePoint.lenhgth != 3");
       //this.referencePoint = referencePoint;
+      if (trackStates.size() != 1){
+          throw new IllegalArgumentException("trying to use setReferencePoint within Track object containing more than one TrackState.");
+      }
       ((ITrackState)trackStates.get(0)).setReferencePoint( referencePoint ) ;
    }
 
