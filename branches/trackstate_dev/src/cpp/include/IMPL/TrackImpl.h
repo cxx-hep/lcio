@@ -49,7 +49,7 @@ namespace IMPL {
 
     /** Flagword that defines the type of track. Bits 0-15 can be used to denote the subdetectors
      *  that have contributed hits used in the track fit. The definition of the  hits has to be done 
-     *  elsewhere, e.g. in the run header. Bit 31 is used to encode isReferencePointPCA.
+     *  elsewhere, e.g. in the run header. Before LCIO 2.0 bit 31 was used to encode isReferencePointPCA (now deprecated).
      */
     virtual  int getType() const  ;
 
@@ -91,14 +91,14 @@ namespace IMPL {
     virtual const EVENT::FloatVec & getCovMatrix() const ;
 
     /** Reference point of the track parameters.
-     *  The default for the reference point is the point of closest approach. @see isReferencPointPCA() 
+     *  The default for the reference point is the point of closest approach.
      *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     virtual const float* getReferencePoint() const ;
 
-    /** True if the reference point is the point of closest approach.
-     */
-    virtual bool isReferencePointPCA() const ;
+    ///** True if the reference point is the point of closest approach.
+    // */
+    //virtual bool isReferencePointPCA() const ;
 
     /** Chi^2 of the track fit.
      */
@@ -171,7 +171,7 @@ namespace IMPL {
     virtual void  setCovMatrix( const EVENT::FloatVec& cov ) ;  // stored in TrackState
     virtual void  setReferencePoint( float* rPnt) ;             // stored in TrackState
 
-    virtual void  setIsReferencePointPCA( bool val ) ;
+    //virtual void  setIsReferencePointPCA( bool val ) ;
 
     virtual void  setChi2( float chi2 ) ;
     virtual void  setNdf( int ndf ) ;
@@ -208,7 +208,7 @@ namespace IMPL {
     //float  _reference[3] ;            // stored in TrackState
 
 
-    bool _isReferencePointPCA ;
+    //bool _isReferencePointPCA ;
 
     float _chi2 ;
     int   _ndf ; 

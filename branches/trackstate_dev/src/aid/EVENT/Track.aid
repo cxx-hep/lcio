@@ -69,14 +69,14 @@ public interface Track extends LCObject {
     
     
     /** Reference point of the track parameters.
-     *  The default for the reference point is the point of closest approach. @see isReferencPointPCA() 
+     *  The default for the reference point is the point of closest approach.
      *  Information is stored in the first TrackState of this Track, @see TrackState.
      */
     public const float3V getReferencePoint() const;
     
-    /** True if the reference point is the point of closest approach.
-     */
-    public boolean isReferencePointPCA() const ;
+    ///** True if the reference point is the point of closest approach.
+    // */
+    //public boolean isReferencePointPCA() const ;
     
     /** Chi^2 of the track fit.
      */

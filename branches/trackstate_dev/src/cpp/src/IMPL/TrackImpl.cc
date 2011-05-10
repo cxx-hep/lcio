@@ -10,14 +10,14 @@ namespace IMPL {
 
     TrackImpl::TrackImpl() :
         _type(0),
-        _isReferencePointPCA(0),
+        //_isReferencePointPCA(0),
         _chi2(0),
         _ndf(0),
         _dEdx(0),
         _dEdxError(0),
         _radiusOfInnermostHit(0) { 
 
-            _type.set( BIT_ISREFERENCEPOINTDCA ) ;
+            //_type.set( BIT_ISREFERENCEPOINTDCA ) ;
 
         }
 
@@ -59,10 +59,10 @@ namespace IMPL {
     const float* TrackImpl::getReferencePoint() const { return _trackStates[0]->getReferencePoint() ; }
 
 
-    bool  TrackImpl::isReferencePointPCA() const { 
-        //    return _isReferencePointPCA ;
-        return _type.test( BIT_ISREFERENCEPOINTDCA ) ;
-    }
+    //bool  TrackImpl::isReferencePointPCA() const { 
+    //    //    return _isReferencePointPCA ;
+    //    return _type.test( BIT_ISREFERENCEPOINTDCA ) ;
+    //}
 
     float TrackImpl::getChi2() const { return _chi2 ;}
     int   TrackImpl::getNdf() const { return _ndf ;}
@@ -268,12 +268,11 @@ namespace IMPL {
         ((TrackStateImpl*)_trackStates[0])->setReferencePoint( rPnt ) ;
     } 
 
-    void  TrackImpl::setIsReferencePointPCA( bool val){ 
-        checkAccess("TrackImpl::setIsReferencePointPCA") ;
-        //    _isReferencePointPCA = val ;
-        _type.set( BIT_ISREFERENCEPOINTDCA , val ) ;
-
-    } 
+    //void  TrackImpl::setIsReferencePointPCA( bool val){ 
+    //    checkAccess("TrackImpl::setIsReferencePointPCA") ;
+    //    //    _isReferencePointPCA = val ;
+    //    _type.set( BIT_ISREFERENCEPOINTDCA , val ) ;
+    //} 
 
     void  TrackImpl::setChi2( float chi2 ){ 
         checkAccess("TrackImpl::setChi2") ;

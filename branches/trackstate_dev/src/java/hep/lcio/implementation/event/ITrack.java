@@ -37,7 +37,7 @@ public class ITrack extends ILCObject implements Track
    protected List hits = new ArrayList();
    protected float radiusOfInnermostHit;
    
-   public final static int BITISREFERENCEPOINTPCA = 31;
+   //public final static int BITISREFERENCEPOINTPCA = 31;
    protected int[] subdetectorHitNumbers = null0;
    
    public float getD0()
@@ -274,15 +274,15 @@ public class ITrack extends ILCObject implements Track
       ndf = i;
    }
    
-   public boolean isReferencePointPCA()
-   {
-      return bitTest(type,BITISREFERENCEPOINTPCA);
-   }
-   
-   public void setReferencePointPCA(boolean b)
-   {
-      type = bitSet(type,BITISREFERENCEPOINTPCA, b);
-   }
+   //public boolean isReferencePointPCA()
+   //{
+   //   return bitTest(type,BITISREFERENCEPOINTPCA);
+   //}
+   //
+   //public void setReferencePointPCA(boolean b)
+   //{
+   //   type = bitSet(type,BITISREFERENCEPOINTPCA, b);
+   //}
    public void setTypeBit(int bit)
    {
       setTypeBit(bit,true) ;
