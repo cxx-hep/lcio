@@ -116,21 +116,19 @@ int main(int argc, char** argv ){
                 // add some additional TrackStates
                 for( int k=1 ; k<4 ; k++ ){
 
-                    TrackStateImpl* trkstate = new TrackStateImpl ;
-
-                    trkstate->setLocation( k ) ;
-                    trkstate->setOmega(  (i+j+k) * .1 ) ;
-                    trkstate->setTanLambda( (i+j+k) * .2 ) ;
-                    trkstate->setPhi( (i+j+k) * .3 ) ;
-                    trkstate->setD0( i*j*k * .1 ) ;
-                    trkstate->setZ0( i*j*k * .1 ) ;
-
                     float cov[15] = { k+1.,k+2.,k+3.,k+4.,k+5.,k+6.,k+7.,k+8.,k+9.,k+10.,k+11.,k+12.,k+13.,k+14.,k+15. } ;
-                    trkstate->setCovMatrix( cov ) ;
-
                     float ref[3] = { k*1. , k*2. , k*3. } ;
-                    trkstate->setReferencePoint( ref ) ;
 
+                    TrackStateImpl* trkstate = new TrackStateImpl(
+                        k,                  // location
+                        ( i*j*k * .1 ),     // d0
+                        ( (i+j+k) * .3 ),   // phi
+                        ( (i+j+k) * .1 ),   // omega
+                        ( i*j*k * .1 ),     // z0
+                        ( (i+j+k) * .2 ),   // tanlambda
+                        cov,
+                        ref
+                    );
                     trk->addTrackState( trkstate ) ;
                 }
 

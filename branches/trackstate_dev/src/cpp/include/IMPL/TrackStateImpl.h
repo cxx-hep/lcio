@@ -29,6 +29,9 @@ namespace IMPL {
     /** Default constructor, initializes values to 0.
      */
     TrackStateImpl() ;
+    TrackStateImpl(int location, float d0, float phi, float omega, float z0, float tanLambda, float* covMatrix, float* reference) ;
+    TrackStateImpl(int location, float d0, float phi, float omega, float z0, float tanLambda, EVENT::FloatVec covMatrix, float* reference) ;
+
     
     /// Destructor.
     virtual ~TrackStateImpl() ; 

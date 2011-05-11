@@ -23,6 +23,36 @@ namespace IMPL {
 
     }
 
+    TrackStateImpl::TrackStateImpl(int location, float d0, float phi, float omega, float z0, float tanLambda, float* covMatrix, float* reference) :
+        _location(location),
+        _d0(d0),
+        _phi(phi),
+        _omega(omega),
+        _z0(z0),
+        _tanLambda(tanLambda)
+    {
+
+        for(int i=0 ; i < TRKSTATENCOVMATRIX ; i++ ) {
+            _covMatrix.push_back( covMatrix[i] ) ; 
+        }
+
+        setReferencePoint(reference);
+    }
+
+
+    TrackStateImpl::TrackStateImpl(int location, float d0, float phi, float omega, float z0, float tanLambda, FloatVec covMatrix, float* reference) :
+        _location(location),
+        _d0(d0),
+        _phi(phi),
+        _omega(omega),
+        _z0(z0),
+        _tanLambda(tanLambda),
+        _covMatrix(covMatrix)
+    {
+        setReferencePoint(reference);
+    }
+
+
     TrackStateImpl::~TrackStateImpl() { /* no-op */ } 
 
     int TrackStateImpl::getLocation() const { return _location ;}
