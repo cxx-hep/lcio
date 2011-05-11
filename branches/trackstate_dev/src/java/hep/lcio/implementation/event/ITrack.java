@@ -211,6 +211,7 @@ public class ITrack extends ILCObject implements Track
  
    public TrackState getTrackState( int location )
    {
+       // FIXME check for valid location
       for( int i=0 ; i<trackStates.size() ; i++ ){
         if( ((ITrackState)trackStates.get(i)).getLocation() == location ){
             return (TrackState)trackStates.get(i) ;

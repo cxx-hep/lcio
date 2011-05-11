@@ -128,8 +128,8 @@ public interface Track extends LCObject {
     public const TrackState* getClosestTrackState( float x, float y, float z ) const ;
 
 
-    /** Returns track state for location with given enum - or NULL if not found. @see TrackState.
-     *  location can be: AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtCustomLocation
+    /** Returns track state for the given location - or NULL if not found. @see TrackState.
+     *  location can be: AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtOther
      */
     public const TrackState* getTrackState( int location ) const ;
 

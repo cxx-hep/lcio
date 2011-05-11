@@ -147,8 +147,8 @@ namespace IMPL {
     virtual const EVENT::TrackState* getClosestTrackState( float x, float y, float z ) const ;
 
 
-    /** Returns track state for location with given enum - or NULL if not found. @see TrackState.
-     *  location can be: AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtCustomLocation
+    /** Returns track state for the given location - or NULL if not found. @see TrackState.
+     *  location can be set to: AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtOther
      */
     virtual const EVENT::TrackState* getTrackState( int location ) const ;
 

@@ -24,8 +24,36 @@ public interface TrackState extends LCObject {
 }
 @endif
 
+@ifdef cpp
+@cpp{
+
+    /** Enumeration for refering to Locations
+     *  Example usage: TrackState::Location::AtIP
+    */
+    struct Location 
+    {
+        // don't forget to update size (below) when adding new entries to TrackStateLocationEnum !!
+        enum TrackStateLocationEnum
+        {
+            AtOther, // any location other than the ones defined below
+            AtIP,
+            AtFirstHit,
+            AtLastHit,
+            AtCalorimeter,
+            AtVertex
+        };
+
+        static int size(){
+            // number of options in TrackStateLocationEnum
+            return 6; // FIXME hard-coded
+        }
+    };
+}
+@endif
+
+
      /** The location of the track state.
-     *   Location defined by enum: TrackStateLocationEnum{ AtCustomLocation, AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex }
+     *   Location can be set to: AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtOther
      */
     public int getLocation() const ;	
    

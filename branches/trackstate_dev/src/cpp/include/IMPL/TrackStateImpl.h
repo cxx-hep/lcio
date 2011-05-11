@@ -20,12 +20,10 @@ namespace IMPL {
  */
 
 
-  enum TrackStateLocationEnum{ AtCustomLocation, AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex } ;
-
   class TrackStateImpl : public EVENT::TrackState, public AccessChecked {
 
   public: 
-    
+
     /** Default constructor, initializes values to 0.
      */
     TrackStateImpl() ;
@@ -41,7 +39,7 @@ namespace IMPL {
 
 
     /** The location of the track state.
-     *  Location defined by enum: TrackStateLocationEnum{ AtCustomLocation, AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex }
+     *  Location can be set to: AtIP, AtFirstHit, AtLastHit, AtCalorimeter, AtVertex, AtOther
      */
     virtual int getLocation() const ;
 

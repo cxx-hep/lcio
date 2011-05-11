@@ -70,6 +70,7 @@ public class ITrackState extends ILCObject implements TrackState
    public void setLocation(int location)
    {
       checkAccess();
+      //FIXME check for valid location
       this.location = location;
    }
     public void setD0(float d0)
