@@ -54,6 +54,8 @@ SET( LCIO_IMPL_SRCS
   ./src/IMPL/TrackStateImpl.cc
   ./src/IMPL/TrackerDataImpl.cc
   ./src/IMPL/TrackerHitImpl.cc
+  ./src/IMPL/TrackerHitPlaneImpl.cc
+  ./src/IMPL/TrackerHitZCylinderImpl.cc
   ./src/IMPL/TrackerPulseImpl.cc
   ./src/IMPL/TrackerRawDataImpl.cc
   ./src/IMPL/VertexImpl.cc
