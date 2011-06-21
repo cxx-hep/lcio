@@ -7,7 +7,7 @@
 #include "EVENT/TrackerHitZCylinder.h"
 #include "IMPL/AccessChecked.h"
 
-#define TRKHITNCOVMATRIX 6
+#define TRKHITZCYLNCOVMATRIX 6
 
 namespace IMPL {
 
@@ -115,14 +115,15 @@ protected:
     float  _r;
     float  _drphi ;
     float  _dz ;
-    mutable EVENT::FloatVec _cov ;
     float _EDep ;
     float _EDepError ;
     float _time ;
     int _quality ;
+    mutable EVENT::FloatVec _cov ;
     EVENT::LCObjectVec _rawHits ;
     
 
 }; // class
 } // namespace IMPL
-#endif // #ifndef IMPL_TrackerHitZCylinderImpl_H 
+#endif // #ifndef IMPL_TrackerHitZCylinderImpl_H
+

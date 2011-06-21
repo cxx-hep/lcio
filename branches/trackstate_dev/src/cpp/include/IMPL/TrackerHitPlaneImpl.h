@@ -7,7 +7,7 @@
 #include "EVENT/TrackerHitPlane.h"
 #include "IMPL/AccessChecked.h"
 
-#define TRKHITNCOVMATRIX 6
+#define TRKHITPLANENCOVMATRIX 6
 
 namespace IMPL {
 
@@ -118,11 +118,11 @@ protected:
     float  _v[2] ;
     float  _du ;
     float  _dv ;
-    mutable EVENT::FloatVec _cov ;
     float _EDep ;
     float _EDepError ;
     float _time ;
     int _quality ;
+    mutable EVENT::FloatVec _cov ;
     EVENT::LCObjectVec _rawHits ;
     
 

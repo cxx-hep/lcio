@@ -10,7 +10,6 @@ namespace IMPL {
     _type(0),
     _du(0),
     _dv(0),
-    _cov(0),
     _EDep(0),
     _EDepError(0),
     _time(0),
@@ -24,10 +23,10 @@ namespace IMPL {
     _v[0] = 0. ;
     _v[1] = 0. ;
     
-    //    _cov.resize( TRKHITNCOVMATRIX ) ;
-    //     for(int i=0;i<TRKHITNCOVMATRIX;i++){
-    //       _cov.push_back(0.0) ;
-    //    }
+    _cov.resize( TRKHITPLANENCOVMATRIX ) ;
+     for(int i=0;i<TRKHITPLANENCOVMATRIX;i++){
+       _cov.push_back(0.0) ;
+    }
   }
   
   TrackerHitPlaneImpl::~TrackerHitPlaneImpl(){  
@@ -36,7 +35,7 @@ namespace IMPL {
   
   const FloatVec & TrackerHitPlaneImpl::getCovMatrix() const {
     
-    _cov.resize( TRKHITNCOVMATRIX ) ;
+    _cov.resize( TRKHITPLANENCOVMATRIX ) ;
     
     // FIXME: compute errors in (x,y,z) 
     _cov[0] = 0. ;
