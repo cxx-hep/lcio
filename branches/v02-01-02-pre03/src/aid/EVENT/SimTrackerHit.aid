@@ -1,0 +1,67 @@
+package hep.lcio.event;
+
+/** A generic simulated tracker hit. 
+ * 
+ * @author gaede
+ * @version $Id: SimTrackerHit.aid,v 1.11 2010-06-17 12:28:59 engels Exp $
+ */
+
+public interface SimTrackerHit extends LCObject {
+    
+@ifdef cpp
+@cpp{
+    /** Useful typedef for template programming with LCIO */
+    typedef SimTrackerHit lcobject_type ;
+
+}
+@endif
+
+   /** Same name as in CalorimeterHit, even though there are no 'cells' in this case
+     */
+    public int getCellID0() const ;
+    
+    /** Same name as in CalorimeterHit, even though there are no 'cells' in this case
+     *  Optional, check/set flag(LCIO::THBIT_ID1)==1.
+     */
+    public int getCellID1() const ;
+
+    /** DEPRECATED: use @getCellID0()
+     */
+    public int getCellID() const ;
+
+    /** Returns the hit  position in [mm].	
+     */
+    public const double3V getPosition() const ;
+
+    /** Returns  the dE/dx of the hit in [GeV].
+     *  @deprecated
+     *  @see getEDep()
+     */
+    public float getdEdx() const ;
+
+    /** The energy deposited on the hit [GeV]
+     */
+    public float getEDep() const ;
+     
+    /** Returns the  time of the hit in [ns]. TO DO needs definition.
+     */
+    public float getTime() const ;	
+    
+    /** Returns the MC particle that caused the hit.
+     *
+     * @see MCParticle
+     */
+    public MCParticle* getMCParticle() const ;
+
+
+    /** Returns the 3-momentum of the particle at the hits position in [GeV] - 
+     * optional, only if bit LCIO::THBIT_MOMENTUM is set.	
+     */ 
+    public const float3V getMomentum() const ;
+
+
+    /** The path length of the particle in the sensitive material that resulted in this hit.
+     *  This is only stored together with momentum, i.e. if  LCIO::THBIT_MOMENTUM is set.
+     */
+    public float getPathLength() const ;
+}
