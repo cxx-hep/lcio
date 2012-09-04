@@ -1,0 +1,88 @@
+package hep.lcio.event;
+
+@ifdef cpp
+@cpp{
+class TrackerHit ;
+/**Vector of (pointers to) TrackerHits.*/
+typedef std::vector<TrackerHit*> TrackerHitVec ;
+}
+@endif
+
+/** A generic tracker hit to be used by pattern recognition.
+ * 
+ * @author gaede
+ * @version $Id: TrackerHit.aid,v 1.16 2010-06-17 12:28:59 engels Exp $
+ */
+
+public interface TrackerHit extends LCObject {
+    
+@ifdef cpp
+@cpp{
+    /** Useful typedef for template programming with LCIO */
+    typedef TrackerHit lcobject_type ;
+
+}
+@endif
+
+   /** Same name as in CalorimeterHit, even though there are no 'cells' in this case
+     */
+    public int getCellID0() const ;
+    
+    /** Same name as in CalorimeterHit, even though there are no 'cells' in this case
+     *  Optional, check/set flag(LCIO::RTHBIT_ID1)==1.
+     */
+    public int getCellID1() const ;
+
+
+    /** The hit  position in [mm].	
+     */
+    public const double3V getPosition() const ;
+
+    /** Covariance of the position (x,y,z), stored as lower triangle matrix. i.e.
+     *  cov(x,x) , cov(y,x) , cov(y,y) , cov(z,x) , cov(z,y) , cov(z,z).
+     */
+    public const FloatVec& getCovMatrix() const ;
+    
+    /** The dE/dx of the hit in [GeV].
+     *  @deprecated
+     *  @see getEDep()
+     */
+    public float getdEdx() const ;
+    
+    /** The  time of the hit in [ns].
+     */
+    public float getTime() const ;	
+
+    //     /**Type of raw data hit, either one of<br>
+    //      * LCIO::TPCHIT<br>
+    //      * LCIO::SIMTRACKERHIT<br>
+    //      */
+    //    public const String& getType() const ;
+
+    /** Type of hit. Mapping of integer types to type names
+     * through collection parameters "TrackerHitTypeNames"
+     * and "TrackerHitTypeValues".
+     */
+    public int getType() const ;
+
+    /** The quality bit flag of the hit */
+    public int getQuality() const ;
+
+    /** The energy deposited on the hit [GeV] */
+    public float getEDep() const ;
+
+    /** The error measured on EDep [GeV] */
+    public float getEDepError() const ;
+
+    /** The raw data hits. 
+     * Check getType() to get actual data type.
+     */
+    public const LCObjectVec& getRawHits() const ;
+
+
+//     public void setPosition( double3V pos) ;
+//     public void setCovMatrix( const FloatVec& cov) ;
+//     public void setTime( float time ) ;
+//     public void setTPCHit( TPCHit* hit ) ;
+
+}
