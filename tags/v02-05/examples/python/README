@@ -1,0 +1,21 @@
+########################################################
+# Examples for using LCIO from python
+#
+# Christian Grefe, CERN
+########################################################
+
+ROOT has to be installed with the pyROOT bindings bindings (http://root.cern.ch/drupal/content/how-use-use-python-pyroot-interpreter)
+Add them to the python environment:
+export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH (usually included in $ROOTSYS/bin/thisroot.sh)
+
+ROOT dictionaries for LCIO are required. Build them by setting BUILD_ROOTDICT=ON in cmake.
+Add the pyLCIO package and these examples to your python environment:
+export PYTHONPATH=${LCIO}/src/python:${LCIO}/examples/python:${PYTHONPATH}
+
+Running requires all software versions identical to those used during compilation! The minimum version for python is 2.6.
+
+The examples in this directory can be executed as python scripts, i.e. 'python <script.py>'
+
+The example XML steering files can be executed with the pylcio script:
+alias pylico='python ${LCIO}/src/python/pylcio.py'
+pylcio <steeringFile.xml>

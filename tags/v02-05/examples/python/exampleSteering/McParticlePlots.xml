@@ -1,0 +1,25 @@
+<pylcio>
+    <inputFiles>
+        <file> test.slcio </file>
+    </inputFiles>
+    
+    <control>
+    	<skipEvents>0</skipEvents>
+        <numberOfEvents>-1</numberOfEvents>
+        <printDrivers>True</printDrivers>
+        <printStatistics>true</printStatistics>
+    </control>
+    
+    <execute>
+        <driver name="markerDriver"/>
+        <driver name="mcParticlePlotDriver"/>
+    </execute>
+    
+    <drivers>
+        <driver name="markerDriver" type="pyLCIO.drivers.EventMarkerDriver.EventMarkerDriver">
+            <interval> 1 </interval>
+            <showRunNumber> False </showRunNumber>
+        </driver>
+        <driver name="mcParticlePlotDriver" type="exampleDrivers.McParticlePlotDriver.McParticlePlotDriver"/>
+    </drivers>
+</pylcio>

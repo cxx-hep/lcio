@@ -1,0 +1,15 @@
+
+#########################################################################################
+#
+# lcioframe:
+# A small example application that creates some root  histograms from LCIO files.  
+# The main program is indepenedent of root. You can use it with your own modules.
+# Use MCParticleHistograms and CalorimeterHit as examples.
+#
+# Frank Gaede, 2003/16/09
+#########################################################################################
+
+ lcioframe is obsolete - please use the marlin (http://ilcsoft.desy.de/marlin)
+
+
+
